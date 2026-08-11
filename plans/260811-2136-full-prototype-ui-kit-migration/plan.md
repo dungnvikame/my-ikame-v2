@@ -21,7 +21,13 @@ Current `prototype-app/` covers a partial R0 slice (Home, Manager Overview previ
 
 **Not in scope:** My iKame Studio (Operations backstage), AI Assistant (R4/R5), real iWiki/iGoal integration, auth/SSO, any server code.
 
-## ⚠️ Blocking dependency — read first
+## ⚠️ Amendment (2026-08-11, during cook) — UI kit migration deferred
+
+`gitlab.ikameglobal.com` is unreachable from the implementation environment (DNS resolves, TCP connect times out — VPN/network access issue, not just a missing token). User decision: **proceed with the full-featured prototype now on the existing hand-rolled Core DS 1.1 CSS/components** (`prototype-app/src/styles/core-ds-1.1.css`, `app.css`, `components/UI.tsx`, `components/ContentCards.tsx` — these already implement Button/Badge(`StatusPill`)/SectionHeader/EmptyState/etc.), and swap in `@frontend-team/ui-kit` later once network access is sorted.
+
+**Effect on every phase below:** wherever a phase file says "kit `Card`/`Badge`/`Chip`/`Modal`/`Drawer`/`Tabs`/`Alert`/`Toast`/`Sidebar`/`DataTable`/etc.", read that as "the equivalent hand-rolled component in `components/UI.tsx`/`ContentCards.tsx`, extended if it doesn't exist yet." No `npm install`, no `.npmrc`, no CSS deletion. Everything else in each phase file (data model, ranking logic, permission guard, route table, RSVP state machine, read-vs-ack semantics, etc.) is architecture, not styling, and stands unchanged. Phase 1's Architecture §0 (verification spike) and §1 (package setup) are skipped entirely for this pass.
+
+## ⚠️ Blocking dependency — read first (deferred per amendment above)
 
 `@frontend-team/ui-kit` is hosted on a **private GitLab npm registry** (`gitlab.ikameglobal.com`). Installing it requires a `GITLAB_NPM_TOKEN` in `.npmrc`/env that this agent does not have. **Phase 1 cannot complete `npm install` without the user supplying this token.** See [Open Questions](#open-questions) below — this is Q1, unresolved as of plan creation.
 

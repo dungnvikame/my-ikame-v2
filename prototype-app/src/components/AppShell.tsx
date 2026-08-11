@@ -1,10 +1,12 @@
 import {
   Bell,
+  BookBookmark,
   CalendarDots,
   House,
   MagnifyingGlass,
   Moon,
   Newspaper,
+  Target,
   Sun,
   UsersThree,
   X,
@@ -15,16 +17,20 @@ import { useAppState } from '../AppState';
 import { IconButton, StatusPill } from './UI';
 
 const iKamerNav = [
-  { label: 'Trang chủ', to: '/', icon: House },
+  { label: 'Trang chủ', to: '/home', icon: House },
   { label: 'Tin tức', to: '/news', icon: Newspaper },
   { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+  { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
+  { label: 'Mục tiêu', to: '/goals', icon: Target },
 ];
 
 const managerNav = [
-  { label: 'Tổng quan', to: '/manager', icon: House },
+  { label: 'Tổng quan', to: '/manager/overview', icon: House },
   { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
   { label: 'Tin tức', to: '/news', icon: Newspaper },
   { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+  { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
+  { label: 'Mục tiêu', to: '/goals', icon: Target },
 ];
 
 function Logo() {
@@ -42,7 +48,7 @@ function PerspectiveSwitch() {
 
   const select = (next: 'ikamer' | 'manager') => {
     setPerspective(next);
-    navigate(next === 'manager' ? '/manager' : '/');
+    navigate(next === 'manager' ? '/manager/overview' : '/home');
   };
 
   return (
@@ -77,6 +83,7 @@ function NotificationsDrawer() {
         </div>
         <div className="drawer-toolbar">
           <button className="text-link" onClick={markAllNotificationsRead}>Đánh dấu tất cả đã đọc</button>
+          <NavLink className="text-link" to="/notifications" onClick={() => setNotificationOpen(false)}>Xem tất cả</NavLink>
         </div>
         <div className="notification-list">
           {notifications.map((item) => (
@@ -117,7 +124,7 @@ export function AppShell({ children }: PropsWithChildren) {
           <nav className="primary-nav" aria-label="Điều hướng chính">
             <p className="nav-label">KHÔNG GIAN CỦA BẠN</p>
             {navItems.map(({ label, to, icon: Icon }) => (
-              <NavLink key={to} to={to} end={to === '/' || to === '/manager'} className={({ isActive }) => `nav-item ${isActive ? 'is-active' : ''}`}>
+              <NavLink key={to} to={to} end className={({ isActive }) => `nav-item ${isActive ? 'is-active' : ''}`}>
                 <Icon size={18} />
                 <span>{label}</span>
               </NavLink>
@@ -126,10 +133,10 @@ export function AppShell({ children }: PropsWithChildren) {
         </div>
         <div className="sidebar-account">
           <PerspectiveSwitch />
-          <div className="account-row">
+          <NavLink to="/profile" className="account-row">
             <span className="avatar" aria-hidden="true">{user.shortName.slice(0, 1)}</span>
             <span className="account-copy"><strong>{user.name}</strong><small>{user.role}</small></span>
-          </div>
+          </NavLink>
         </div>
       </aside>
 
@@ -154,8 +161,8 @@ export function AppShell({ children }: PropsWithChildren) {
         </header>
         <main id="main-content" className="main-content">{children}</main>
         <nav className="bottom-nav" aria-label="Điều hướng mobile">
-          {navItems.slice(0, 4).map(({ label, to, icon: Icon }) => (
-            <NavLink key={to} to={to} end={to === '/' || to === '/manager'} className={({ isActive }) => isActive ? 'is-active' : ''}>
+          {navItems.slice(0, 5).map(({ label, to, icon: Icon }) => (
+            <NavLink key={to} to={to} end className={({ isActive }) => isActive ? 'is-active' : ''}>
               <Icon size={20} />
               <span>{label}</span>
             </NavLink>
