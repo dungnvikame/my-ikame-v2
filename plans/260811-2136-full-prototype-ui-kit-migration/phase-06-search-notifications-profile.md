@@ -17,7 +17,7 @@
 ## Key Insights
 
 - Search is a **client-side filter over `news`/`events` from `AppState`**, not a service. But spec §20.3 rule 1 still applies in the prototype: run `isEligible(user, item.audienceTeamIds)` **before** matching, so an out-of-audience post can never appear even as a title in results (same leak rule as `/forbidden`).
-- `NotificationItem.time` is a **human-relative string** ("8 phút trước", "Hôm qua"), not ISO — grouping "by day" (§19.1) must be derived from that string with a local `dayBucket()` helper (Hôm nay / Hôm qua / Trước đó). Do not add a date field to the shared type (Phase-1 owned); see Next Steps.
+- **(Red team update)** Phase 1 already added an optional `NotificationItem.receivedAt` (ISO) specifically for this — prefer it when populated (`dayBucket(receivedAt ?? time)`), falling back to the string-parsing heuristic only where a fixture lacks it. Either way, expand the regex beyond the original 2 cases: the earlier draft's example string ("2 ngày trước") fell into the same `Trước đó` bucket as month-old items — add a `/(\d+)\s*ngày/` match mapped to its own recent-ish bucket (or "Hôm qua"-adjacent) so a 2-day-old item doesn't read as indistinguishable from ancient ones.
 - `NotificationItem` has no `actor`/`source` field, so the §19.1 card anatomy is mapped as: message=`title`, reason=`body`, source=priority `Badge`, time=`time`, read-state=dot + surface tone, primary action=link to `href`. Deliberate reduction, flagged as a dependency.
 - "Cần làm" has no business-state field to key off (`acknowledged`/RSVP live on News/Event, not on the notification). Define it as `priority ∈ {critical, required} && !read`. Marking read must NOT touch business state (§19.1 explicit) — `markNotificationRead` already only flips `read`, so reuse it verbatim.
 - Profile has **no spec section**. This is a deliberate scope-fill to make the avatar link in the shell land somewhere real, not an attempt to spec the feature. Keep it to 3 blocks; do not invent preference/notification settings UI (§19.3 preferences are R1+).
@@ -56,7 +56,7 @@ applied + typeFilter  -->  useMemo:
 - Grouping: `dayBucket(time)` → `'Hôm nay' | 'Hôm qua' | 'Trước đó'` (matches `/phút|giờ/` → Hôm nay; `/Hôm qua/` → Hôm qua; else Trước đó). Within a bucket, consecutive items sharing `groupKey` render under one sub-heading with a count ("3 cập nhật về iConnect"), collapsed via kit `Accordion type="single" collapsible` only when the group has >2 items.
 - Priority → `Badge`: critical=`error`, required=`warning`, transactional=`info`, informational=`default`.
 - Header: title + unread total + "Đánh dấu tất cả đã đọc" (kit `Button variant` non-primary — the page's single primary CTA budget is spent on nothing, per Core DS one-primary rule) → `markAllNotificationsRead()` + `toast.success('Đã đánh dấu tất cả là đã đọc')`.
-- Export `NotificationList` from this file so the AppShell drawer can render the same rows in compact mode (`compact` prop: hides day headings, caps at 5). Wiring the import into `AppShell.tsx` is Phase-1/8 work — see Next Steps.
+- Export `NotificationList` from this file so the AppShell drawer can render the same rows in compact mode (`compact` prop: hides day headings, caps at 5). **Container contract (from Phase 1's Drawer shell — design against this, not just against this page's full-width layout):** the drawer body is a `flex-1 overflow-y-auto` column roughly 360-400px wide with its own scroll. `compact` mode must not assume page-level max-width, margins sized for a full page, or its own nested scroll container. Wiring the import into `AppShell.tsx` is Phase 8 work — see Next Steps.
 
 ### ProfilePage
 - Three kit `Card`s: (1) identity — `Avatar` (initials fallback) + name/role/team + `Badge` per perspective in `availablePerspectives`, current one filled; (2) hiển thị — `Switch label="Chế độ tối"` bound to `useDarkMode()`; (3) phiên — disabled `Button` "Đăng xuất" + caption. No editable fields.
@@ -112,24 +112,21 @@ applied + typeFilter  -->  useMemo:
 
 ## Risk Assessment
 
-- **`dayBucket` string parsing is brittle** if mock `time` copy changes (e.g. "2 ngày trước"). Mitigate: default branch is `Trước đó`, so unknown strings degrade gracefully instead of throwing; keep the matcher to 2 regexes.
+- **`dayBucket` string parsing is brittle** if mock `time` copy changes — mitigated by preferring `receivedAt` (now available from Phase 1) and widening the regex set (see Key Insights); default branch stays `Trước đó` for truly unmatched strings, not as the catch-all for "a few days ago."
 - **Drawer/page duplication** — if Phase 1's drawer body ships its own list markup, we end up with two renderers (DRY break). Mitigate: export `NotificationList` and flag the wiring in Next Steps; do not silently fork the markup.
 - **Highlight vs. Vietnamese diacritics** — `toLocaleLowerCase('vi')` matching is fine, but do NOT strip diacritics for matching, since re-inserting them into the highlighted title would alter the title (§20.1 forbids meaning-changing highlight). Accept that "bao mat" won't match "bảo mật" in the prototype.
 - **Tabs + Accordion nesting** — kit `Accordion` inside `Tabs` content is untested here; if it misbehaves, drop the collapse and render grouped items flat with a count heading (grouping is the requirement, collapsing is not).
 
 ## Security Considerations
 
-- Eligibility filter runs **before** the text match and before any result object reaches render — no ineligible title/summary in the DOM, matching the `/forbidden` no-leak rule from Phase 1.
+- Eligibility filter runs **before** the text match and before any result object reaches render — no ineligible title/summary in the DOM. Demo-fidelity check matching Phase 1's `/forbidden` pattern, not a real access-control boundary (the underlying arrays are resident in `AppState` regardless).
 - Recent searches stay in memory only — nothing written to localStorage/sessionStorage, so no query history survives a refresh (§20.1 privacy note, and §19.3's "no sensitive detail in previews" spirit).
 - Notification rows render only `title`/`body` from the fixture; no ids, hrefs of ineligible resources, or debug payloads in the DOM.
 
 ## Next Steps
 
-**Dependencies on Phase 1 (raise before starting if missing):**
-- `NotificationItem.priority` must include `'critical'` and the type must carry `groupKey?` — the tabs and grouping depend on both.
-- At least one `groupKey`-shared notification pair + one `critical` notification in `mockData.ts`, otherwise grouping and the critical Badge are unexercised.
-- Ideally add `receivedAt` (ISO) to `NotificationItem` so day grouping is data-driven; if Phase 1 declines, `dayBucket()` string parsing stands (documented above).
-- Optional: `actor`/`source` field on `NotificationItem` to satisfy the full §19.1 card anatomy.
+**(Red team update) All items below are already resolved in the landed Phase 1 spec** — `priority` includes `'critical'`, `groupKey?` and optional `receivedAt` both exist on `NotificationItem`. Confirm the actual fixtures include a `groupKey`-shared pair and a `critical` item; if not present, that's worth flagging, but the type support itself is no longer in question.
+- Still genuinely optional/not requested: `actor`/`source` field on `NotificationItem` for the full §19.1 card anatomy — the reduced mapping in Key Insights stands.
 
 **Hand-offs:**
 - Phase 8 (hardening) wires `NotificationList compact` from `pages/NotificationsPage.tsx` into `AppShell.tsx`'s drawer body, and may relocate it to `components/NotificationList.tsx` if any third consumer appears.

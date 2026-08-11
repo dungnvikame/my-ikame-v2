@@ -16,10 +16,10 @@
 
 ## Key Insights
 
-- Current page models RSVP as one boolean → cannot express `waitlisted` or `cancelled`. Phase 1's `myRegistration` union is the source of truth; drop `event.registered` entirely.
-- **The disabled-button trick alone does not satisfy §18.7 idempotency.** Two clicks in the same tick both read the pre-render `disabled` value. The real guard is a `useRef` lock read+set synchronously inside the handler; `disabled` is UX polish on top.
-- Timezone display needs a real instant, not the mock's `dateLabel`/`time` display strings → requires ISO `startsAt`/`endsAt` on `EventItem` (dependency on Phase 1, fallback below). `Intl.DateTimeFormat` with `timeZone` does the conversion — no date library.
-- .ics generation is pure string building + `Blob` + anchor click. No server, no dependency. Correct call for a mock prototype.
+- Current page models RSVP as one boolean → cannot express `waitlisted`. Phase 1's `myRegistration` union (3 values: `not_registered`/`going`/`waitlisted`) is the source of truth; drop `event.registered` entirely. Event-level cancellation is a *separate* concept on `EventItem.status === 'cancelled'` — never on `myRegistration` (red team caught a contradiction in an earlier draft that had both; resolved in Phase 1's type now).
+- **(Red team simplification) Drop the manufactured race.** An earlier draft added a `useRef` lock + idempotency key + an artificial `sleep(400)` specifically so the double-click race would be "real and testable" — but there's no server, so the race was invented by the plan itself purely to give the guard code something to guard against. A plain `pending` boolean disabling the button during the (now much shorter, or removed) async gap delivers the same visible outcome — one registration, one toast — for a fraction of the code and zero manufactured-latency ceremony. See Architecture §3 (simplified) and Success Criteria (Gherkin 1 reworded accordingly).
+- Timezone display needs a real instant, not the mock's `dateLabel`/`time` display strings → Phase 1's `EventItem.startsAt`/`endsAt` are now REQUIRED ISO fields with no fallback path (Phase 1 §3 type comment is explicit: missing timestamps are a blocker to report, not something this phase papers over). `Intl.DateTimeFormat` with `timeZone` does the conversion — no date library.
+- .ics generation is pure string building + `Blob` + anchor click. No server, no dependency — correct call for a mock prototype. **(Red team simplification)** full RFC 5545 escaping/line-folding rigor is calendar-interop engineering nobody will stress-test in a demo; ship a minimal working VEVENT (see Architecture §1, simplified) and skip the escaping edge cases.
 - **Deliberate deviations (not oversights):** (a) kit `Steps` is skipped — R0 RSVP is a single action, a 4-step wizard would be theatre (YAGNI); (b) desktop month calendar is skipped — spec §18.1 says MAY, list is the required view; (c) filters beyond the 3 tabs (format/location/taxonomy) skipped for R0 prototype scope.
 
 ## Requirements
@@ -42,7 +42,7 @@
 
 ## Architecture
 
-### 1. `lib/ics.ts` (new, ~60 lines)
+### 1. `lib/ics.ts` (new, ~30 lines — simplified per red team, was ~60)
 ```ts
 export interface IcsInput {
   uid: string; title: string; description?: string; location?: string
@@ -51,8 +51,8 @@ export interface IcsInput {
 export function buildIcs(input: IcsInput): string
 export function downloadIcs(filename: string, ics: string): void
 ```
-- `buildIcs`: `BEGIN:VCALENDAR/VERSION:2.0/PRODID:-//My iKame//Prototype//VI` → `VEVENT` with `UID`, `DTSTAMP`, `DTSTART`/`DTEND` as UTC basic format (`YYYYMMDDTHHMMSSZ` — avoids shipping a VTIMEZONE block, still correct), `SUMMARY`, `DESCRIPTION`, `LOCATION`, `STATUS:CONFIRMED`. CRLF line endings.
-- Escape per RFC 5545: `\` `;` `,` → escaped, newline → `\n`. No line folding (values are short; note the 75-octet limit as a known simplification).
+- `buildIcs`: `BEGIN:VCALENDAR/VERSION:2.0/PRODID:-//My iKame//Prototype//VI` → `VEVENT` with `UID`, `DTSTAMP`, `DTSTART`/`DTEND` as UTC basic format (`YYYYMMDDTHHMMSSZ`), `SUMMARY`, `DESCRIPTION`, `LOCATION`, `STATUS:CONFIRMED`. CRLF line endings.
+- **(Simplified, red team)** No RFC 5545 escaping, no line-folding handling — mock titles/locations are short, developer-controlled strings with no `;`/`,`/newline in practice. If a future real-data path needs this, it's a self-contained addition to this one function, not a redesign. Manual test: download one file, open it once in a calendar app to confirm the date/title round-trip — not a hardened interop test suite.
 - `downloadIcs`: `new Blob([ics], { type: 'text/calendar;charset=utf-8' })` → `URL.createObjectURL` → hidden `<a download>` → `click()` → `URL.revokeObjectURL` in a `setTimeout(…, 0)`.
 
 ### 2. Timezone helpers (local to `EventPages.tsx`, ~15 lines)
@@ -63,15 +63,13 @@ const fmt = (iso: string, tz: string) =>
 - Detail renders: primary line = user tz (`user.timezone`) + `timeZoneName: 'short'`; secondary muted line = `Giờ gốc sự kiện: … ({event.timezone})`. If `user.timezone === event.timezone`, render one line with the tz label appended (no redundant duplicate).
 - Cards render user-tz short form only.
 
-### 3. RSVP action (detail page)
+### 3. RSVP action (detail page) — simplified per red team (was a `lockRef`+`doneKeyRef`+manufactured-latency guard)
 ```ts
-const lockRef = useRef(false)                 // synchronous double-submit guard
-const doneKeyRef = useRef<string | null>(null) // idempotency key: `${event.id}:${next}`
 const [pending, setPending] = useState(false)  // drives disabled + Spinner
 ```
-Handler: `if (lockRef.current) return` → `const key = ...; if (doneKeyRef.current === key) return` → `lockRef.current = true; setPending(true)` → `await sleep(400)` (mock latency, makes the race real and testable) → call AppState setter → `doneKeyRef.current = key` → `toast.success(...)` → `finally { lockRef.current = false; setPending(false) }`.
+Handler: `if (pending) return` → `setPending(true)` → call the `AppState` setter synchronously (no artificial delay — there's no server round-trip to simulate) → `toast.success(...)` → `finally { setPending(false) }`. `pending` is set synchronously before any `await`, so a second click in the same tick sees `pending === true` and returns — this is enough for a single-user client demo. **Known, documented limitation:** this does not guard across browser tabs/reloads (no cross-tab coordination exists or is needed here — there's no shared server state to corrupt).
 - Cancel (Going→NotRegistered) goes through a kit `Modal` confirm (`title="Hủy đăng ký?"`, footer = Huỷ/Xác nhận). Register does not (one primary CTA, low-friction).
-- Receipts via kit `toast.success` / `toast.error` — replaces the inline `receipt` string state (§18.6 "RSVP success → transactional, ngay").
+- Receipts via kit `toast.success` / `toast.error` — replaces the inline `receipt` string state (§18.6 "RSVP success → transactional, ngay"). Toast text may include a timestamp; it's `new Date()` (browser clock), display-only, not an audit record.
 
 ### 4. State rendering matrix (detail RSVP panel)
 | event.status | myRegistration | Panel |
@@ -104,13 +102,13 @@ Handler: `if (lockRef.current) return` → `const key = ...; if (doneKeyRef.curr
 
 ## Implementation Steps
 
-1. Verify Phase-1 contract present: `EventItem.myRegistration`, `timezone`, `capacity/remaining/waitlistEnabled`, `audienceTeamIds`, `user.timezone`, plus `startsAt`/`endsAt` and an AppState registration setter. If ISO fields or setter are missing → apply the fallbacks in Next Steps and log it there, do not edit Phase-1 files.
-2. Write `lib/ics.ts` (`buildIcs` + `downloadIcs` + RFC 5545 escaping). Verify manually: download one file, import into a calendar app.
+1. Read the landed Phase 1 files: `EventItem` (3-value `myRegistration`, `startsAt`/`endsAt`, `timezone`, `capacity/remaining/waitlistEnabled`, `joinUrl`, `audienceTeamIds`), `user.timezone`, `setEventRegistration` on `AppState`. All of these are committed in Phase 1's current spec — if any are actually missing when you read the real file, that's a blocker to report, not something to fall back around (especially `startsAt`/`endsAt` — see Key Insights).
+2. Write `lib/ics.ts` (`buildIcs` + `downloadIcs`, simplified — no RFC 5545 escaping). Verify manually: download one file, import into a calendar app once.
 3. Rewrite `EventsPage`: kit `Tabs` (`variant="underline"`) with `items[]`; eligibility filter → tab filter → priority sort; render shared `EventCard`; per-tab `EmptyState`; timezone toolbar note.
 4. Rewrite `EventDetailPage` skeleton in §18.3 order 1–9 using kit `Card`/`Badge`/`Alert`; guards first: not found → `/not-found`; `!isEligible(...)` → `/forbidden` (**before** any render path that touches `event.title`).
 5. Add the dual-timezone block (§18.3.2) with `Intl.DateTimeFormat`, user tz primary, event tz secondary.
 6. Implement the RSVP panel state matrix (Architecture §4) incl. `Progress` capacity meter and gated join link.
-7. Implement the RSVP handler with `lockRef` + idempotency key + mock 400ms delay + `pending` disabled state + `toast` receipts; wrap cancel in a kit `Modal` confirm.
+7. Implement the RSVP handler with the `pending` guard + `toast` receipts (Architecture §3, simplified); wrap cancel in a kit `Modal` confirm.
 8. Wire `Thêm vào lịch` → `downloadIcs(slug(event.title) + '.ics', buildIcs(...))`, shown only for `going` on a non-cancelled event.
 9. Past-event recap/survey block (§18.3.9) + `Đã tham gia` badge; contact/support block (§18.3.8).
 10. `npm run typecheck && npm run build`; then manual acceptance run (Success Criteria).
@@ -125,7 +123,7 @@ Handler: `if (lockRef.current) return` → `const key = ...; if (doneKeyRef.curr
 - [ ] Detail page follows §18.3 order 1–9
 - [ ] Dual-timezone display (user primary, event secondary)
 - [ ] RSVP matrix: open / full+waitlist / full-no-waitlist / waitlisted / cancelled / past all render distinctly
-- [ ] Double-click RSVP → single registration (Gherkin 1) verified manually
+- [ ] Double-click RSVP → single registration (Gherkin 1, single-tab scope) verified manually
 - [ ] Cancel confirm `Modal` + `toast` receipts wired
 - [ ] Capacity `Progress` meter + gated join link
 - [ ] Out-of-audience direct URL → `/forbidden`, DOM contains no event title
@@ -133,7 +131,7 @@ Handler: `if (lockRef.current) return` → `const key = ...; if (doneKeyRef.curr
 
 ## Success Criteria
 
-- **Gherkin 1 (idempotency):** rapid double-click `Đăng ký tham gia` → exactly one state transition, `remaining` decrements by exactly 1, one toast, badge reads `Đã đăng ký` once. Verify by clicking twice within ~50ms (or via React DevTools state inspection), not by eyeballing the button.
+- **Gherkin 1 (idempotency, single-tab scope):** rapid double-click `Đăng ký tham gia` → exactly one state transition, `remaining` decrements by exactly 1, one toast, badge reads `Đã đăng ký` once. Verify by clicking twice quickly (or via React DevTools state inspection). Explicitly out of scope: cross-tab/cross-reload coordination — not needed for a single-user client demo.
 - **Gherkin 2 (timezone):** with `user.timezone` ≠ `event.timezone` in mock data, detail shows the user-tz time as the headline and the event's original tz on a secondary line.
 - Cancelled event: no RSVP CTA, no calendar CTA, error `Alert`, still visible in `Sắp tới`.
 - Full event with `waitlistEnabled`: CTA reads `Vào danh sách chờ`; after action, state is `waitlisted` with a leave-waitlist CTA.
@@ -143,31 +141,24 @@ Handler: `if (lockRef.current) return` → `const key = ...; if (doneKeyRef.curr
 
 ## Risk Assessment
 
-- **Missing ISO datetimes on `EventItem`** → timezone + .ics both break. Mitigation: fallback parser in `ics.ts` composing an ISO string from `day`/`month`/`time` assuming `+07:00`; flag to Phase 1 owner. This is the single most likely blocker.
-- **Missing AppState setter for the 4-value union** → cannot express `waitlisted`. Mitigation (temporary): local `useState` overlay in the detail page for the waitlist branch + existing `toggleRegistration` for going/cancel; replace as soon as Phase 1 lands the setter. Do not fork mock data.
-- **`disabled`-only guard mistaken for idempotency** → silently fails the acceptance criterion. Mitigation: the `lockRef` is mandatory; a reviewer must see it.
+- **If `startsAt`/`endsAt` are somehow still missing when this phase starts** (shouldn't happen — Phase 1 §4 commits every event fixture to real ISO timestamps) → this is a stop-and-report blocker, not a fallback to build. A parser guessing an offset from `day`/`month`/`time` would defeat the exact Gherkin 2 timezone-difference test it would exist to pass — red team caught an earlier draft doing exactly this.
+- **`pending`-boolean guard is a single-tab, single-session simplification** (see Key Insights) — do not over-build this into cross-tab-safe machinery; nothing in this prototype needs that.
 - **Kit `Tabs` unmounts inactive content** → per-tab scroll/state loss. Acceptable for R0; do not add memoization complexity.
 - **`Intl` timezone name output varies by browser/ICU** — do not assert exact strings in any later automated check; assert the tz identifier text we render ourselves.
 
 ## Security Considerations
 
-- Eligibility guard runs **before** render, not inside a conditional branch of the JSX — an ineligible resource must never reach the DOM (§18 + Phase 1 §6). No title in `document.title`, aria-labels, or the `/forbidden` redirect state.
+- Eligibility guard runs **before** render, not inside a conditional branch of the JSX — an ineligible resource shouldn't reach the DOM (§18 + Phase 1 §6). No title in `document.title`, aria-labels, or the `/forbidden` redirect state. This is a demo-fidelity check, not a real access-control boundary — see Phase 1 `lib/audience.ts`'s framing note.
 - Meeting/join links revealed only for `myRegistration === 'going'` (§18.3.3 "link online chỉ lộ theo policy") — omit from the DOM entirely when gated, do not `display:none` it.
-- `.ics` content is built from mock event fields; escape all user-facing strings per RFC 5545 so a title with `;`/`,`/newline cannot corrupt or inject extra calendar properties.
+- `.ics` content is built from developer-controlled mock event fields, not user input — no escaping needed for this prototype (simplified per red team; see Architecture §1). If a real-data path is ever added, add RFC 5545 escaping then, at that boundary.
 - Blob URL revoked after download (no lingering object URLs).
 
 ## Next Steps
 
-**Dependencies to raise with Phase 1 (blocking, no self-service edits):**
-1. `EventItem.startsAt: string` and `endsAt: string` — ISO 8601 **with offset** (e.g. `2026-08-20T15:30:00+07:00`). Required by dual-timezone display and .ics.
-2. AppState: `setEventRegistration(eventId: string, next: 'not_registered' | 'going' | 'waitlisted')` replacing boolean `toggleRegistration`; must also adjust `remaining` and flip `status` open↔full at capacity.
-3. Mock data: at least one event per state — `cancelled`, `full` + `waitlistEnabled: true`, `full` + no waitlist, `past` + `myRegistration: 'going'`, one audience-scoped-out event, and one event whose `timezone` differs from `user.timezone`.
-4. `<Toaster />` mounted at app root (already in Phase 1 step 3) — confirm before using `toast`.
+**(Red team update) All four items below are already resolved in the landed Phase 1 spec — nothing left to request.** Phase 1 now ships: `EventItem.startsAt`/`endsAt` as required ISO-with-offset fields; `setEventRegistration(eventId, next)` on the 3-value union with `remaining` bookkeeping; the full per-state fixture list (cancelled/full+waitlist/full-no-waitlist/past+going/tz-diff/joinUrl); and `<Toaster />` mounted at root. Read the real files and use them — do not re-derive fallbacks for gaps that are already closed.
 
 **Follow-ups:** Phase 6 links notification items to `/events/:eventId` (deep links must survive the audience guard). Phase 8 owns the responsive/a11y sweep (tab roving focus, `aria-live` on the RSVP panel, icon-button `aria-label`s) and may add an automated double-click regression to `scripts/visual-check.mjs`.
 
 ## Unresolved Questions
 
-1. Is a registration setter (dep #2) acceptable to add in Phase 1, or should Phase 4 own a small `useEventRegistration` hook instead? Ownership call for the plan lead.
-2. Mock data has no meeting URL field — add `joinUrl?: string` to `EventItem` (Phase 1), or drop the gated-join-link requirement to a static "Link sẽ được gửi qua email" string?
-3. Attended vs NoShow (§18.4) has no actor in a mock prototype — current plan derives `Attended` from `going` + `past`. Confirm that's acceptable, or should mock data carry an explicit `attendance` field to demo both outcomes?
+1. Attended vs NoShow (§18.4) has no actor in a mock prototype — current plan derives `Attended` from `going` + `past`. Confirm that's acceptable, or should mock data carry an explicit `attendance` field to demo both outcomes?

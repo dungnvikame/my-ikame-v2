@@ -123,7 +123,7 @@ selected = visible.find(m => m.id === selectedId)   // drives Drawer
 ## Risk Assessment
 
 - **`rankCards` shape mismatch** — `AttentionItem` lacks `priorityBand`/`updatedAt`. Mitigation: local `toRankable` adapter (above). If `rankCards`'s actual signature diverges from phase-01's sketch, adapt locally; do not edit `lib/ranking.ts`.
-- **Kit `DataTable` row-click API unknown** — docs list column/pagination/selection props but no documented `onRow`/`onRowClick`. Mitigation: put the click handler on the `person` cell + a dedicated action cell; if a row-level hook exists, prefer it. Do not fall back to a raw `<table>`.
+- **Kit `DataTable` row-click API** — Phase 1's verification spike (§0 in that phase) reads the installed `.d.ts` for this before any phase builds against it; check that phase's recorded findings first. If still undocumented when you get here, put the click handler on the `person` cell + a dedicated action cell. Do not fall back to a raw `<table>`.
 - **Drawer width on mobile** — kit forces full-width <640px; fine for a side panel, but confirm the roster stays scrollable behind it.
 - **Fixture coupling** — this phase's proofs depend on Phase 1 actually adding the foreign-`teamId` and required/optional pair fixtures. Listed in Next Steps as a hard dependency.
 - **Scope selector overreach** — resist building multi-scope switching (YAGNI, R0 has one scope); render it read-only.
@@ -134,15 +134,13 @@ selected = visible.find(m => m.id === selectedId)   // drives Drawer
 - Counts and KPI aggregates are computed from the already-scoped array, so an out-of-scope member can't influence a number and be inferred from it (small-aggregate inference rule, §15.4).
 - No sensitive attributes in card previews or table cells — roster shows role/team/attention summary/timestamp only; nothing about compensation, performance rating, or personal data.
 - Drawer content is limited to the same scoped fields — opening a panel must not reveal anything the row didn't already permit.
-- Treat this as rehearsal for a real permission boundary: comment the filter line with the spec reference so R1 replaces it with a BFF call rather than deleting it.
+- **(Red team framing fix)** This scope filter proves the spec §15.4 pattern renders correctly in the demo — it is not a real permission boundary; the full `attentionItems`/`teamMembers` arrays are resident client-side in `AppState` regardless of what this filter does. A one-line functional comment describing what the filter does today is enough; don't write it as a placeholder for a future backend team, since there's no backend in this plan's scope to hand it off to.
 
 ## Next Steps
 
 **Depends on (Phase 1, hard):** `lib/ranking.ts::rankCards`; `types/index.ts` `AttentionItem` (incl. `teamId`, `required`, `freshnessAt`, `state`) + `TeamMember`; `mockData.ts` exporting `teamMembers`, an out-of-scope `AttentionItem`, and a required-due-soon / optional-overdue pair; `AttentionCard`, `SectionHeader`, `EmptyState`, `InlineError`; `useIsDesktop()`; `/manager` → `/manager/overview` redirect + `PerspectiveGuard` covering both routes.
 
-**Requests to Phase 1 (do not implement here):**
-1. `TeamMember` may need an optional `joinedAt`/`momentType` if Team Moments should be data-driven rather than a local presentational const — otherwise this phase keeps a 1–2 item local array.
-2. Fixture must include ≥1 member per status (`needs_attention`/`ok`/`no_data`) so all three filter chips are demonstrable.
+**(Red team update) Both items below are already resolved in the landed Phase 1 spec:** `TeamMember` already carries optional `joinedAt`/`momentType`, and the fixture list already commits to ≥1 member per status. Use them if present; a local 1-2 item const for Team Moments is still an acceptable fallback if the optional fields aren't populated in the actual fixtures, but check first.
 
 **Hands off to Phase 8:** a11y/responsive sweep of both pages; `scripts/visual-check.mjs` target URLs must include `/manager/overview` and `/manager/team`.
 

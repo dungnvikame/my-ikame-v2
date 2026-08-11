@@ -18,9 +18,9 @@
 
 - **Read ≠ acknowledge is the whole point of this phase.** `read` is passive/system-set; `acknowledged` is an explicit click. Setting `read` MUST NOT clear the mandatory attention item, MUST NOT change the "Cần xác nhận" badge, MUST NOT remove the post from Home's attention queue. Only `acknowledgeNews()` does.
 - Acknowledgement is append-only (§17.3) — no un-acknowledge UI, no toggle. Button disappears/disables permanently after click.
-- `read` must be **shared** state, not local: Gherkin #1 requires the "Đã đọc" state to still be visible after navigating back to Home. Requires `markNewsRead(postId)` on `AppState` — **Phase-1 dependency, see Next Steps.**
-- Spec §17.3 forbids "page load = read". Prototype approximation: mark read after 3s of continuous visible dwell on detail (`document.visibilityState === 'visible'`), cancel timer on unmount.
-- Audience guard runs **before any derived render** — no title in `<h1>`, no `document.title`, no breadcrumb label, no meta, not even in a hidden attribute. Return `<Navigate to="/forbidden" replace />` as the first statement after lookup.
+- `read` must be **shared** state, not local: Gherkin #1 requires the "Đã đọc" state to still be visible after navigating back to Home. Phase 1 already ships `markNewsRead(postId)` on `AppState` (confirmed in the landed contract) — this is no longer an open dependency, just a signature to read and use.
+- **(Red team simplification)** Spec §17.3 forbids "page load = read," but a 3-second visibility-gated dwell timer is invisible ceremony a demo viewer will never notice — it requires cleanup-on-unmount, a `visibilityState` listener, and its own regression test, for a state transition with no direct UI trigger. Simplified: call `markNewsRead(post.id)` synchronously once on mount (a `useEffect` with `[post.id]` dep, no timer). This still satisfies "not literally the list-page load" (detail view requires a real navigation) without the timer machinery. If a reviewer specifically wants dwell-gating later, it's a 5-line addition, not a redesign.
+- Audience guard runs **before any derived render** — no title in `<h1>`, no `document.title`, no breadcrumb label, no meta, not even in a hidden attribute. Return `<Navigate to="/forbidden" replace />` as the first statement after lookup. **(Framing note, red team):** this proves the spec's permission-aware-by-construction pattern renders correctly — it is not a real access-control boundary; the full post data is resident in `AppState` regardless (see Phase 1 `lib/audience.ts`).
 - Spec §17.1: in-module search delegates to global search (`type=news`) — do not rebuild a local text filter; navigate to `/search?type=news&q=…`.
 - Sort is relevance bands, not `publishedAt desc` (§17.1) → use `rankCards()` from `lib/ranking.ts` with a local post→RankableCard adapter.
 
@@ -72,10 +72,10 @@ if (!post) return <Navigate to="/not-found" replace />
 if (!isEligible(user, post.audienceTeamIds)) return <Navigate to="/forbidden" replace />
 // ↑ nothing above this line reads post.title/summary
 ```
-- `useReadTracker(post.id, post.read, markNewsRead)` — local hook in this file: `setTimeout(3000)` gated on `visibilityState`, `clearTimeout` on unmount, no-op when already read.
+- Read marking: `useEffect(() => { if (!post.read) markNewsRead(post.id) }, [post.id])` — synchronous on mount, no-op when already read. No timer, no `visibilityState` listener (simplified per red team — see Key Insights).
 - Ack panel: kit `Alert variant={acknowledged ? 'success' : 'warning'}` with `title`, reason + `dueAt` from `post.mandatory`, `action` = primary `Button`. Wrapper `className="lg:sticky lg:top-6"` (inline flow on mobile — no extra component).
 - Confirm: kit `Modal size="sm"` title `Xác nhận đã đọc`, body restates that this is recorded permanently and cannot be undone, footer = `Hủy` (dim) + `Tôi đã đọc và xác nhận` (primary).
-- Receipt: `toast.success('Đã ghi nhận xác nhận của bạn', { description: <HH:mm dd/MM> })`; panel flips to success variant showing the same timestamp (local `ackedAt` state — no `types/index.ts` change).
+- Receipt: `toast.success('Đã ghi nhận xác nhận của bạn', { description: <HH:mm dd/MM> })`; panel flips to success variant showing the same timestamp (local `ackedAt` state — no `types/index.ts` change). Timestamp is `new Date()` (browser clock) — display-only, not a trustworthy audit record; don't carry this pattern into a real backend without server-side timestamping.
 - Audience reason: shared `ReasonDisclosure` next to labels, only when `audienceTeamIds` is set.
 - Related: same-topic eligible posts, max 3, reuse `NewsCard`.
 - **Only one orange primary CTA per screen** (DS 1.1): on detail that is the ack button; share/copy-link is `borderless`.
@@ -99,13 +99,13 @@ if (!isEligible(user, post.audienceTeamIds)) return <Navigate to="/forbidden" re
 
 ## Implementation Steps
 
-1. Confirm Phase 1 landed: `lib/audience.ts`, `lib/ranking.ts`, shared `NewsCard`/`EmptyState`/`ReasonDisclosure`, `/forbidden` route, `<Toaster />` mounted, and `markNewsRead` on `AppState` (if absent → raise before coding, see Next Steps).
-2. Verify mock data has (a) one mandatory unacknowledged post, (b) one `audienceTeamIds` post excluding `user.an`, (c) ≥2 distinct topics. If missing, request from Phase 1 owner — do not edit `mockData.ts`.
+1. Read the landed Phase 1 files: `lib/audience.ts`, `lib/ranking.ts`, shared `NewsCard`/`EmptyState`/`ReasonDisclosure`, `/forbidden` route, `<Toaster />` mounted, `markNewsRead` signature on `AppState`. Code to the real signatures.
+2. Verify mock data has (a) one mandatory unacknowledged post, (b) one `audienceTeamIds` post excluding `user.an`, (c) ≥2 distinct topics — Phase 1 §4 commits to these; confirm they landed rather than re-requesting them.
 3. Rewrite `NewsPage`: eligibility filter → tab filter → topic filter → `rankCards` → featured/rest split.
 4. Build toolbar: `SegmentedControl` (3 options) + topic `Chip` row + search trigger navigating to `/search?type=news`.
 5. Render featured `Card` + grid of `NewsCard`; wire `EmptyState` (no-result vs first-use) with `Xóa bộ lọc` reset.
 6. Rewrite `ArticlePage` guards in the exact order above (not-found → forbidden → render).
-7. Add `useReadTracker` (3s visible-dwell → `markNewsRead`); assert it never calls `acknowledgeNews`.
+7. Add the mount-effect read marker (`markNewsRead` on mount, no timer — see Architecture); assert it never calls `acknowledgeNews`.
 8. Build detail body per §17.4 ordering, with `Breadcrumb`, labels, `ReasonDisclosure`, heading hierarchy (`h1` title, `h2` body sections).
 9. Build ack panel (`Alert` + sticky wrapper) + confirm `Modal` + `toast.success` receipt; disable/hide CTA once acknowledged.
 10. Add related-content strip (same topic, eligible, ≤3).
@@ -120,7 +120,7 @@ if (!isEligible(user, post.audienceTeamIds)) return <Navigate to="/forbidden" re
 - [ ] Featured story + grid + `EmptyState` variants
 - [ ] Search trigger → `/search?type=news`
 - [ ] Detail guard order: not-found → forbidden → render
-- [ ] `useReadTracker` dwell-based read marking
+- [ ] Read marked synchronously on mount, never touches `acknowledged`
 - [ ] Detail section order per §17.4, ack panel sticky on desktop
 - [ ] Confirm `Modal` + `toast` receipt, no un-acknowledge path
 - [ ] Related content by topic
@@ -139,7 +139,6 @@ Plus: filters combine correctly; acknowledged posts cannot be un-acknowledged by
 
 ## Risk Assessment
 
-- **`markNewsRead` missing from `AppState`** (frozen file) → Gherkin 1 cannot be demonstrated cross-page. Mitigation: raise with Phase-1 owner *before* implementing (step 1). Interim fallback if refused: module-scoped `Set` + `useSyncExternalStore` inside this phase's files — works within `/news`, degrades on Home; document as known gap, do not ship silently.
 - Auto-read logic accidentally wired to `acknowledgeNews` → silently breaks the phase's core rule. Mitigation: explicit matrix test in step 11; the two calls live in different functions with no shared branch.
 - `rankCards` requires fields `NewsPost` lacks → handled by the local adapter, no shared-type churn.
 - `/search?type=news` may not be honoured until Phase 6 → acceptable (route exists as a stub from Phase 1); note the query contract to Phase 6.
@@ -147,7 +146,7 @@ Plus: filters combine correctly; acknowledged posts cannot be un-acknowledged by
 
 ## Security Considerations
 
-- Forbidden redirect must precede every read of `post` fields; never pass post data into `ForbiddenPage` props, state, or the URL.
+- Forbidden redirect must precede every read of `post` fields; never pass post data into `ForbiddenPage` props, state, or the URL. (Demo-fidelity check, not a real security boundary — see Phase 1 `lib/audience.ts` framing note.)
 - Filter the list by `isEligible` before ranking/rendering — never render-then-hide with CSS.
 - Related-content strip must re-apply `isEligible` (it queries the same `news` array).
 - Share/copy-link produces an internal deep link only; never copies body/summary text (§17.6).
@@ -155,14 +154,13 @@ Plus: filters combine correctly; acknowledged posts cannot be un-acknowledged by
 
 ## Next Steps
 
-- **Dependency (Phase 1 / `AppState.tsx` owner):** add `markNewsRead(postId: string): void` setting `read: true` only. Must not touch `acknowledged`, must be idempotent. This phase cannot fully satisfy Gherkin 1 without it.
-- **Dependency (Phase 1 / `mockData.ts` owner):** ≥2 distinct topics across news fixtures so the topic-chip filter is demonstrable; plus the mandatory-unacked and out-of-audience fixtures already listed in Phase 1 §4.
+- Both fixture/mutator dependencies this phase originally needed from Phase 1 (`markNewsRead`, ≥2 news topics) are already committed in the landed Phase 1 spec — nothing further to request.
 - **Contract to Phase 2 (Home):** Home's attention queue must key off `mandatory && !acknowledged` (never `!read`), otherwise Gherkin 1 fails at the Home end.
 - **Contract to Phase 6 (Search):** `/search` should read `type` and `q` query params.
 - Phase 8 picks up: responsive/a11y sweep of both pages, `Skeleton` loading states if simulated latency is added.
 
 ## Unresolved Questions
 
-1. Read dwell threshold — spec defers to Analytics; prototype uses 3s. Confirm acceptable for demo, or expose as a constant for tuning?
+1. ~~Read dwell threshold~~ — moot after the red-team simplification (mark-on-mount, no timer). If dwell-gating is wanted later, it's a small addition to the mount effect.
 2. Does the R0 demo need a "highlighted campaign" story at all, or should the featured slot fall back to the top-ranked post when no post is `highlighted`? (Current draft: no fallback — featured slot renders only when a post is explicitly `highlighted`, per §17.1 "nếu campaign đang active".)
 3. Social interactions (§17.6: reactions P1, comments gated on moderation) — assumed out of R0 scope; confirm no reaction affordance is expected in the prototype.

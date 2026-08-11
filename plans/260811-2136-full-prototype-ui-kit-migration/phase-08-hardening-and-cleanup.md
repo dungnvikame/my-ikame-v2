@@ -10,7 +10,7 @@
 ## Overview
 
 - **Priority:** P1 — last phase, gates handoff.
-- **Status:** Pending. **Effort:** 3h.
+- **Status:** Pending. **Effort:** 4h (bumped from 3h — red team flagged the original budget as inconsistent with what it absorbs: defects from 6 converged parallel phases + the AppShell/NotificationList integration step + doc rewrites + visual-check updates. Keyboard checklist trimmed in exchange, see Architecture, to make the total realistic rather than raising the budget without cutting anything).
 - Cross-cutting QA + doc truth-up. Three workstreams: (a) responsive + keyboard pass across every route, (b) `visual-check.mjs` updated for renamed routes and new scenarios, (c) root docs rewritten to describe the ui-kit reality instead of the hand-rolled CSS reality.
 
 ## Key Insights
@@ -47,19 +47,13 @@
 
 Routes to sweep: `/home`, `/news`, `/news/:id`, `/events`, `/events/:id`, `/manager/overview`, `/manager/team`, `/search`, `/notifications`, `/profile`, `/knowledge`, `/goals`, `/forbidden`, `/not-found`.
 
-### Keyboard checklist (spec §49.1 subset applicable to a mock prototype)
+### Keyboard checklist — trimmed to 4 (red team: a 10-item manual audit contradicted this phase's own "R1 gate, not R0" admission and couldn't realistically fit a 3h budget alongside everything else)
 1. Skip link focus-first, activates, focus lands in `<main>`.
-2. Tab order matches visual order on Home, News detail, Event detail, Manager Overview.
-3. Focus ring visible on all controls incl. cards-as-links and icon-only buttons (kit default; check dark theme too).
-4. Notification drawer: opens by keyboard, traps, `Esc` closes, focus returns to bell.
-5. Acknowledge (News detail) and RSVP (Event detail) completable keyboard-only — spec §63 journey 6.
-6. Landmarks present exactly once each: `header`, `nav`, `main`; `aside` only where a side rail exists.
-7. Heading hierarchy no skipped levels per page.
-8. State never color-only — status chips/badges carry text or icon.
-9. Toasts/receipts announce via live region (kit `Toaster` — verify `role="status"` in DOM).
-10. 200% zoom / 320px reflow spot-check on Home + News detail only.
+2. Notification drawer + any confirm `Modal`: opens by keyboard, traps focus, `Esc` closes, focus returns to the trigger — logged as an explicit pass/fail per interaction, not a single eyeballed pass (this is the one item with real regression risk from the kit's Radix composition, per Phase 1's spike findings).
+3. Acknowledge (News detail) and RSVP (Event detail) completable keyboard-only — spec §63 journey 6, the two flows a live demo walkthrough actually exercises.
+4. Focus ring visible on all controls incl. cards-as-links and icon-only buttons, in both themes (spot-check, not exhaustive).
 
-Out of scope for a prototype (record as gap, don't attempt): NVDA/VoiceOver runs, full contrast audit, axe automation wiring — spec §49.2 is an R1 release gate, not an R0 one.
+**Explicitly deferred to R1, not attempted here** (unchanged from before, just no longer contradicted by an oversized R0 checklist): tab-order-matches-visual-order audit across every page, landmark/heading-hierarchy audit, 200%-zoom/320px-reflow sweep, NVDA/VoiceOver runs, full contrast audit, axe automation wiring. Record this split explicitly in `review-and-handoff.md` §R0.1 rather than silently doing a partial job on all ten.
 
 ### `visual-check.mjs` changes
 - Base URL nav: `${baseUrl}/home`; perspective-switch assertion `waitForURL('**/manager/overview')`.
@@ -83,6 +77,8 @@ Out of scope for a prototype (record as gap, don't attempt): NVDA/VoiceOver runs
 ### Final sweep greps (across `prototype-app/`, incl. `package.json`, `index.html`, `scripts/`)
 `core-ds-1.1`, `app.css`, `@phosphor-icons/react`, `styles/`, `data-theme`, `to="/manager"`, `to="/"`, `href="/manager"`, `ContentCards`, `components/UI`.
 
+**Also (red team, SA finding on fixture hygiene):** read through `src/data/mockData.ts` once specifically for names/teams/org fragments that read as plausible real ikame structure rather than obviously fictional — the mandatory-deny and out-of-scope fixtures were deliberately crafted to look like real sensitive content, which is exactly the risk if a real-sounding name slipped in during phases 3-7 authoring their own test data. This is a content read, not a grep pattern.
+
 ## Related Code Files
 
 **Modify:** `prototype-app/scripts/visual-check.mjs`, `prototype-app/package.json` (drop `@phosphor-icons/react` if unused), `design-system-application.md`, `review-and-handoff.md`, `README.md`, `README 2.md`, `prototype-app/src/components/AppShell.tsx` (one-line integration: import `NotificationList` from `pages/NotificationsPage.tsx` and render it inside the notification `Drawer` body Phase 1 left as a placeholder — this is the one exception to "AppShell is Phase-1-owned," explicitly deferred here since it needs Phase 6's export to exist first), plus targeted a11y edits inside `prototype-app/src/**` (labels/alt/roles/headings only).
@@ -98,7 +94,7 @@ Out of scope for a prototype (record as gap, don't attempt): NVDA/VoiceOver runs
 4. Run the sweep greps. Fix or delete every hit. Drop dead deps from `package.json`, re-run `npm install`.
 5. Responsive sweep: `npm run dev`, walk all 14 routes at the three viewports in a real browser. Log each defect as one line (route / viewport / symptom) before fixing anything.
 6. Fix responsive defects — Tailwind class tweaks and kit prop changes only. Escalate anything structural to a follow-up note.
-7. Keyboard sweep: the 10-item checklist above, on Home, News detail, Event detail, Manager Overview, Notification drawer. Log then fix.
+7. Keyboard sweep: the 4-item checklist above, on Home, News detail, Event detail, Notification drawer. Log then fix; log the drawer/modal focus-trap result as an explicit pass/fail per interaction, not a single eyeballed check.
 8. Apply surgical a11y fixes (`aria-label` on icon-only buttons, `alt` on avatars/images, heading levels, `role="status"` on receipts, `lang="vi"` on `<html>` if missing).
 9. Update `visual-check.mjs` per Architecture; run `npm run visual:check` until green; eyeball all screenshots in `../deployments/visual-check/`.
 10. Rewrite `design-system-application.md`.
@@ -110,10 +106,11 @@ Out of scope for a prototype (record as gap, don't attempt): NVDA/VoiceOver runs
 
 - [ ] Notification drawer wired to Phase 6's `NotificationList`, mark-read/mark-all-read verified from inside it
 - [ ] Sweep greps clean; dead deps removed from `package.json`
+- [ ] `mockData.ts` fixture content read through for accidental real-sounding names/teams
 - [ ] Responsive pass at 1440×900 / 1024×768 / 390×844 across all 14 routes
 - [ ] Mobile bottom nav operable, ≤5 items, 44px targets
 - [ ] Sidebar collapse/expand verified desktop + tablet
-- [ ] Keyboard 10-item checklist executed; defects fixed or logged
+- [ ] Keyboard 4-item checklist executed with explicit pass/fail log; defects fixed or logged
 - [ ] Drawer/modal focus-trap + return-focus verified (not assumed)
 - [ ] `visual-check.mjs` routes renamed + 3 new screenshots + forbidden assertion
 - [ ] `design-system-application.md` rewritten for ui-kit

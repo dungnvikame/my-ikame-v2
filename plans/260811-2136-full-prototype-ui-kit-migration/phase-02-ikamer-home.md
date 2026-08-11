@@ -148,25 +148,22 @@ export function useHomeSections(): HomeSections
 ## Risk Assessment
 
 - **`rankCards()` input shape differs from the sketch** → read the landed signature first (step 1) and adapt `toRankable()`; do not fork the sort logic into this page.
-- **`EventItem` has no machine-readable start timestamp** (only `day`/`month`/`time`/`dateLabel`) → P2 "starts within 48h" band can't be computed deterministically. See Next Steps dependency; interim fallback: treat events with `status==='going'|'open'` and array position 0 as near-term, and flag the imprecision in a code comment rather than parsing Vietnamese date labels.
 - **Simulated async mistaken for a real data layer** → keep the hook <120 lines, comment it as a prototype affordance, no request/cache/abort abstractions (YAGNI).
 - **StrictMode double-effect** re-runs timers and flickers skeletons → `useRef` guard.
 - **Section wrapper over-generalisation** → one generic `HomeSection`, not a per-section HOC family (KISS).
 
 ## Security Considerations
 
-- Eligibility filter runs **before** ranking and before any render path; an ineligible item's title/summary must never reach the DOM, including inside a skeleton or `aria-label`.
+- Eligibility filter runs **before** ranking and before any render path; an ineligible item's title/summary shouldn't reach the DOM, including inside a skeleton or `aria-label` — this is a demo-fidelity check proving the spec's permission-aware-by-construction pattern, not a real access-control boundary (the underlying mock data is fully resident client-side either way; see Phase 1 `lib/audience.ts`'s honest-framing note).
 - `ReasonDisclosure` copy stays human ("Dành cho toàn bộ iKamer") — never echoes `audienceTeamIds`, rule ids, or team ids (§13.4).
 - Dev fixture flag must not become a content-visibility control — it only flips section status, never filters or reveals data.
 - Quick action targets are static in-app routes; no user-supplied href interpolation.
 
 ## Next Steps
 
-- **Dependency on Phase 1 (do not edit these here):**
-  1. `EventItem` needs an ISO `startsAt: string` for deterministic P2 banding and "upcoming" sorting — request as an additive field.
-  2. `NewsPost` needs `updatedAt` (or confirmation that `publishedAt` is the canonical freshness key for `rankCards`).
-  3. Confirm `SectionHeader` supports a degraded/error indicator slot and a `count` prop; `EmptyState` supports a `success` variant.
-  4. Confirm shared `NewsCard`/`EventCard` accept a `compact` prop and an optional `reason` slot.
+- **(Red team update) Items 1-3 below are already resolved in the landed Phase 1 — do not treat them as open.** Phase 1 now ships `EventItem.startsAt`/`endsAt` (ISO, required, no fallback) explicitly for this phase's P2 banding, resolves `NewsPost` freshness as "map `publishedAt`→`updatedAt` in the adapter, no new field," and `SectionHeader`/`EmptyState` already spec degraded/success variants (Phase 1 Architecture §7). Read the landed file, don't re-derive a workaround for a gap that's already closed.
+  4. Still worth confirming at implementation time: exact `compact`/`reason` prop names on shared `NewsCard`/`EventCard` (Phase 1 names them in §7, but confirm against the actual file, not this doc).
+- Phase 1's `lib/ranking.ts` ships a worked ordering example (3-4 canonical fixtures) — sanity-check this phase's `toRankable()` output against it so Home/News/Manager don't silently diverge on tie-break semantics.
 - Phase 3/4 reuse the same section-status pattern for list pages — keep `Section<T>` exported from this hook so they can import rather than redefine.
 - Phase 8 owns the responsive/a11y sweep; only obvious breakpoints handled here.
 
