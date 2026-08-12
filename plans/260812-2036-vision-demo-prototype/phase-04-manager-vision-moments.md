@@ -8,7 +8,7 @@
 
 ## Overview
 
-- **Priority:** P1 — the tour's longest stop and the WUAR story's proof. **Effort:** 1d. Parallel with 2/3/5.
+- **Priority:** P1 — the tour's longest stop and the WUAR story's proof. **Effort:** 1d. **Status:** Complete (commit 37e6dbf).
 - Two additions to Manager Overview: (a) **AI-brief đầu tuần** block (A2 concept, on-canvas — not chatbot), (b) **resolve flow** — attention item leaves the queue with receipt, counts update live.
 
 ## Key Insights
@@ -56,13 +56,13 @@
 
 ## Todo List
 
-- [ ] ManagerPage reads attention from context (direct import removed)
-- [ ] AI-brief block: 3 derived bullets, reasons, links, A2 + R4 badges, source footer
-- [ ] Resolve: item leaves queue, header count + critical KPI recompute (check-in KPI copy decoupled — F5), receipt announced
-- [ ] AI-brief zero-state single line renders when queue empty (F6)
-- [ ] onAction navigations wired per item type
-- [ ] Empty-queue success state reachable live
-- [ ] Dark + 390px; typecheck && build green
+- [x] ManagerPage reads attention from context (direct import removed)
+- [x] AI-brief block: 3 derived bullets, reasons, links, A2 + R4 badges, source footer
+- [x] Resolve: item leaves queue, header count + critical KPI recompute (check-in KPI copy decoupled — F5), receipt announced
+- [x] AI-brief zero-state single line renders when queue empty (F6)
+- [x] onAction navigations wired per item type
+- [x] Empty-queue success state reachable live
+- [x] Dark + 390px; typecheck && build green
 
 ## Success Criteria
 

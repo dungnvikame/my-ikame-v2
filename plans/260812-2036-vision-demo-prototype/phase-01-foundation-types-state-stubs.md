@@ -8,7 +8,7 @@
 
 ## Overview
 
-- **Priority:** P0 — hard sequential prerequisite for phases 2-5. **Effort:** 1d.
+- **Priority:** P0 — hard sequential prerequisite for phases 2-5. **Effort:** 1d. **Status:** Complete (commit e9670c1).
 - Establish every shared contract the parallel phases consume: new types, AppState mutators, mock fixtures, routes, shell wiring for the assistant trigger + `/vision`, badge component, and empty stub files so all later imports resolve from day one.
 
 ## Key Insights
@@ -105,15 +105,15 @@ The brainstorm mandated "viết script song song với build, không để cuố
 
 ## Todo List
 
-- [ ] Types added (AiLevel, ReleaseTag, KnowledgeDoc, Goal)
-- [ ] Fixtures: 5 knowledge docs (1 audience-scoped) + 4 goals (all statuses) + event-reservation comment
-- [ ] AppState: attention stateful + resolveAttentionItem, goals + checkInGoal, askOpen, resetDemo + demoResetCount, theme/perspective localStorage persist
-- [ ] RBadge + AiBadge components + styles (frozen shared contracts)
-- [ ] AttentionCard optional onAction/onResolve; ManagerPage renders identically
-- [ ] Stubs + CSS files + main.tsx imports
-- [ ] /vision route + Ask trigger + sidebar link
-- [ ] Presenter-script skeleton v1 (7 stops, click paths, event reservation, A3 two-step)
-- [ ] typecheck && build green; committed
+- [x] Types added (AiLevel, ReleaseTag, KnowledgeDoc, Goal)
+- [x] Fixtures: 5 knowledge docs (1 audience-scoped) + 4 goals (all statuses) + event-reservation comment
+- [x] AppState: attention stateful + resolveAttentionItem, goals + checkInGoal, askOpen, resetDemo + demoResetCount, theme/perspective localStorage persist
+- [x] RBadge + AiBadge components + styles (frozen shared contracts)
+- [x] AttentionCard optional onAction/onResolve; ManagerPage renders identically
+- [x] Stubs + CSS files + main.tsx imports
+- [x] /vision route + Ask trigger + sidebar link
+- [x] Presenter-script skeleton v1 (7 stops, click paths, event reservation, A3 two-step)
+- [x] typecheck && build green; committed
 
 ## Success Criteria
 

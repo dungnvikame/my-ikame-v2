@@ -8,7 +8,7 @@
 
 ## Overview
 
-- **Priority:** P2. **Effort:** 1d. Parallel with 2/4/5.
+- **Priority:** P2. **Effort:** 1d. **Status:** Complete (commit 8a97acb).
 - Upgrade both shells to interactive concept demos labeled `Concept · R2` / `Concept · R3`: Knowledge gets search + preview + deep-link; Goals gets 4-status board + quick check-in. Tour stop #4 — includes the permission beat feeding scenario S2b's narrative.
 
 ## Key Insights
@@ -52,13 +52,13 @@
 
 ## Todo List
 
-- [ ] Knowledge list: search + eligibility filter + zero-result state
-- [ ] Knowledge detail: guard order, body, iWiki rail, reason disclosure
-- [ ] Goals board: 4 sections ordered, progress bars, status pills
-- [ ] Quick check-in: mutator + receipt + card moves section
-- [ ] Deep-link CTAs labeled as demo (no fake URLs)
-- [ ] RBadge R2/R3 on both page headers
-- [ ] Dark + 390px pass; typecheck && build green
+- [x] Knowledge list: search + eligibility filter + zero-result state
+- [x] Knowledge detail: guard order, body, iWiki rail, reason disclosure
+- [x] Goals board: 4 sections ordered, progress bars, status pills
+- [x] Quick check-in: mutator + receipt + card moves section
+- [x] Deep-link CTAs labeled as demo (no fake URLs)
+- [x] RBadge R2/R3 on both page headers
+- [x] Dark + 390px pass; typecheck && build green
 
 ## Success Criteria
 

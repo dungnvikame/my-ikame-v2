@@ -1,7 +1,7 @@
 ---
 title: "My iKame Vision Demo Prototype — BLĐ Executive Demo"
 description: "Extend the R0 prototype with a scripted Ask iKame AI layer (A1-A4), Knowledge/Goals concept demos, Manager vision moments, a /vision screen, and demo hardening for a 25-minute live executive tour."
-status: pending
+status: implementation-complete-pending-rehearsal
 priority: P1
 effort: 9d
 branch: master
@@ -21,12 +21,12 @@ Extend the working R0 prototype (`prototype-app/`, React 18 + TS + Vite, mock da
 
 | # | Phase | Status | Effort | Link |
 |---|-------|--------|--------|------|
-| 1 | Foundation: types, AppState mutators, fixtures, shell wiring, stubs | Pending | 1d | [phase-01](./phase-01-foundation-types-state-stubs.md) |
-| 2 | Ask iKame scripted engine (panel, script store, A1-A4 flows) | Pending | 2.5d | [phase-02](./phase-02-ask-ikame-scripted-engine.md) |
-| 3 | Knowledge & Goals concept demos (R2/R3) | Pending | 1d | [phase-03](./phase-03-knowledge-goals-concept-demos.md) |
-| 4 | Manager vision moments (AI-brief, resolve flow) | Pending | 1d | [phase-04](./phase-04-manager-vision-moments.md) |
-| 5 | `/vision` screen (North Star, ladder, roadmap, stats) | Pending | 1.5d (incl. owner copy-review checkpoint) | [phase-05](./phase-05-vision-screen.md) |
-| 6 | Demo hardening: badges sweep, reset, script verify, rehearsal | Pending | 2d (0.5d rehearsal ring-fenced) | [phase-06](./phase-06-demo-hardening-presenter-script.md) |
+| 1 | Foundation: types, AppState mutators, fixtures, shell wiring, stubs | Complete | 1d | [phase-01](./phase-01-foundation-types-state-stubs.md) |
+| 2 | Ask iKame scripted engine (panel, script store, A1-A4 flows) | Complete | 2.5d | [phase-02](./phase-02-ask-ikame-scripted-engine.md) |
+| 3 | Knowledge & Goals concept demos (R2/R3) | Complete | 1d | [phase-03](./phase-03-knowledge-goals-concept-demos.md) |
+| 4 | Manager vision moments (AI-brief, resolve flow) | Complete | 1d | [phase-04](./phase-04-manager-vision-moments.md) |
+| 5 | `/vision` screen (North Star, ladder, roadmap, stats) | Complete — copy review pending | 1.5d (incl. owner copy-review checkpoint) | [phase-05](./phase-05-vision-screen.md) |
+| 6 | Demo hardening: badges sweep, reset, script verify, rehearsal | Complete — rehearsal + push pending | 2d (0.5d rehearsal ring-fenced) | [phase-06](./phase-06-demo-hardening-presenter-script.md) |
 
 ## Execution strategy (parallel mode)
 
@@ -68,6 +68,19 @@ Phase 1 (sequential prerequisite)
 ## Build-scope fallback (insurance — activate only if schedule compresses)
 
 Demo date confirmed ~2 weeks out → full scope proceeds. If the date suddenly moves earlier, cut in THIS order: (1) Goals board → status-list-only, (2) new visual-check screenshots, (3) AI scenarios 5→3 (keep S2, S2b-deny, S3). **Never cut:** `/vision` copy-review checkpoint, 2 rehearsals.
+
+## Execution log — 2026-08-12
+
+All 6 phases implemented and committed on master:
+- **e9670c1** phase 1 foundation (types, AppState, fixtures, shell, stubs)
+- **04da39f** phase 2 Ask iKame engine (panel, 5 AI scenarios, receipts)
+- **8a97acb** phase 3 Knowledge/Goals (search + board demos, badges)
+- **37e6dbf** phase 4 Manager moments (AI-brief, resolve flow, live counts)
+- **cc6ce37** phase 5 /vision (North Star, ladder, roadmap, market stats)
+- **13c275d** phase 6 hardening (reset button, script, visual-check, full build)
+- **da345d9** code-review fixes (3 items: S3 draft gated on applicability, blocked-close feedback note, Tuấn/Ngọc Anh roster consistency)
+
+Gates green: typecheck, build, visual:check (7 PNGs). Tester: all pass. Code review: 0 critical; 1 high + 2 medium FIXED in da345d9; 4 low accepted as-is for demo prototype.
 
 ## Open questions (carried from brainstorm)
 

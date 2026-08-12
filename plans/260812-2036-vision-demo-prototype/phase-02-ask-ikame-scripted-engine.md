@@ -8,7 +8,7 @@
 
 ## Overview
 
-- **Priority:** P1 — the demo's headline layer. **Effort:** 2.5d. Parallel with 3/4/5 after Phase 1.
+- **Priority:** P1 — the demo's headline layer. **Effort:** 2.5d. **Status:** Complete (commit 04da39f, code-review fixes in da345d9).
 - Build the global "Ask iKame" conversation panel: suggested-prompt chips (context-aware by route), scripted responses with typing effect, A-level badges, citation cards, A3 confirm-before-send, A4 execute-with-receipt. **NO free-text processing, NO LLM.**
 
 ## Key Insights
@@ -98,16 +98,16 @@ export function scriptsForContext(pathname: string, perspective: Perspective): A
 
 ## Todo List
 
-- [ ] `ai-scripts.ts`: 5 scenarios + fallback, matchPath filtering (F7), state-reading paragraphs (F2)
-- [ ] Panel shell: trap (selector incl. textarea), Esc/backdrop guard while draft pending, return-focus, conversation persists across close (F4)
-- [ ] Conversation clears on `demoResetCount` change only
-- [ ] AiMessage: shared AiBadge import, staggered paragraphs, citation cards, reason disclosure (no feedback buttons — F11)
-- [ ] AiActionBlock: A3 draft→edit→confirm→receipt ("item vẫn ở queue…" copy); A4 confirm→mutator→receipt+link; idempotent re-ask
-- [ ] Disabled free-text input with R4 label
-- [ ] S2b permission-deny renders "Không đủ dữ liệu", zero leaked content
-- [ ] S4 chip absent on non-workshop event details (F7 pinning verified per tour stop)
-- [ ] Dark mode + 390px pass; timers StrictMode-safe
-- [ ] typecheck && build green
+- [x] `ai-scripts.ts`: 5 scenarios + fallback, matchPath filtering (F7), state-reading paragraphs (F2)
+- [x] Panel shell: trap (selector incl. textarea), Esc/backdrop guard while draft pending, return-focus, conversation persists across close (F4)
+- [x] Conversation clears on `demoResetCount` change only
+- [x] AiMessage: shared AiBadge import, staggered paragraphs, citation cards, reason disclosure (no feedback buttons — F11)
+- [x] AiActionBlock: A3 draft→edit→confirm→receipt ("item vẫn ở queue…" copy); A4 confirm→mutator→receipt+link; idempotent re-ask
+- [x] Disabled free-text input with R4 label
+- [x] S2b permission-deny renders "Không đủ dữ liệu", zero leaked content
+- [x] S4 chip absent on non-workshop event details (F7 pinning verified per tour stop)
+- [x] Dark mode + 390px pass; timers StrictMode-safe
+- [x] typecheck && build green
 
 ## Success Criteria
 

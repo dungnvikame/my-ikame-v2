@@ -8,7 +8,8 @@
 
 ## Overview
 
-- **Priority:** P1 — opens AND closes the demo (stops 0 và 6); the screen answering "tại sao phải làm như vậy". **Effort:** 1.5d (RED TEAM F12 — bumped from 1d) **with a mandatory mid-phase checkpoint: layout + draft copy done → product owner reviews ALL Vietnamese copy → revise**. Exec-grade VN copy is the artifact AI agents judge worst and the owner must personally approve; it must NOT be read for the first time the night before rehearsal. Parallel with 2/3/4.
+- **Priority:** P1 — opens AND closes the demo (stops 0 và 6); the screen answering "tại sao phải làm như vậy". **Effort:** 1.5d (RED TEAM F12 — bumped from 1d). **Status:** Code complete (commit cc6ce37); copy review checkpoint PENDING. 
+- Mandatory mid-phase checkpoint: layout + draft copy done → product owner reviews ALL Vietnamese copy → revise. Exec-grade VN copy is the artifact AI agents judge worst and the owner must personally approve; it must NOT be read for the first time the night before rehearsal. Parallel with 2/3/4.
 - One long scrollable page, presenter-friendly (large type, one idea per viewport), with anchors `#intro` (mở màn) and `#ladder` (đóng màn).
 
 ## Key Insights
@@ -56,13 +57,14 @@
 
 ## Todo List
 
-- [ ] 9 sections đúng thứ tự narrative, anchors #intro/#ladder
-- [ ] WUAR formula + useful-action chips
-- [ ] Ladder A0→A4 với status honesty tags, dùng chung visual với AiBadge
-- [ ] Roadmap + marker "chúng ta ở đây"
-- [ ] 4 stat cards có nguồn + "nghĩa là gì với chúng ta"
-- [ ] Benchmark strip + câu "học pattern, không mua nguyên khối"
-- [ ] Dark + 390px; typecheck && build green
+- [x] 9 sections đúng thứ tự narrative, anchors #intro/#ladder
+- [x] WUAR formula + useful-action chips
+- [x] Ladder A0→A4 với status honesty tags, dùng chung visual với AiBadge
+- [x] Roadmap + marker "chúng ta ở đây"
+- [x] 4 stat cards có nguồn + "nghĩa là gì với chúng ta"
+- [x] Benchmark strip + câu "học pattern, không mua nguyên khối"
+- [x] Dark + 390px; typecheck && build green
+- [ ] Product owner copy review checkpoint (F12) — PENDING
 
 ## Success Criteria
 

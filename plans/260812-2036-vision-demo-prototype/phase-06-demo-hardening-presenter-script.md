@@ -9,7 +9,8 @@
 
 ## Overview
 
-- **Priority:** P1 — gates the demo. **Effort:** 2d (RED TEAM F9 — bumped from 1.5d), trong đó **0.5d rehearsal là BẤT KHẢ XÂM PHẠM**: không được trừ vào để fix defect; defect lớn hơn quỹ còn lại → escalate, không lặng lẽ cắt rehearsal.
+- **Priority:** P1 — gates the demo. **Effort:** 2d (RED TEAM F9 — bumped from 1.5d). **Status:** Code complete (commit 13c275d); rehearsal + push PENDING.
+- Within 2d: **0.5d rehearsal is BẤT KHẢ XÂM PHẠM** — cannot be cut to fix defects; oversized defects escalate, not silenced via cut rehearsal.
 - Cross-cutting polish + the two artifacts that make the demo repeatable under pressure: a **reset affordance** and the **presenter script** (verify/time/expand Phase 1's skeleton — NOT written from scratch here, per F8). Ends with full golden-path rehearsal **on the deployed build**.
 
 ## Key Insights
@@ -59,13 +60,15 @@
 
 ## Todo List
 
-- [ ] Reset button restores every mutable slice trừ theme/perspective (checklist per AppState useState)
-- [ ] Badge sweep: concept badged, R1 clean
-- [ ] Dark + 390px + 1024px/125%-zoom + keyboard pass on 5 new/changed surfaces
-- [ ] visual-check.mjs: 3 screenshot tĩnh mới + xanh ổn định (không automate panel)
-- [ ] Presenter script: 7 trạm timing thật + luật event/reset/A3-two-step + express path + 4 prepared answers + logistics (pinned URL)
-- [ ] Push → verify → rehearsal ×2 trên bản deploy → freeze
-- [ ] typecheck && build && visual:check xanh
+- [x] Reset button restores every mutable slice trừ theme/perspective (checklist per AppState useState)
+- [x] Badge sweep: concept badged, R1 clean
+- [x] Dark + 390px + 1024px/125%-zoom + keyboard pass on 5 new/changed surfaces
+- [x] visual-check.mjs: 3 screenshot tĩnh mới + xanh ổn định (không automate panel)
+- [x] Presenter script: 7 trạm timing thật + luật event/reset/A3-two-step + express path + 4 prepared answers + logistics (pinned URL)
+- [x] typecheck && build && visual:check xanh
+- [ ] Push to origin + Vercel verify — PENDING
+- [ ] Rehearsal ×2 trên deployed URL + freeze — PENDING
+- [ ] Meeting-room resolution confirm — PENDING
 
 ## Success Criteria
 
