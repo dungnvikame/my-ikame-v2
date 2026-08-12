@@ -1,12 +1,14 @@
+import { useEffect, useState } from 'react';
 import { ArrowRight, CheckCircle, UsersThree, WarningCircle } from '@phosphor-icons/react';
-import { Link } from 'react-router-dom';
-import { attentionItems, teamMembers } from '../data/mockData';
+import { Link, useNavigate } from 'react-router-dom';
+import { teamMembers } from '../data/mockData';
 import { AttentionCard } from '../components/ContentCards';
 import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
 import { useAppState } from '../AppState';
 import { rankCards } from '../lib/ranking';
 import type { RankableCard } from '../lib/ranking';
 import type { AttentionItem, TeamMember } from '../types';
+import { attentionHref, ManagerAiBrief } from './manager/ManagerAiBrief';
 
 type RankableAttention = RankableCard & { source: AttentionItem };
 
@@ -28,24 +30,36 @@ function momentLabel(type: TeamMember['momentType']) {
 }
 
 export function ManagerPage() {
-  const { user } = useAppState();
+  const { user, attention, resolveAttentionItem, demoResetCount } = useAppState();
+  const navigate = useNavigate();
+  const [receipt, setReceipt] = useState<string | null>(null);
+
+  // Rehearsal reset must not leave a stale "Đã xử lý" banner once the queue is restored.
+  useEffect(() => { setReceipt(null); }, [demoResetCount]);
 
   // Scope boundary: only attention items owned by this manager's own team may reach the DOM.
-  const scoped = attentionItems.filter((item) => item.teamId === user.teamId && item.state === 'open');
-  const queue = rankCards(scoped.map(toRankable)).slice(0, 5).map((ranked) => ranked.source);
+  // Ranked but unsliced — the AI-brief reads the full scoped picture, the queue below caps at 5.
+  const scoped = attention.filter((item) => item.teamId === user.teamId && item.state === 'open');
+  const rankedAttention = rankCards(scoped.map(toRankable)).map((ranked) => ranked.source);
+  const queue = rankedAttention.slice(0, 5);
   const roster = teamMembers.filter((member) => member.teamId === user.teamId);
 
   const okCount = roster.filter((member) => member.status === 'ok').length;
-  const criticalCount = queue.filter((item) => item.severity === 'critical').length;
+  const criticalCount = rankedAttention.filter((item) => item.severity === 'critical').length;
   const moments = roster.filter((member) => member.momentType);
   const latestFreshness = queue[0]?.freshness ?? 'Chưa có dữ liệu mới';
+
+  function handleResolve(item: AttentionItem) {
+    resolveAttentionItem(item.id);
+    setReceipt(`Đã xử lý · WUAR +1 — "${item.title}"`);
+  }
 
   return (
     <div className="page overview-page">
       <header className="context-header">
         <div>
           <p className="eyebrow">GÓC NHÌN MANAGER</p>
-          <h1>Chào {user.shortName}, team đang có {queue.length} việc cần chú ý</h1>
+          <h1>Chào {user.shortName}, team đang có {rankedAttention.length} việc cần chú ý</h1>
           <p>{user.team} · {roster.length} thành viên · Dữ liệu {latestFreshness.replace(/^Cập nhật\s*/i, 'cập nhật ')}</p>
         </div>
         {/* Read-only scope indicator: R0 grants each manager a single scope, so this is not switchable. */}
@@ -54,13 +68,24 @@ export function ManagerPage() {
         </button>
       </header>
 
+      <ManagerAiBrief items={rankedAttention} />
+
       <section className="manager-attention">
         <SectionHeader title="Cần bạn chú ý" meta="Required trước optional · Quá hạn trước sắp đến hạn" actionLabel="Xem toàn bộ" href="/manager/team" />
+        {receipt && <p className="resolve-receipt" role="status">{receipt}</p>}
         {queue.length === 0 ? (
           <EmptyState title="Không có việc cần chú ý" body="Mọi việc trong phạm vi quản lý của bạn đều đã được xử lý." />
         ) : (
           <div className="attention-list">
-            {queue.map((item, index) => <AttentionCard key={item.id} item={item} primary={index === 0} />)}
+            {queue.map((item, index) => (
+              <AttentionCard
+                key={item.id}
+                item={item}
+                primary={index === 0}
+                onAction={() => navigate(attentionHref(item))}
+                onResolve={() => handleResolve(item)}
+              />
+            ))}
           </div>
         )}
       </section>
@@ -73,7 +98,8 @@ export function ManagerPage() {
               <span className="metric-icon"><CheckCircle size={22} weight="duotone" /></span>
               <strong>{okCount}/{roster.length}</strong>
               <h3>Đã hoàn tất check-in tuần</h3>
-              <p>{roster.length - okCount} thành viên còn lại nằm trong attention queue.</p>
+              {/* RED TEAM F5: no attention-queue linkage here — roster status has no member↔item join in this data model. */}
+              <p>Theo nhịp check-in hàng tuần của team, cập nhật riêng với queue chú ý.</p>
               <Link className="text-link" to="/manager/team">Xem trạng thái<ArrowRight size={15} /></Link>
             </article>
             <article className="metric-card">

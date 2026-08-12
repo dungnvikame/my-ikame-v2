@@ -1,1 +1,90 @@
 /* Manager vision-moment styles (AI-brief, resolve flow) — owned by Phase 4 (manager-vision-moments). */
+
+.ai-brief {
+  margin-bottom: 28px;
+  padding: 20px;
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-12);
+  background: var(--bg-canvas-secondary);
+}
+
+.ai-brief-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ai-brief-header h2 {
+  margin-top: 4px;
+  font-size: var(--body-l-size);
+  line-height: var(--body-l-line);
+  font-weight: var(--font-semibold);
+}
+
+.ai-brief-header .card-badges {
+  flex: none;
+  display: flex;
+  gap: 6px;
+}
+
+.ai-brief-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.ai-brief-list li {
+  padding-top: 14px;
+  border-top: 1px solid var(--border-primary);
+}
+
+.ai-brief-list li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.ai-brief-headline {
+  font-weight: var(--font-semibold);
+}
+
+.ai-brief-reason {
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: var(--body-s-size);
+  line-height: var(--body-s-line);
+}
+
+.ai-brief-list .text-link {
+  margin-top: 8px;
+}
+
+.ai-brief-footer {
+  margin-top: 16px;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+  line-height: var(--body-xs-line);
+}
+
+.ai-brief-zero {
+  margin-top: 12px;
+  color: var(--text-secondary);
+}
+
+.resolve-receipt {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-8);
+  background: var(--bg-success);
+  color: var(--fg-success);
+  font-size: var(--body-s-size);
+  line-height: var(--body-s-line);
+  font-weight: var(--font-semibold);
+}
+
+@media (max-width: 620px) {
+  .ai-brief-header {
+    flex-direction: column;
+  }
+}
+
