@@ -1,9 +1,16 @@
-import { Moon, SignOut, Sun } from '@phosphor-icons/react';
+import { ArrowCounterClockwise, Moon, SignOut, Sun } from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
 import { useAppState } from '../AppState';
 import { Button, StatusPill } from '../components/UI';
 
 export function ProfilePage() {
-  const { user, perspective, theme, setTheme } = useAppState();
+  const { user, perspective, theme, setTheme, resetDemo, demoResetCount } = useAppState();
+  const [resetReceipt, setResetReceipt] = useState(false);
+
+  // Receipt only for a reset triggered while this page is mounted.
+  useEffect(() => {
+    if (demoResetCount > 0) setResetReceipt(true);
+  }, [demoResetCount]);
 
   return (
     <div className="page collection-page">
@@ -31,6 +38,13 @@ export function ProfilePage() {
           <Button icon={theme === 'light' ? <Moon size={18} /> : <Sun size={18} />} onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
             {theme === 'light' ? 'Bật giao diện tối' : 'Bật giao diện sáng'}
           </Button>
+        </div>
+
+        <div className="side-info">
+          <h2>Demo</h2>
+          <p>Đưa toàn bộ dữ liệu demo (tin tức, sự kiện, thông báo, mục chú ý, mục tiêu, hội thoại Ask iKame) về trạng thái ban đầu. Giao diện sáng/tối và góc nhìn được giữ nguyên.</p>
+          <Button icon={<ArrowCounterClockwise size={18} />} onClick={resetDemo}>Đặt lại dữ liệu demo</Button>
+          {resetReceipt && <p className="receipt" role="status">Đã đặt lại dữ liệu demo về trạng thái ban đầu.</p>}
         </div>
 
         <div className="side-info">

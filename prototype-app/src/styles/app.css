@@ -1623,6 +1623,14 @@ p {
   .search-trigger {
     width: auto;
     flex: 1;
+    min-width: 0;
+  }
+
+  /* Text must be shrinkable — 4 topbar icons no longer fit beside full placeholder on 375px. */
+  .search-trigger span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .search-trigger kbd,

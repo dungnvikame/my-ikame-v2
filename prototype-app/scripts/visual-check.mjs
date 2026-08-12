@@ -42,6 +42,16 @@ try {
   await desktop.getByRole('button', { name: 'Xác nhận đã đọc' }).click();
   await expect(desktop.getByRole('heading', { name: 'Đã xác nhận' })).toBeVisible();
 
+  // Vision-demo static routes (F10: no panel automation — rehearsal covers interactions).
+  await desktop.goto(`${baseUrl}/vision`, { waitUntil: 'networkidle' });
+  await desktop.screenshot({ path: path.join(output, 'vision-desktop.png'), fullPage: true });
+
+  await desktop.goto(`${baseUrl}/knowledge`, { waitUntil: 'networkidle' });
+  await desktop.screenshot({ path: path.join(output, 'knowledge-desktop.png'), fullPage: true });
+
+  await desktop.goto(`${baseUrl}/goals`, { waitUntil: 'networkidle' });
+  await desktop.screenshot({ path: path.join(output, 'goals-desktop.png'), fullPage: true });
+
   await desktop.goto(`${baseUrl}/events/ai-product-workshop`, { waitUntil: 'networkidle' });
   await desktop.getByRole('button', { name: 'Đăng ký tham gia' }).click();
   await expect(desktop.getByRole('heading', { name: 'Bạn sẽ tham gia' })).toBeVisible();
