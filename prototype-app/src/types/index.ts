@@ -199,6 +199,39 @@ export type Objective = {
   keyResults: KeyResult[];
   linkedGoalId?: string;
 };
+/** EKS — Employee Key Success (iGoal-style personal scorecard, demo v2.1).
+ * Structure mirrors the real iGoal EKS screen: E-objectives with KS children. */
+export type KeySuccess = {
+  id: string;
+  /** Display code within its objective: "KS1", "KS2"... */
+  code: string;
+  title: string;
+  progress: number;
+  status: GoalStatus;
+  /** Optional bridge to the v1 personal Goal cards (check-in flow reuse). */
+  linkedGoalId?: string;
+};
+export type EksObjective = {
+  id: string;
+  /** Display code: "E1", "E2"... */
+  code: string;
+  title: string;
+  progress: number;
+  keySuccesses: KeySuccess[];
+};
+/** Manager Goals tab "Thành viên" — per-member EKS + report compliance row. */
+export type MemberEksStat = {
+  id: string;
+  name: string;
+  shortName: string;
+  role: string;
+  eksStatus: GoalStatus;
+  eksProgress: number;
+  reportsSubmitted: number;
+  reportsExpected: number;
+  lastCheckInLabel: string;
+};
+
 export type CheckInReport = {
   id: string;
   goalId: string;

@@ -1,4 +1,4 @@
-import type { CheckInReport, Objective } from '../types';
+import type { CheckInReport, EksObjective, MemberEksStat, Objective } from '../types';
 
 // Mục tiêu (Demo v2 iGoal-style OKR) — 7 node hư cấu: company → 2 team → 4 personal (An).
 // Cycle decision: OKR nodes dùng 'H2-2026'; Goal.cycle (initialGoals) giữ 'Q3-2026' (Q3 ⊂ H2).
@@ -136,4 +136,82 @@ export const initialCheckInReports: CheckInReport[] = [
     submittedAt: '5 ngày trước',
     source: 'manual',
   },
+];
+
+// EKS (Employee Key Success) — v2.1, cấu trúc phỏng theo màn "My EKS" của iGoal thật:
+// E-objective (E1, E2) với các KS con, progress %, không trọng số hiển thị.
+// Nội dung hư cấu cho persona An (Product Designer) — KHÔNG dùng dữ liệu nhân sự thật.
+export const eksObjectives: EksObjective[] = [
+  {
+    id: 'eks-e1',
+    code: 'E1',
+    title: 'Nâng trải nghiệm các sản phẩm nội bộ My iKame, iGoal và iWiki đạt chất lượng cao',
+    progress: 62,
+    keySuccesses: [
+      {
+        id: 'eks-e1-ks1',
+        code: 'KS1',
+        title: 'Hoàn thiện design system Core DS 1.1 và áp dụng trên 5 module chính của My iKame trước 30/09; điểm hài lòng giao diện ≥4/5',
+        progress: 55,
+        status: 'needs_update',
+        linkedGoalId: 'goal-design-refresh',
+      },
+      {
+        id: 'eks-e1-ks2',
+        code: 'KS2',
+        title: 'Tái thiết kế hành trình onboarding nhân sự mới 100% trên My iKame, thời gian hoàn tất checklist giảm 30%',
+        progress: 70,
+        status: 'on_track',
+        linkedGoalId: 'goal-onboarding-journey',
+      },
+      {
+        id: 'eks-e1-ks3',
+        code: 'KS3',
+        title: 'Audit accessibility toàn bộ màn hình chính đạt WCAG AA, hoàn thành trước 31/12',
+        progress: 100,
+        status: 'done',
+        linkedGoalId: 'goal-a11y-audit',
+      },
+    ],
+  },
+  {
+    id: 'eks-e2',
+    code: 'E2',
+    title: 'Đưa nghiệp vụ Design của team Product đạt level AI-native, vận hành hiệu quả với AI Agent',
+    progress: 25,
+    keySuccesses: [
+      {
+        id: 'eks-e2-ks1',
+        code: 'KS1',
+        title: 'Áp dụng quy trình thiết kế AI-assisted cho 3 dự án mới, 100% có document chuẩn hoá (problem context, decision log, release evidence)',
+        progress: 35,
+        status: 'at_risk',
+        linkedGoalId: 'goal-research-repo',
+      },
+      {
+        id: 'eks-e2-ks2',
+        code: 'KS2',
+        title: 'Xây bộ Agents Kit hỗ trợ nghiệp vụ Design (prompt library, component generator) dùng chung cho khối Product',
+        progress: 20,
+        status: 'on_track',
+      },
+      {
+        id: 'eks-e2-ks3',
+        code: 'KS3',
+        title: 'Thiết kế Product Health Dashboard cho My iKame/iGoal/iWiki giúp PM và Manager theo dõi sức khỏe sản phẩm, trước 30/09',
+        progress: 20,
+        status: 'on_track',
+      },
+    ],
+  },
+];
+
+// Tab "Thành viên" (Manager Goals view) — EKS status + compliance báo cáo per member.
+// Khớp fixture attention: Lan & Minh chưa check-in đúng hạn (item `goal-required`).
+export const memberEksStats: MemberEksStat[] = [
+  { id: 'mes-lan', name: 'Lan Nguyễn', shortName: 'Lan', role: 'Product Designer', eksStatus: 'needs_update', eksProgress: 45, reportsSubmitted: 4, reportsExpected: 6, lastCheckInLabel: '2 tuần trước' },
+  { id: 'mes-minh', name: 'Minh Trần', shortName: 'Minh', role: 'Frontend Developer', eksStatus: 'needs_update', eksProgress: 50, reportsSubmitted: 5, reportsExpected: 6, lastCheckInLabel: '2 tuần trước' },
+  { id: 'mes-ha', name: 'Hà Phạm', shortName: 'Hà', role: 'QA Engineer', eksStatus: 'on_track', eksProgress: 68, reportsSubmitted: 6, reportsExpected: 6, lastCheckInLabel: '3 ngày trước' },
+  { id: 'mes-tuan', name: 'Tuấn Lê', shortName: 'Tuấn', role: 'Backend Developer', eksStatus: 'at_risk', eksProgress: 38, reportsSubmitted: 5, reportsExpected: 6, lastCheckInLabel: '1 tuần trước' },
+  { id: 'mes-ngocanh', name: 'Ngọc Anh', shortName: 'NA', role: 'Business Analyst', eksStatus: 'on_track', eksProgress: 72, reportsSubmitted: 6, reportsExpected: 6, lastCheckInLabel: 'Hôm qua' },
 ];

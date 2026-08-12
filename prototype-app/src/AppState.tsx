@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 import {
   attentionItems,
+  eksObjectives,
   equipment,
   initialBirthdays,
   initialCheckInReports,
@@ -15,6 +16,7 @@ import {
   initialTopFans,
   knowledgeDocs,
   leaveBalance,
+  memberEksStats,
   okrTree,
   seniorityEntries,
   users,
@@ -106,6 +108,8 @@ type AppStateValue = {
   equipment: typeof equipment;
   seniorityEntries: typeof seniorityEntries;
   okrTree: typeof okrTree;
+  eks: typeof eksObjectives;
+  memberEksStats: typeof memberEksStats;
   setPerspective: (perspective: Perspective) => void;
   setTheme: (theme: Theme) => void;
   setNotificationOpen: (open: boolean) => void;
@@ -178,6 +182,8 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     equipment,
     seniorityEntries,
     okrTree,
+    eks: eksObjectives,
+    memberEksStats,
     setPerspective,
     setTheme,
     setNotificationOpen,
