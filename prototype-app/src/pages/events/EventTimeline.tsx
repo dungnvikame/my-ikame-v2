@@ -1,27 +1,7 @@
 import { useMemo } from 'react';
 import type { EventItem } from '../../types';
-import { daysInMonth, eventDate, monthKey, monthLabel, monthsFrom } from './event-dates';
-
-// Emoji dots — override by event id for flavor, else derive from format (spec §Requirements 2).
-const EMOJI_BY_ID: Record<string, string> = {
-  'iconnect-2026-08': '📣',
-  'ai-product-workshop': '🤖',
-  'design-sprint-full': '🎨',
-  'running-club': '🏃',
-  'security-briefing-cancelled': '⚠️',
-  'town-hall-q2': '🏛️',
-  'global-webinar-us': '🌍',
-  'finance-town-hall': '💰',
-  'hackathon-2026-09': '🚀',
-  'wellness-day-09': '🧘',
-  'town-hall-q3': '🏛️',
-  'year-end-teaser': '🎉',
-};
-const EMOJI_BY_FORMAT: Record<EventItem['format'], string> = { 'Trực tiếp': '🎯', Online: '💻', Hybrid: '🌐' };
-
-function formatEmoji(event: EventItem): string {
-  return EMOJI_BY_ID[event.id] ?? EMOJI_BY_FORMAT[event.format] ?? '📅';
-}
+import { daysInMonth, daysUntil, eventDate, monthKey, monthLabel, monthsFrom } from './event-dates';
+import { eventCoverPalette, eventEmoji } from './event-visuals';
 
 type MonthColumn = { key: string; label: string; isCurrent: boolean; todayLeftPct: number; monthEvents: EventItem[] };
 
@@ -37,12 +17,25 @@ function buildColumns(events: EventItem[], now: Date): MonthColumn[] {
   });
 }
 
-/** Computed insight — never a hardcoded month; must stay true even if fixtures change. */
-function computeInsight(columns: MonthColumn[]): string | undefined {
+/** 3 computed clauses (nearest/densest/total) — never hardcoded, must stay true if fixtures change. */
+function computeInsights(events: EventItem[], columns: MonthColumn[], now: Date): string[] {
+  const insights: string[] = [];
+  const upcoming = events.filter((event) => {
+    const date = eventDate(event);
+    return date && date.getTime() >= now.getTime() && event.status !== 'cancelled' && event.status !== 'past';
+  });
+  const nearest = [...upcoming].sort((a, b) => eventDate(a)!.getTime() - eventDate(b)!.getTime())[0];
+  if (nearest) insights.push(`⏳ Gần nhất: ${nearest.title} — còn ${daysUntil(eventDate(nearest)!, now)} ngày`);
+
   const withEvents = columns.filter((column) => column.monthEvents.length > 0);
-  if (withEvents.length === 0) return undefined;
-  const densest = withEvents.reduce((max, current) => (current.monthEvents.length > max.monthEvents.length ? current : max));
-  return `${densest.label} dày nhất với ${densest.monthEvents.length} sự kiện`;
+  if (withEvents.length > 0) {
+    const densest = withEvents.reduce((max, current) => (current.monthEvents.length > max.monthEvents.length ? current : max));
+    if (densest.monthEvents.length > 1) insights.push(`🔥 ${densest.label} dày nhất với ${densest.monthEvents.length} sự kiện`);
+  }
+
+  const total = columns.reduce((sum, column) => sum + column.monthEvents.length, 0);
+  if (total > 0) insights.push(`${total} sự kiện trong 6 tháng tới`);
+  return insights;
 }
 
 type EventTimelineProps = { events: EventItem[]; now?: Date; onSelectEvent: (id: string) => void };
@@ -50,7 +43,7 @@ type EventTimelineProps = { events: EventItem[]; now?: Date; onSelectEvent: (id:
 /** 6-month horizontally-scrollable strip with HÔM NAY marker + emoji dots (click → scroll to card). */
 export function EventTimeline({ events, now = new Date(), onSelectEvent }: EventTimelineProps) {
   const columns = useMemo(() => buildColumns(events, now), [events, now]);
-  const insight = useMemo(() => computeInsight(columns), [columns]);
+  const insights = useMemo(() => computeInsights(events, columns, now), [events, columns, now]);
 
   return (
     <section className="events-v2-timeline" aria-label="Dòng thời gian sự kiện 6 tháng">
@@ -66,19 +59,19 @@ export function EventTimeline({ events, now = new Date(), onSelectEvent }: Event
                 <button
                   key={event.id}
                   type="button"
-                  className="events-v2-timeline-dot"
+                  className={`events-v2-timeline-dot events-v2-timeline-dot--${eventCoverPalette(event)}`}
                   title={event.title}
                   aria-label={event.title}
                   onClick={() => onSelectEvent(event.id)}
                 >
-                  {formatEmoji(event)}
+                  {eventEmoji(event)}
                 </button>
               ))}
             </div>
           </div>
         ))}
       </div>
-      {insight && <p className="events-v2-timeline-insight">{insight}</p>}
+      {insights.length > 0 && <p className="events-v2-timeline-insight">{insights.join(' · ')}</p>}
     </section>
   );
 }

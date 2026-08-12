@@ -40,13 +40,29 @@ export function EventsPage() {
       <header className="page-heading">
         <div><p className="eyebrow">CẦN THAM GIA</p><h1>Sự kiện</h1><p>Khám phá hoạt động phù hợp và quản lý lịch tham gia của bạn.</p></div>
       </header>
-      {heroEvent && <EventHero event={heroEvent} primaryAction={heroPrimaryAction(heroEvent, setEventRegistration)} />}
+      {heroEvent && (
+        <EventHero
+          event={heroEvent}
+          primaryAction={heroPrimaryAction(heroEvent, setEventRegistration)}
+          detailHref={`/events/${heroEvent.id}`}
+        />
+      )}
       <EventStats events={eligible} now={now} />
       <EventTimeline events={eligible} now={now} onSelectEvent={handleSelectEvent} />
       <div className="collection-toolbar">
-        <div className="neutral-tabs" role="tablist" aria-label="Lọc sự kiện">
+        <div className="events-v2-tabs" role="tablist" aria-label="Lọc sự kiện">
           {(Object.keys(TAB_LABELS) as EventTab[]).map((key) => (
-            <button key={key} role="tab" aria-selected={tab === key} className={tab === key ? 'is-active' : ''} onClick={() => setTab(key)}>{TAB_LABELS[key]}</button>
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={tab === key}
+              className={`events-v2-tab ${tab === key ? 'is-active' : ''}`}
+              onClick={() => setTab(key)}
+            >
+              {key === 'live' && <span className="events-v2-tab-dot" aria-hidden="true" />}
+              {TAB_LABELS[key]}
+            </button>
           ))}
         </div>
         <span className="timezone-note"><Clock size={16} />Múi giờ hiển thị: {user.timezone}</span>

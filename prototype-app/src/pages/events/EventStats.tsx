@@ -18,20 +18,23 @@ export function EventStats({ events, now = new Date() }: EventStatsProps) {
   return (
     <div className="events-v2-stats">
       <article className="events-v2-stat-card">
-        <CalendarDots size={22} weight="duotone" />
+        <span className="events-v2-stat-icon events-v2-stat-icon--blue"><CalendarDots size={20} weight="duotone" /></span>
         <strong>{thisMonthCount}</strong>
         <span>Sự kiện tháng này</span>
       </article>
       <article className="events-v2-stat-card">
-        <CheckCircle size={22} weight="duotone" />
+        <span className="events-v2-stat-icon events-v2-stat-icon--emerald"><CheckCircle size={20} weight="duotone" /></span>
         <strong>{goingCount}</strong>
         <span>Bạn sẽ tham gia</span>
+        {goingCount === 0 && <small className="events-v2-stat-helper events-v2-stat-helper--accent">Chọn 1 hoạt động bên dưới nhé!</small>}
       </article>
       <article className="events-v2-stat-card">
-        <HourglassMedium size={22} weight="duotone" />
+        <span className="events-v2-stat-icon events-v2-stat-icon--amber"><HourglassMedium size={20} weight="duotone" /></span>
         <strong>{closingSoon.length}</strong>
         <span>Sắp hết hạn đăng ký</span>
-        {closingSoon[0]?.registrationDeadlineLabel && <small>{closingSoon[0].registrationDeadlineLabel}</small>}
+        {closingSoon.length > 0 && closingSoon[0]?.registrationDeadlineLabel && (
+          <small className="events-v2-stat-helper events-v2-stat-helper--danger">{closingSoon[0].registrationDeadlineLabel}</small>
+        )}
       </article>
     </div>
   );

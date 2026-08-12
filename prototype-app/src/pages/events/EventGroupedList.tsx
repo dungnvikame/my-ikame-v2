@@ -10,19 +10,22 @@ type EventGroupedListProps = {
   cardRefs: MutableRefObject<Record<string, HTMLElement | null>>;
 };
 
+/** Single-column rows on a left "rail" (line + dot per row) — owner reference feel. */
 function EventGroup({ title, events, highlightedId, cardRefs }: Omit<EventGroupedListProps, 'now'> & { title: string }) {
   if (events.length === 0) return null;
   return (
     <section className="events-v2-group">
       <h2 className="events-v2-group-title">{title}</h2>
-      <div className="event-collection">
+      <div className="events-v2-list">
         {events.map((event) => (
-          <EventCardV2
-            key={event.id}
-            event={event}
-            highlighted={highlightedId === event.id}
-            cardRef={(element) => { cardRefs.current[event.id] = element; }}
-          />
+          <div key={event.id} className="events-v2-list-row">
+            <span className="events-v2-list-dot" aria-hidden="true" />
+            <EventCardV2
+              event={event}
+              highlighted={highlightedId === event.id}
+              cardRef={(element) => { cardRefs.current[event.id] = element; }}
+            />
+          </div>
         ))}
       </div>
     </section>

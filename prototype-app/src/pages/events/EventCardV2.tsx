@@ -1,7 +1,9 @@
-import { Clock, MapPin } from '@phosphor-icons/react';
+import { CalendarDots, Clock, MapPin } from '@phosphor-icons/react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { StatusPill } from '../../components/UI';
 import type { EventItem } from '../../types';
+import { audienceStatusLabel, eventCoverPalette, eventEmoji } from './event-visuals';
 
 export type CapacityInfo = { registered: number; capacity: number; ratio: number; label: string };
 
@@ -23,6 +25,34 @@ export function ParticipantAvatars({ names, max = 5 }: { names?: string[]; max?:
     <div className="events-v2-avatars" aria-label={`${names.length} người tham gia`}>
       {shown.map((name, index) => <span key={`${name}-${index}`} className="avatar events-v2-avatar">{name.charAt(0)}</span>)}
       {extra > 0 && <span className="avatar events-v2-avatar events-v2-avatar--more">+{extra}</span>}
+    </div>
+  );
+}
+
+/** "Trà My +30 người tham gia" social-proof line — owner reference. Uses real registered
+ *  headcount (capacity - remaining) when available, else falls back to the named sample. */
+export function ParticipantSummary({ event }: { event: EventItem }) {
+  const names = event.participantNames;
+  if (!names || names.length === 0) return null;
+  const capacity = capacityInfo(event);
+  const extra = Math.max((capacity?.registered ?? names.length) - 1, 0);
+  return (
+    <span className="events-v2-participant-summary">
+      {names[0]}{extra > 0 ? ` +${extra} người tham gia` : ' đã tham gia'}
+    </span>
+  );
+}
+
+/**
+ * Rounded gradient tile with an emoji — the no-photo "cover" used by hero/card. Plain (no
+ * `children`) it's a small decorative art tile; the hero passes `children` to overlay real
+ * title/countdown/CTA content on top of the same gradient + radial glow treatment.
+ */
+export function EventCoverTile({ event, className = '', children }: { event: EventItem; className?: string; children?: ReactNode }) {
+  return (
+    <div className={`events-v2-cover events-v2-cover--${eventCoverPalette(event)} ${className}`}>
+      <span className="events-v2-cover-emoji" aria-hidden="true">{eventEmoji(event)}</span>
+      {children}
     </div>
   );
 }
@@ -50,7 +80,7 @@ type EventCardV2Props = {
   cardRef?: (element: HTMLElement | null) => void;
 };
 
-/** Upgraded event card — date block, avatars, capacity bar, registration + closingSoon pills. */
+/** Upgraded event card — gradient emoji cover tile, avatars + social-proof line, capacity bar. */
 export function EventCardV2({ event, highlighted = false, cardRef }: EventCardV2Props) {
   const capacity = capacityInfo(event);
   const isDimmed = event.status === 'past' || event.status === 'cancelled';
@@ -59,7 +89,7 @@ export function EventCardV2({ event, highlighted = false, cardRef }: EventCardV2
       ref={cardRef}
       className={`content-card event-card events-v2-card ${isDimmed ? 'is-past' : ''} ${highlighted ? 'is-highlighted' : ''}`}
     >
-      <div className="event-date" aria-label={event.dateLabel}><span>{event.month}</span><strong>{event.day}</strong></div>
+      <EventCoverTile event={event} className="events-v2-card-cover" />
       <div className="card-body">
         <div className="card-badges">
           <StatusPill tone={registrationTone(event)}>{registrationLabel(event)}</StatusPill>
@@ -68,16 +98,25 @@ export function EventCardV2({ event, highlighted = false, cardRef }: EventCardV2
         </div>
         <h3><Link to={`/events/${event.id}`}>{event.title}</Link></h3>
         <div className="event-meta">
+          <span><CalendarDots size={16} /> {event.dateLabel}</span>
           <span><Clock size={16} /> {event.time}</span>
           <span><MapPin size={16} /> {event.location}</span>
         </div>
-        <ParticipantAvatars names={event.participantNames} />
-        {capacity && (
-          <div className="events-v2-capacity" aria-label={capacity.label}>
-            <div className="events-v2-capacity-bar"><span style={{ width: `${capacity.ratio * 100}%` }} /></div>
-            <small>{capacity.label}</small>
+        <div className="events-v2-card-footer">
+          <div className="events-v2-card-footer-left">
+            <ParticipantAvatars names={event.participantNames} />
+            <ParticipantSummary event={event} />
           </div>
-        )}
+          <div className="events-v2-card-footer-right">
+            {event.myRegistration === 'going' && <StatusPill tone="success">{audienceStatusLabel(event)}</StatusPill>}
+            {capacity && (
+              <div className="events-v2-capacity" aria-label={capacity.label}>
+                <div className="events-v2-capacity-bar"><span style={{ width: `${capacity.ratio * 100}%` }} /></div>
+                <small>{capacity.label}</small>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </article>
   );

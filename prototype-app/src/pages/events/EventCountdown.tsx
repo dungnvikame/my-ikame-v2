@@ -50,28 +50,33 @@ function pad(value: number): string {
   return String(value).padStart(2, '0');
 }
 
+/**
+ * 4 boxed units (NGÀY/GIỜ/PHÚT/GIÂY) — owner reference. Under prefers-reduced-motion the
+ * underlying `useCountdown` hook never ticks (no interval), so the boxes render once and
+ * stay static — no separate reduced-motion markup needed here.
+ */
 export function EventCountdown({ startsAt, cancelled = false }: { startsAt?: string; cancelled?: boolean }) {
   const countdown = useCountdown(cancelled ? undefined : startsAt);
-  const [reduced] = useState(prefersReducedMotion);
 
   if (cancelled) return <p className="events-v2-countdown events-v2-countdown--muted">Đã hủy</p>;
   if (countdown.state === 'live') return <p className="events-v2-countdown events-v2-countdown--live">● Đang diễn ra</p>;
   if (countdown.state === 'past') return <p className="events-v2-countdown events-v2-countdown--muted">Đã diễn ra</p>;
 
-  if (reduced) {
-    return (
-      <p className="events-v2-countdown">
-        Còn {countdown.days} ngày · {pad(countdown.hours)}:{pad(countdown.minutes)}
-      </p>
-    );
-  }
+  const units = [
+    { value: countdown.days, label: 'NGÀY' },
+    { value: countdown.hours, label: 'GIỜ' },
+    { value: countdown.minutes, label: 'PHÚT' },
+    { value: countdown.seconds, label: 'GIÂY' },
+  ];
 
   return (
-    <p className="events-v2-countdown" aria-live="off">
-      <span><strong>{countdown.days}</strong> ngày</span>
-      <span><strong>{pad(countdown.hours)}</strong> giờ</span>
-      <span><strong>{pad(countdown.minutes)}</strong> phút</span>
-      <span><strong>{pad(countdown.seconds)}</strong> giây</span>
-    </p>
+    <div className="events-v2-countdown" role="group" aria-label="Đếm ngược tới sự kiện" aria-live="off">
+      {units.map((unit) => (
+        <div key={unit.label} className="events-v2-countdown-box">
+          <strong>{pad(unit.value)}</strong>
+          <span>{unit.label}</span>
+        </div>
+      ))}
+    </div>
   );
 }
