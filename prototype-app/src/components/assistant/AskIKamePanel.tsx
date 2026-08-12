@@ -21,7 +21,7 @@ const ASK_TRIGGER_SELECTOR = 'button[aria-label="Hỏi iKame"]';
 export function AskIKamePanel() {
   const {
     askOpen, setAskOpen, demoResetCount, perspective, news, events, goals, attention,
-    posts, birthdays, knowledgeDocs, leaveBalance, user,
+    posts, birthdays, knowledgeDocs, leaveBalance, user, checkInReports,
     setEventRegistration, addPost, submitReport,
   } = useAppState();
   const { pathname } = useLocation();
@@ -59,8 +59,9 @@ export function AskIKamePanel() {
       goals,
       leaveBalance,
       userName: user.name,
+      checkInReports,
     };
-  }, [attention, birthdays, events, goals, knowledgeDocs, leaveBalance, news, pathname, posts, user]);
+  }, [attention, birthdays, checkInReports, events, goals, knowledgeDocs, leaveBalance, news, pathname, posts, user]);
 
   const chips = useMemo(() => scriptsForContext(pathname, perspective), [pathname, perspective]);
 

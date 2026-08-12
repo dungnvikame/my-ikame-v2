@@ -1,4 +1,5 @@
 import type { AiScript } from './ai-scripts-types';
+import { g3CheckinReport, g4WeekSummary } from './ai-scripts-v2-goals';
 
 /**
  * Demo v2 — 6 new module-wide scripts (phase-06 req #1). All paragraphs read LIVE ctx
@@ -114,50 +115,6 @@ const k2NewcomerDocs: AiScript = {
   reason: '3 tài liệu curated cố định cho người mới, lọc theo quyền xem của bạn — tài liệu riêng của Finance không xuất hiện ở đây.',
 };
 
-const g3CheckinReport: AiScript = {
-  id: 'g3-checkin-report',
-  chip: 'Soạn báo cáo check-in tuần',
-  routes: ['/goals', '/goals/:goalId'],
-  level: 'A3',
-  paragraphs: (ctx) => {
-    const goal = ctx.goals.find((g) => g.status === 'needs_update');
-    return goal
-      ? [`Mục tiêu "${goal.title}" đang ở ${goal.progress}% và cần check-in (check-in gần nhất: ${goal.lastCheckIn}, ${goal.nextDue}). iKame đã soạn sẵn báo cáo tuần này — bạn xem lại và sửa trước khi gửi.`]
-      : ['Không còn mục tiêu nào cần check-in — tất cả đang đúng tiến độ.'];
-  },
-  citations: (ctx) => {
-    const goal = ctx.goals.find((g) => g.status === 'needs_update');
-    return goal ? [{ title: goal.title, source: 'iGoal', href: `/goals/${goal.id}` }] : [];
-  },
-  action: {
-    kind: 'draft',
-    isApplicable: (ctx) => ctx.goals.some((g) => g.status === 'needs_update'),
-    draftText: (ctx) => {
-      const goal = ctx.goals.find((g) => g.status === 'needs_update');
-      if (!goal) return '';
-      const next = Math.min(goal.progress + 10, 100);
-      return `Cập nhật tiến độ cho "${goal.title}": đã hoàn thiện thêm phần còn lại theo chuẩn Core DS 1.1 cho các module tiếp theo. Tiến độ hiện tại: ${goal.progress}% → dự kiến đạt ${next}% sau tuần này.`;
-    },
-    confirmLabel: 'Duyệt & gửi báo cáo',
-    receipt: 'Đã gửi báo cáo · #RCPT-xxxx — hiện trong Tổng hợp báo cáo',
-    commit: 'report',
-    buildReport: (ctx, text) => {
-      const goal = ctx.goals.find((g) => g.status === 'needs_update')!;
-      return {
-        goalId: goal.id,
-        goalTitle: goal.title,
-        authorName: ctx.userName,
-        periodLabel: 'Tuần 33 · 10-16/08',
-        progressBefore: goal.progress,
-        progressAfter: Math.min(goal.progress + 10, 100),
-        content: text,
-        source: 'ai',
-      };
-    },
-  },
-  reason: 'Nội dung báo cáo do iKame soạn từ tiến độ và lần check-in gần nhất của chính mục tiêu này; gửi sẽ cập nhật cả trạng thái mục tiêu và Tổng hợp báo cáo.',
-};
-
 const p2LeaveBalance: AiScript = {
   id: 'p2-leave-balance',
   chip: 'Tôi còn bao nhiêu ngày phép?',
@@ -179,5 +136,5 @@ const p2LeaveBalance: AiScript = {
 };
 
 export const V2_SCRIPTS: AiScript[] = [
-  c1CommunityHot, c2BirthdayWish, e2EventsSuggest, k2NewcomerDocs, g3CheckinReport, p2LeaveBalance,
+  c1CommunityHot, c2BirthdayWish, e2EventsSuggest, k2NewcomerDocs, g3CheckinReport, g4WeekSummary, p2LeaveBalance,
 ];

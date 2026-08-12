@@ -32,6 +32,8 @@ export type ScriptCtx = {
   goals: Goal[];
   leaveBalance: LeaveBalance;
   userName: string;
+  /** Full live check-in reports list — g4 week-summary count (never re-derived, F2). */
+  checkInReports: CheckInReport[];
 };
 
 export type Citation = { title: string; source: string; href: string };
