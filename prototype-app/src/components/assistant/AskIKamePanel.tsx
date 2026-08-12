@@ -28,6 +28,7 @@ export function AskIKamePanel() {
   const navigate = useNavigate();
   const panelRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const [closeBlockedNotice, setCloseBlockedNotice] = useState(false);
 
   const { conversation, hasPendingDraft, askChip, markRevealed, updateDraft, cancelDraft, sendDraft, confirmExecute } =
@@ -36,6 +37,12 @@ export function AskIKamePanel() {
   useEffect(() => {
     if (askOpen) closeButtonRef.current?.focus();
   }, [askOpen]);
+
+  // New turn (chip asked / draft sent) → scroll the conversation into view so the
+  // fresh response never sits hidden below the fold behind the chips/input.
+  useEffect(() => {
+    bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight, behavior: 'smooth' });
+  }, [conversation.length]);
 
   const ctx = useMemo<ScriptCtx>(() => {
     const postId = matchNewsPostId(pathname);
@@ -125,7 +132,7 @@ export function AskIKamePanel() {
           <IconButton ref={closeButtonRef} label="Đóng Ask iKame" onClick={attemptClose}><X size={20} /></IconButton>
         </div>
 
-        <div className="ask-panel-body">
+        <div className="ask-panel-body" ref={bodyRef}>
           <AskConversationList
             conversation={conversation}
             onRevealed={markRevealed}

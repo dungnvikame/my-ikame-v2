@@ -20,7 +20,7 @@ const TABS: GoalsTabDef<TabKey>[] = [
 
 /** iKamer perspective — EKS-first, modeled on the real iGoal "My EKS" screen. */
 export function IkamerGoalsView() {
-  const { eks, goals, okrTree, checkInGoal, checkInReports, submitReport, user, demoResetCount } = useAppState();
+  const { eks, goals, okrTree, checkInReports, submitReport, user, demoResetCount } = useAppState();
   const [cycle, setCycle] = useState<CycleOption>('H2 2026');
   const [activeTab, setActiveTab] = useState<TabKey>('eks');
   const [reportGoal, setReportGoal] = useState<Goal | null>(null);
@@ -44,11 +44,6 @@ export function IkamerGoalsView() {
       if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
-  }
-
-  function handleQuickCheckIn(goal: Goal) {
-    checkInGoal(goal.id);
-    setReceipt(`Đã check-in "${goal.title}" — chuyển sang Đang đúng tiến độ.`);
   }
 
   function handleSubmitReport(input: { periodLabel: string; progressAfter: number; content: string; blockers: string }) {
@@ -89,9 +84,7 @@ export function IkamerGoalsView() {
                 eks={eks}
                 goals={goals}
                 checkInReports={checkInReports}
-                goalsById={goalsById}
                 reportGoal={reportGoal}
-                onQuickCheckIn={handleQuickCheckIn}
                 onOpenReport={setReportGoal}
                 onCancelReport={() => setReportGoal(null)}
                 onSubmitReport={handleSubmitReport}

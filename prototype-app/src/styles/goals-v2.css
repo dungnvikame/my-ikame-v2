@@ -220,19 +220,6 @@
   color: var(--text-secondary);
 }
 
-/* --- "Mục tiêu của tôi" card actions --- */
-
-.okr-goal-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.okr-goal-actions .button {
-  width: 100%;
-}
-
 /* --- Tạo báo cáo form --- */
 
 .okr-report-form {
@@ -422,11 +409,6 @@
   white-space: normal;
   word-break: break-word;
   color: var(--text-secondary);
-}
-
-.eks-ks-row .button {
-  grid-column: 1 / -1;
-  justify-self: flex-start;
 }
 
 /* --- AI quick-actions strip --- */

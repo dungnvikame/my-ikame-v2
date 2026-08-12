@@ -1966,7 +1966,11 @@ p {
   color: var(--text-primary);
 }
 
-/* Base drawer geometry for the Ask iKame panel; visual detail lives in assistant.css (Phase 2). */
+/* Base drawer geometry for the Ask iKame panel; visual detail lives in assistant.css (Phase 2).
+   The panel itself does NOT scroll — only `.ask-panel-body` does (assistant.css) — so the
+   header stays pinned top and the chips/input stay pinned bottom, chat-app style. Scrolling
+   the whole panel let long conversations overflow `.ask-panel-body`'s flex box and visually
+   bleed under the chips/input (bug fix, 2026-08-13). */
 .ask-panel {
   margin-left: auto;
   width: min(420px, 100%);
@@ -1977,5 +1981,5 @@ p {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  overflow-y: auto;
+  overflow: hidden;
 }

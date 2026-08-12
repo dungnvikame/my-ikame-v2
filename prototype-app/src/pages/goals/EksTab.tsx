@@ -3,7 +3,6 @@ import { AiBadge } from '../../components/AiBadge';
 import { useAppState } from '../../AppState';
 import type { CheckInReport, EksObjective, Goal } from '../../types';
 import { EksList } from './EksList';
-import { GoalMyList } from './GoalMyList';
 import { ReportBrowser } from './ReportBrowser';
 import { ReportForm } from './ReportForm';
 
@@ -11,9 +10,7 @@ type EksTabProps = {
   eks: EksObjective[];
   goals: Goal[];
   checkInReports: CheckInReport[];
-  goalsById: Record<string, Goal>;
   reportGoal: Goal | null;
-  onQuickCheckIn: (goal: Goal) => void;
   onOpenReport: (goal: Goal) => void;
   onCancelReport: () => void;
   onSubmitReport: (input: { periodLabel: string; progressAfter: number; content: string; blockers: string }) => void;
@@ -40,7 +37,7 @@ function EksAiStrip() {
 }
 
 export function EksTab({
-  eks, goals, checkInReports, goalsById, reportGoal, onQuickCheckIn, onOpenReport, onCancelReport, onSubmitReport,
+  eks, goals, checkInReports, reportGoal, onOpenReport, onCancelReport, onSubmitReport,
 }: EksTabProps) {
   const { user } = useAppState();
 
@@ -53,8 +50,7 @@ export function EksTab({
     <>
       <EksAiStrip />
       {reportGoal && <ReportForm goal={reportGoal} authorName={user.name} onCancel={onCancelReport} onSubmit={onSubmitReport} />}
-      <EksList eks={eks} goalsById={goalsById} onQuickCheckIn={onQuickCheckIn} />
-      <GoalMyList goals={goals} onCheckIn={onQuickCheckIn} onOpenReport={onOpenReport} />
+      <EksList eks={eks} />
       <ReportBrowser reports={checkInReports} onCreateNew={handleCreateReport} />
     </>
   );

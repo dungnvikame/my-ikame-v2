@@ -1,30 +1,30 @@
-import { Target } from '@phosphor-icons/react';
-import { Button, SectionHeader, StatusPill } from '../../components/UI';
-import type { EksObjective, Goal } from '../../types';
+import { SectionHeader, StatusPill } from '../../components/UI';
+import type { EksObjective } from '../../types';
 import { STATUS_META } from './build-okr-tree';
 
 type EksListProps = {
   eks: EksObjective[];
-  goalsById: Record<string, Goal>;
-  onQuickCheckIn: (goal: Goal) => void;
 };
 
 /** "Danh sách EKS" card — mirrors the real iGoal My EKS screen: E-objective rows (blue
- * circular code) with KS child rows (orange code, wrapping title, progress, status). */
-export function EksList({ eks, goalsById, onQuickCheckIn }: EksListProps) {
+ * circular code) with KS child rows (orange code, wrapping title, progress, status).
+ * Read-only display — check-in happens via the AI quick-action or the report flow, not
+ * a per-row button here (owner feedback, 2026-08-13: a check-in action didn't belong
+ * in this list). */
+export function EksList({ eks }: EksListProps) {
   return (
     <section className="section-block eks-card">
       <SectionHeader title="Danh sách EKS" meta={`${eks.length} mục tiêu · ${eks.reduce((sum, e) => sum + e.keySuccesses.length, 0)} KS`} />
       <div className="eks-list">
         {eks.map((objective) => (
-          <EksObjectiveRow key={objective.id} objective={objective} goalsById={goalsById} onQuickCheckIn={onQuickCheckIn} />
+          <EksObjectiveRow key={objective.id} objective={objective} />
         ))}
       </div>
     </section>
   );
 }
 
-function EksObjectiveRow({ objective, goalsById, onQuickCheckIn }: Omit<EksListProps, 'eks'> & { objective: EksObjective }) {
+function EksObjectiveRow({ objective }: { objective: EksObjective }) {
   return (
     <article className="eks-objective">
       <div className="eks-objective-row">
@@ -38,26 +38,19 @@ function EksObjectiveRow({ objective, goalsById, onQuickCheckIn }: Omit<EksListP
         </div>
       </div>
       <ul className="eks-ks-list">
-        {objective.keySuccesses.map((ks) => {
-          const linkedGoal = ks.linkedGoalId ? goalsById[ks.linkedGoalId] : undefined;
-          const canCheckIn = linkedGoal && (linkedGoal.status === 'needs_update' || linkedGoal.status === 'at_risk');
-          return (
-            <li key={ks.id} className="eks-ks-row">
-              <span className="eks-code eks-code--ks" aria-hidden="true">{ks.code}</span>
-              <p className="eks-ks-title">{ks.title}</p>
-              <div className="eks-progress">
-                <div className="okr-progress-bar okr-progress-bar--kr" role="progressbar" aria-valuenow={ks.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Tiến độ ${ks.code}`}>
-                  <div className="okr-progress-fill" style={{ width: `${ks.progress}%` }} />
-                </div>
-                <span>{ks.progress}%</span>
+        {objective.keySuccesses.map((ks) => (
+          <li key={ks.id} className="eks-ks-row">
+            <span className="eks-code eks-code--ks" aria-hidden="true">{ks.code}</span>
+            <p className="eks-ks-title">{ks.title}</p>
+            <div className="eks-progress">
+              <div className="okr-progress-bar okr-progress-bar--kr" role="progressbar" aria-valuenow={ks.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Tiến độ ${ks.code}`}>
+                <div className="okr-progress-fill" style={{ width: `${ks.progress}%` }} />
               </div>
-              <StatusPill tone={STATUS_META[ks.status].tone}>{STATUS_META[ks.status].label}</StatusPill>
-              {canCheckIn && linkedGoal && (
-                <Button variant="dim" icon={<Target size={15} />} onClick={() => onQuickCheckIn(linkedGoal)}>Check-in nhanh</Button>
-              )}
-            </li>
-          );
-        })}
+              <span>{ks.progress}%</span>
+            </div>
+            <StatusPill tone={STATUS_META[ks.status].tone}>{STATUS_META[ks.status].label}</StatusPill>
+          </li>
+        ))}
       </ul>
     </article>
   );

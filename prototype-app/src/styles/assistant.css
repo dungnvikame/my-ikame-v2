@@ -30,7 +30,18 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  min-height: 120px;
+  /* min-height:0 (not auto) is required so this flex item can actually shrink below its
+     content height and let overflow-y:auto scroll internally, instead of the panel's flex
+     column reserving only the flex-grow share and letting turns spill past chips/input. */
+  min-height: 0;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-panel-body {
+    scroll-behavior: auto;
+  }
 }
 
 .ask-panel-empty {
