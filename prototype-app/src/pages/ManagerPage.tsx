@@ -46,7 +46,7 @@ export function ManagerPage() {
         <div>
           <p className="eyebrow">GÓC NHÌN MANAGER</p>
           <h1>Chào {user.shortName}, team đang có {queue.length} việc cần chú ý</h1>
-          <p>{user.team} · {roster.length} thành viên · Dữ liệu cập nhật {latestFreshness}</p>
+          <p>{user.team} · {roster.length} thành viên · Dữ liệu {latestFreshness.replace(/^Cập nhật\s*/i, 'cập nhật ')}</p>
         </div>
         {/* Read-only scope indicator: R0 grants each manager a single scope, so this is not switchable. */}
         <button className="scope-selector" disabled aria-disabled="true">
