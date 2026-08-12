@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import type { EventRegistration } from '../../types';
+import type { CheckInReport, EventRegistration, Post } from '../../types';
 import type { AiScript, ScriptCtx } from '../../data/ai-scripts';
+
+type NewPostInput = { body: string; cover?: Post['cover']; official?: boolean };
+type SubmitReportInput = Omit<CheckInReport, 'id' | 'submittedAt'>;
+
+export type AskConversationActions = {
+  setEventRegistration: (id: string, next: EventRegistration) => void;
+  addPost: (input: NewPostInput) => void;
+  submitReport: (input: SubmitReportInput) => void;
+};
 
 export type Turn = {
   id: string;
@@ -22,7 +31,7 @@ function generateReceiptId() {
  * survives the panel's close/open render-null cycle (F4) and so AskIKamePanel.tsx
  * stays under the ~200-line file budget. Cleared ONLY when `demoResetCount` changes.
  */
-export function useAskConversation(demoResetCount: number, setEventRegistration: (id: string, next: EventRegistration) => void) {
+export function useAskConversation(demoResetCount: number, actions: AskConversationActions) {
   const [conversation, setConversation] = useState<Turn[]>([]);
   const lockRef = useRef<Set<string>>(new Set());
 
@@ -61,17 +70,29 @@ export function useAskConversation(demoResetCount: number, setEventRegistration:
     setConversation((turns) => turns.filter((turn) => turn.id !== turnId));
   }
 
+  /** Approving an A3 draft: `commit` decides whether this only prints a receipt (v1
+   * behavior, default) or also writes to app state with the user-edited draft text
+   * (Phase 6 — `addPost`/`submitReport`). */
   function sendDraft(turnId: string) {
     if (lockRef.current.has(turnId)) return; // synchronous double-click guard
     lockRef.current.add(turnId);
+    const turn = conversation.find((item) => item.id === turnId);
+    const action = turn?.script.action;
+    if (turn && action?.kind === 'draft' && turn.draftText) {
+      if (action.commit === 'post' && action.buildPost) {
+        actions.addPost(action.buildPost(turn.ctx, turn.draftText));
+      } else if (action.commit === 'report' && action.buildReport) {
+        actions.submitReport(action.buildReport(turn.ctx, turn.draftText));
+      }
+    }
     const receiptId = generateReceiptId();
-    setConversation((turns) => turns.map((turn) => (turn.id === turnId ? { ...turn, sent: true, receiptId } : turn)));
+    setConversation((turns) => turns.map((t) => (t.id === turnId ? { ...t, sent: true, receiptId } : t)));
   }
 
   function confirmExecute(turnId: string, targetEventId: string) {
     if (lockRef.current.has(turnId)) return; // synchronous double-click guard
     lockRef.current.add(turnId);
-    setEventRegistration(targetEventId, 'going');
+    actions.setEventRegistration(targetEventId, 'going');
     const receiptId = generateReceiptId();
     setConversation((turns) => turns.map((turn) => (turn.id === turnId ? { ...turn, sent: true, receiptId } : turn)));
   }

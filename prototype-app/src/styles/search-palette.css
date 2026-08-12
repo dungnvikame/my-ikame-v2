@@ -101,13 +101,20 @@
   gap: 8px;
 }
 
-.search-palette-citations button {
+.search-palette-citations button,
+.search-palette-citations a {
   padding: 4px 10px;
   border: 1px solid var(--border-blue);
   border-radius: var(--radius-round);
   background: var(--bg-primary);
   color: var(--fg-blue-strong);
   font-size: var(--body-xs-size);
+  text-decoration: none;
+}
+
+/* /search page reuse of the palette's answer block (Phase 6) — full-width, no drawer margin. */
+.search-page-answer {
+  margin: 0 0 8px;
 }
 
 .search-palette-note {

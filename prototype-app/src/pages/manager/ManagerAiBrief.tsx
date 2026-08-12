@@ -1,7 +1,6 @@
 import { ArrowRight } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { AiBadge } from '../../components/AiBadge';
-import { RBadge } from '../../components/RBadge';
 import type { AttentionItem } from '../../types';
 
 type BriefBullet = { id: string; headline: string; reason: string; href: string };
@@ -43,7 +42,6 @@ export function ManagerAiBrief({ items }: { items: AttentionItem[] }) {
         </div>
         <div className="card-badges">
           <AiBadge level="A2" />
-          <RBadge tag="R4" />
         </div>
       </div>
       {bullets.length === 0 ? (

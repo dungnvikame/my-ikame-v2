@@ -1,1 +1,170 @@
 /* Hồ sơ rebuild (/profile) — Phase 6 owns this file. Classes prefixed `profile-`. */
+
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-section .section-header h2 {
+  margin-top: 0;
+}
+
+/* Section 1 — header */
+.profile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.profile-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profile-header-info h2 {
+  margin-top: 0 !important;
+}
+
+.profile-contact-rows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+/* Section 2 — Tổ chức */
+.profile-org-manager {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.profile-org-label {
+  margin-top: 12px;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.profile-teammate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.profile-teammate-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-teammate-list small,
+.profile-org-manager small {
+  display: block;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+/* Section 3 — Thâm niên & cột mốc */
+.profile-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 4px;
+  padding-left: 4px;
+}
+
+.profile-timeline li {
+  display: flex;
+  gap: 10px;
+}
+
+.profile-timeline-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: var(--radius-round);
+  background: var(--bg-accent-primary);
+}
+
+.profile-timeline small {
+  display: block;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.profile-timeline p {
+  margin-top: 2px;
+}
+
+/* Section 4 — Nghỉ phép & phúc lợi */
+.profile-leave-bar {
+  height: 10px;
+  margin-top: 6px;
+  border-radius: var(--radius-round);
+  background: var(--bg-tertiary);
+  overflow: hidden;
+}
+
+.profile-leave-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-round);
+  background: var(--bg-accent-primary);
+}
+
+.profile-leave-summary {
+  margin-top: 8px;
+  font-size: var(--body-m-size);
+}
+
+/* Section 5 — Thiết bị được cấp */
+.profile-equipment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.profile-equipment-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-secondary);
+}
+
+.profile-equipment-list li:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.profile-equipment-meta {
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+/* Section 6 — Hoạt động gần đây (live) */
+.profile-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.profile-activity-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-accent-secondary);
+}
+
+.profile-activity-list a {
+  color: var(--text-primary);
+  font-size: var(--body-s-size);
+}

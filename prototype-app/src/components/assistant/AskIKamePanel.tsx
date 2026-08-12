@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { X } from '@phosphor-icons/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppState } from '../../AppState';
+import { isEligible } from '../../lib/audience';
 import { IconButton } from '../UI';
-import { RBadge } from '../RBadge';
 import { AskConversationList } from './AskConversationList';
 import { useAskConversation } from './use-ask-conversation';
 import { matchNewsPostId, scriptsForContext, type ScriptCtx } from '../../data/ai-scripts';
@@ -19,7 +19,11 @@ const ASK_TRIGGER_SELECTOR = 'button[aria-label="Hỏi iKame"]';
  * citation/receipt links close-then-navigate.
  */
 export function AskIKamePanel() {
-  const { askOpen, setAskOpen, demoResetCount, perspective, news, events, goals, attention, setEventRegistration } = useAppState();
+  const {
+    askOpen, setAskOpen, demoResetCount, perspective, news, events, goals, attention,
+    posts, birthdays, knowledgeDocs, leaveBalance, user,
+    setEventRegistration, addPost, submitReport,
+  } = useAppState();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const panelRef = useRef<HTMLElement>(null);
@@ -27,7 +31,7 @@ export function AskIKamePanel() {
   const [closeBlockedNotice, setCloseBlockedNotice] = useState(false);
 
   const { conversation, hasPendingDraft, askChip, markRevealed, updateDraft, cancelDraft, sendDraft, confirmExecute } =
-    useAskConversation(demoResetCount, setEventRegistration);
+    useAskConversation(demoResetCount, { setEventRegistration, addPost, submitReport });
 
   useEffect(() => {
     if (askOpen) closeButtonRef.current?.focus();
@@ -44,8 +48,19 @@ export function AskIKamePanel() {
       events,
       pathname,
       currentNewsPost: postId ? news.find((item) => item.id === postId) : undefined,
+      // Phase 6 — AI everywhere: live slices for the new module scripts (F2).
+      posts,
+      birthdays,
+      upcomingEvents: events
+        .filter((item) => isEligible(user, item.audienceTeamIds) && item.status !== 'past' && item.status !== 'cancelled'
+          && item.startsAt && new Date(item.startsAt).getTime() > Date.now())
+        .sort((a, b) => new Date(a.startsAt!).getTime() - new Date(b.startsAt!).getTime()),
+      eligibleDocs: knowledgeDocs.filter((doc) => isEligible(user, doc.audienceTeamIds)),
+      goals,
+      leaveBalance,
+      userName: user.name,
     };
-  }, [attention, events, goals, news, pathname]);
+  }, [attention, birthdays, events, goals, knowledgeDocs, leaveBalance, news, pathname, posts, user]);
 
   const chips = useMemo(() => scriptsForContext(pathname, perspective), [pathname, perspective]);
 
@@ -103,8 +118,8 @@ export function AskIKamePanel() {
       >
         <div className="ask-panel-header">
           <div>
-            <h2>Ask iKame <RBadge tag="R4" /></h2>
-            <p className="ask-panel-disclosure">Bản mô phỏng khái niệm — câu trả lời được dựng sẵn.</p>
+            <h2>Ask iKame</h2>
+            <p className="ask-panel-disclosure">Concept · R4 — iKame trả lời bằng kịch bản dựng sẵn, chưa xử lý văn bản tự do.</p>
           </div>
           <IconButton ref={closeButtonRef} label="Đóng Ask iKame" onClick={attemptClose}><X size={20} /></IconButton>
         </div>

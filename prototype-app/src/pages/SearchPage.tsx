@@ -4,7 +4,9 @@ import type { ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { isEligible } from '../lib/audience';
+import { AiBadge } from '../components/AiBadge';
 import { SectionHeader, StatusPill } from '../components/UI';
+import { findSeedAnswer } from '../data/search-answers';
 import type { EventItem, NewsPost } from '../types';
 
 type TypeFilter = 'all' | 'news' | 'events';
@@ -62,6 +64,7 @@ export function SearchPage() {
 
   const term = applied.length >= 2 ? normalize(applied) : '';
   const pending = trimmedQuery.length >= 2 && trimmedQuery !== applied;
+  const answer = term ? findSeedAnswer(applied) : undefined;
 
   const results = useMemo(() => ({
     news: term
@@ -86,6 +89,22 @@ export function SearchPage() {
         <button className={typeFilter === 'news' ? 'is-active' : ''} onClick={() => setTypeFilter('news')}>Tin tức</button>
         <button className={typeFilter === 'events' ? 'is-active' : ''} onClick={() => setTypeFilter('events')}>Sự kiện</button>
       </div>
+
+      {term && !pending && (
+        answer ? (
+          <div className="search-palette-answer search-page-answer">
+            <AiBadge level={answer.level} />
+            {answer.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+            <div className="search-palette-citations">
+              {answer.citations.map((citation) => (
+                <Link key={citation.href} to={citation.href}>{citation.title}</Link>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="search-palette-note">Trả lời AI tổng hợp sẽ mở rộng thêm chủ đề — hiện hiển thị kết quả tìm kiếm.</p>
+        )
+      )}
 
       {trimmedQuery.length < 2 ? (
         <div className="search-suggestions">
