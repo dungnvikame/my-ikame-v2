@@ -8,13 +8,14 @@ import {
   MagnifyingGlass,
   Moon,
   Newspaper,
+  SidebarSimple,
   Sparkle,
   Target,
   Sun,
   UsersThree,
   X,
 } from '@phosphor-icons/react';
-import { useEffect, useRef, type KeyboardEvent, type PropsWithChildren } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type PropsWithChildren } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { IconButton, StatusPill } from './UI';
@@ -167,6 +168,14 @@ export function AppShell({ children }: PropsWithChildren) {
   const unreadCount = notifications.filter((item) => !item.read).length;
   const notificationTriggerRef = useRef<HTMLButtonElement>(null);
 
+  // Presenter may hide the sidebar for extra canvas mid-demo; survives refresh like theme.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try { return localStorage.getItem('my-ikame-sidebar') === 'collapsed'; } catch { return false; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem('my-ikame-sidebar', sidebarCollapsed ? 'collapsed' : 'open'); } catch { /* private mode */ }
+  }, [sidebarCollapsed]);
+
   // ⌘K / Ctrl+K opens the palette from any route. Deliberately no `/` shortcut — it would
   // hijack the character inside every text input on the page (typing trap).
   useEffect(() => {
@@ -181,7 +190,7 @@ export function AppShell({ children }: PropsWithChildren) {
   }, [setSearchOpen]);
 
   return (
-    <div className="app-shell" data-theme={theme}>
+    <div className={`app-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} data-theme={theme}>
       <a className="skip-link" href="#main-content">Đi tới nội dung chính</a>
       <aside className="sidebar">
         <div className="sidebar-top">
@@ -215,7 +224,16 @@ export function AppShell({ children }: PropsWithChildren) {
 
       <div className="work-area">
         <header className="topbar">
-          <div className="mobile-logo"><Logo /></div>
+          <div className="topbar-left">
+            <IconButton
+              className="sidebar-toggle"
+              label={sidebarCollapsed ? 'Hiện thanh điều hướng' : 'Ẩn thanh điều hướng'}
+              onClick={() => setSidebarCollapsed((prev) => !prev)}
+            >
+              <SidebarSimple size={20} />
+            </IconButton>
+            <div className="mobile-logo"><Logo /></div>
+          </div>
           <button type="button" className="search-trigger" aria-label="Tìm kiếm (⌘K)" onClick={() => setSearchOpen(true)}>
             <MagnifyingGlass size={18} />
             <span>Tìm tin tức, sự kiện...</span>

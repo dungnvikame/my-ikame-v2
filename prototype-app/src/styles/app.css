@@ -251,7 +251,9 @@ p {
   z-index: 15;
   height: 64px;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  /* Equal flanks = search sits at TRUE page center; minmax(0,1fr) kills the auto floor
+     that let the wider actions cluster skew the middle column left. */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 24px;
   padding: 0 32px;
@@ -259,15 +261,20 @@ p {
   background: var(--bg-primary);
 }
 
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+}
+
 .mobile-logo {
   display: none;
 }
 
 .search-trigger {
-  /* Fills the 1fr grid cell and shrinks with it — a fixed vw width overflowed the topbar
-     at mid widths once the actions cluster grew. */
-  width: 100%;
-  max-width: 440px;
+  /* Middle `auto` column — explicit width capped by viewport so flanks stay equal. */
+  width: min(440px, 42vw);
   min-width: 0;
   height: var(--input-height-s);
   display: flex;
@@ -301,7 +308,18 @@ p {
 .topbar-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  justify-self: end;
+}
+
+/* Sidebar collapse (topbar toggle) — desktop only; mobile already uses bottom-nav. */
+.app-shell.sidebar-collapsed .sidebar {
+  display: none;
+}
+
+.app-shell.sidebar-collapsed .work-area {
+  margin-left: 0;
 }
 
 .icon-button {
@@ -1625,6 +1643,13 @@ p {
   .topbar {
     height: 58px;
     padding: 0 16px;
+    /* Mobile: logo + stretching search + actions — no centering flanks. */
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+  }
+
+  .sidebar-toggle {
+    display: none;
   }
 
   .mobile-logo {
@@ -1641,7 +1666,7 @@ p {
   }
 
   .search-trigger {
-    width: auto;
+    width: 100%;
     min-width: 0;
     justify-self: stretch;
   }
