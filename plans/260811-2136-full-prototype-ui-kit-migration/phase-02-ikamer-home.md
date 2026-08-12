@@ -121,18 +121,18 @@ export function useHomeSections(): HomeSections
 
 ## Todo List
 
-- [ ] `useHomeSections.ts` created; ranking + eligibility + slot limits wired
-- [ ] Band mapper implements §13.2 P0/P1/P2/P4/P5
-- [ ] Per-section `loading|ok|error` + `retry()` working, timers cleaned up
-- [ ] Dev-only `?fail=` / `?slow=` fixture flag, inert in prod build
-- [ ] `HomePage.tsx` rewritten: 8 sections in spec order, 12-col grid
-- [ ] Context header fully derived (date, greeting, counts)
-- [ ] Hero: single primary CTA, reason disclosure, hidden when no priority
-- [ ] Active items ≤3 with compact success empty state
-- [ ] Quick actions ≤4, news ≤4, events ≤2
-- [ ] Knowledge/Goals teasers link to Phase-7 pages, badged R2/R3
-- [ ] Skeletons height-matched, no layout shift
-- [ ] Both §14.5 scenarios pass; `typecheck && build` clean
+- [x] `useHomeSections.ts` created; ranking + eligibility + slot limits wired
+- [x] Band mapper implements §13.2 P0/P1/P2/P4/P5
+- [x] Per-section `loading|ok|error` + `retry()` working, timers cleaned up
+- [x] Dev-only `?fail=` / `?slow=` fixture flag, inert in prod build
+- [x] `HomePage.tsx` rewritten: 8 sections in spec order, 12-col grid
+- [x] Context header fully derived (date, greeting, counts)
+- [x] Hero: single primary CTA, reason disclosure, hidden when no priority
+- [x] Active items ≤3 with compact success empty state
+- [x] Quick actions ≤4, news ≤4, events ≤2
+- [x] Knowledge/Goals teasers link to Phase-7 pages, badged R2/R3
+- [x] Skeletons height-matched, no layout shift
+- [x] Both §14.5 scenarios pass; `typecheck && build` clean
 
 ## Success Criteria
 

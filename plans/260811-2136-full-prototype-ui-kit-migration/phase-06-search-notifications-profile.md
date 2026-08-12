@@ -88,17 +88,17 @@ applied + typeFilter  -->  useMemo:
 
 ## Todo List
 
-- [ ] SearchPage rewritten: debounced ≥2-char typeahead, eligibility-filtered
-- [ ] Grouped News/Event results with counts + non-destructive match highlight
-- [ ] Type filter (Tất cả/Tin tức/Sự kiện) working
-- [ ] Idle (recent + suggestions), pending (Skeleton), zero-result states all render
-- [ ] NotificationsPage: 3 tabs with counts, correct `todo` predicate
-- [ ] Day-bucket grouping + `groupKey` sub-grouping
-- [ ] Mark-read on click, mark-all-read + Toast, per-tab empty states
-- [ ] `NotificationList` exported with `compact` mode for the shell drawer
-- [ ] ProfilePage: identity card, dark-mode Switch, disabled sign-out + caption
-- [ ] a11y pass (labels, sr-only unread text)
-- [ ] `npm run typecheck && npm run build` clean
+- [x] SearchPage rewritten: debounced ≥2-char typeahead, eligibility-filtered
+- [x] Grouped News/Event results with counts + non-destructive match highlight
+- [x] Type filter (Tất cả/Tin tức/Sự kiện) working
+- [x] Idle (recent + suggestions), pending (Skeleton), zero-result states all render
+- [x] NotificationsPage: 3 tabs with counts, correct `todo` predicate
+- [x] Day-bucket grouping + `groupKey` sub-grouping
+- [x] Mark-read on click, mark-all-read + Toast, per-tab empty states
+- [x] `NotificationList` exported with `compact` mode for the shell drawer
+- [x] ProfilePage: identity card, dark-mode Switch, disabled sign-out + caption
+- [x] a11y pass (labels, sr-only unread text)
+- [x] `npm run typecheck && npm run build` clean
 
 ## Success Criteria
 

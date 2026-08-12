@@ -93,14 +93,14 @@ Detail pages: single `Card` — "Chi tiết tài liệu chưa khả dụng ở b
 
 ## Todo List
 
-- [ ] Phase 1 landed; stub export names confirmed
-- [ ] `KnowledgePage` — title + intro + R2 `Alert` + preview `Card` + disabled CTA
-- [ ] `KnowledgeDetailPage` — not-available `Card` + back link, no `useParams`
-- [ ] `GoalsPage` — title + intro + R3 `Alert` + four statuses as static text + disabled CTA
-- [ ] `GoalDetailPage` — not-available `Card` + back link
-- [ ] No inputs/lists/forms anywhere in either file (grep: no `<Input`, no `<Select`, no `<form`)
-- [ ] `npm run typecheck && npm run build` clean
-- [ ] All four routes visually checked in light + dark theme
+- [x] Phase 1 landed; stub export names confirmed
+- [x] `KnowledgePage` — title + intro + R2 `Alert` + preview `Card` + disabled CTA
+- [x] `KnowledgeDetailPage` — not-available `Card` + back link, no `useParams`
+- [x] `GoalsPage` — title + intro + R3 `Alert` + four statuses as static text + disabled CTA
+- [x] `GoalDetailPage` — not-available `Card` + back link
+- [x] No inputs/lists/forms anywhere in either file (grep: no `<Input`, no `<Select`, no `<form`)
+- [x] `npm run typecheck && npm run build` clean
+- [x] All four routes visually checked in light + dark theme
 
 ## Success Criteria
 

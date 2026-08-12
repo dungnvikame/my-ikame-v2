@@ -88,3 +88,62 @@ Average: **8.8/10**.
 - Mobile perspective switching requires a future profile/perspective entry point.
 - External stakeholder usability testing has not yet been performed.
 
+---
+
+## Handoff Addendum — Aug 12, 2026
+
+### Complete Route & Screen Implementation
+
+All R0-scoped routes now implemented:
+
+| Route | Screen | Status |
+|---|---|---|
+| `/home` | iKamer Home (priority + active items) | ✓ complete |
+| `/manager/overview` | Manager Overview (attention queue) | ✓ complete |
+| `/manager/team` | My Team (team-scoped ranking) | ✓ complete |
+| `/news` | Newsfeed (list view) | ✓ complete |
+| `/news/:postId` | Article detail + acknowledgement | ✓ complete |
+| `/events` | Events list | ✓ complete |
+| `/events/:eventId` | Event detail + RSVP + .ics export | ✓ complete |
+| `/search` | Global search | ✓ complete |
+| `/notifications` | Notification center (drawer) | ✓ complete |
+| `/profile` | User profile | ✓ complete |
+| `/knowledge` | Knowledge shell (R2 placeholder) | ✓ complete |
+| `/knowledge/:documentId` | Knowledge detail (R2 placeholder) | ✓ complete |
+| `/goals` | Goals shell (R3 placeholder) | ✓ complete |
+| `/goals/:goalId` | Goal detail (R3 placeholder) | ✓ complete |
+| `/forbidden` | Permission error state | ✓ complete |
+
+### UI Kit Migration: Deferred
+
+**Decision:** The planned migration from hand-rolled Core DS 1.1 CSS to `@frontend-team/ui-kit` has been deferred. The package registry (`gitlab.ikameglobal.com`) was unreachable from the development network (VPN/access constraint). All R0 screens have been built using the existing hand-rolled CSS and component patterns:
+
+- `src/styles/core-ds-1.1.css` — token definitions (colors, radius, typography)
+- `app.css` — layout and theme overrides
+- `components/UI.tsx` — button, badge, status pill patterns
+- `components/ContentCards.tsx` — card and content layouts
+
+**Impact:** No breaking changes; no new runtime dependencies added (removed unused `@sparticuz/chromium` dev dependency).
+
+### Known Limitations
+
+**Responsive & Accessibility (Manual QA not performed):**
+- No browser environment in this build context; responsive behavior inferred from code.
+- Keyboard navigation and screen reader testing deferred to FE team QA.
+
+**RSVP Idempotency:**
+- In-memory state only; RSVP changes are single-tab. Refresh resets all state.
+
+**.ics Export:**
+- RFC 5545 character escaping not implemented (mock data only; no real attendee email/names).
+
+**Manager Permission Checks:**
+- Attention/audience guards are demo-fidelity (role-based `PerspectiveGuard`), not enforced by a backend.
+- Data is fully client-resident; no server-side security boundary.
+
+### Dependencies & Setup
+
+- No `.npmrc` configuration needed; all packages sourced from npm registry.
+- Visual check script uses Playwright's bundled browser (no external Chromium dependency).
+- Production integration will require: Keycloak/OIDC UserContext, RTK Query API client, server-authoritative state and idempotency.
+

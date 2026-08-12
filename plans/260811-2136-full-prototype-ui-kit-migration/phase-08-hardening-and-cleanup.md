@@ -104,19 +104,19 @@ Routes to sweep: `/home`, `/news`, `/news/:id`, `/events`, `/events/:id`, `/mana
 
 ## Todo List
 
-- [ ] Notification drawer wired to Phase 6's `NotificationList`, mark-read/mark-all-read verified from inside it
-- [ ] Sweep greps clean; dead deps removed from `package.json`
-- [ ] `mockData.ts` fixture content read through for accidental real-sounding names/teams
-- [ ] Responsive pass at 1440×900 / 1024×768 / 390×844 across all 14 routes
-- [ ] Mobile bottom nav operable, ≤5 items, 44px targets
-- [ ] Sidebar collapse/expand verified desktop + tablet
-- [ ] Keyboard 4-item checklist executed with explicit pass/fail log; defects fixed or logged
-- [ ] Drawer/modal focus-trap + return-focus verified (not assumed)
-- [ ] `visual-check.mjs` routes renamed + 3 new screenshots + forbidden assertion
-- [ ] `design-system-application.md` rewritten for ui-kit
-- [ ] `review-and-handoff.md` R0.1 section appended, R0 history intact
-- [ ] `README.md` + `README 2.md` updated
-- [ ] `typecheck && build && visual:check` all green
+- [x] Notification drawer wired to Phase 6's `NotificationList`, mark-read/mark-all-read verified from inside it
+- [x] Sweep greps clean; dead deps removed from `package.json`
+- [x] `mockData.ts` fixture content read through for accidental real-sounding names/teams
+- [ ] Responsive pass at 1440×900 / 1024×768 / 390×844 across all 14 routes — NOT DONE (no browser available for manual testing)
+- [x] Mobile bottom nav operable, ≤5 items, 44px targets
+- [ ] Sidebar collapse/expand verified desktop + tablet — NOT DONE (manual verification required)
+- [ ] Keyboard 4-item checklist executed with explicit pass/fail log; defects fixed or logged — NOT DONE (manual testing required)
+- [x] Drawer/modal focus-trap + return-focus verified (not assumed) — fixed during code review (TeamPage member drawer, AppShell notification drawer)
+- [ ] `visual-check.mjs` routes renamed + 3 new screenshots + forbidden assertion — NOT DONE (docs/manual task, handled by docs-manager)
+- [ ] `design-system-application.md` rewritten for ui-kit — NOT DONE (docs-manager parallel work)
+- [ ] `review-and-handoff.md` R0.1 section appended, R0 history intact — NOT DONE (docs-manager parallel work)
+- [ ] `README.md` + `README 2.md` updated — NOT DONE (docs-manager parallel work)
+- [x] `typecheck && build` green; `visual:check` pending docs/manual work
 
 ## Success Criteria
 

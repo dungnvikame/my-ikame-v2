@@ -9,6 +9,8 @@ npm install --cache /tmp/myikame-npm-cache
 npm run dev -- --host 127.0.0.1
 ```
 
+No `.npmrc` or registry configuration required — all packages sourced from npm registry.
+
 ## Verify
 
 ```bash
@@ -21,12 +23,17 @@ npm run visual:check
 
 ## Routes
 
-- `/` — iKamer Home
-- `/manager` — Manager Overview
-- `/manager/team` — My Team
-- `/news` and `/news/:postId`
-- `/events` and `/events/:eventId`
-- `/search`
+- `/home` — iKamer Home (priority + active items)
+- `/manager/overview` — Manager Overview (attention queue)
+- `/manager/team` — My Team (team-scoped ranking)
+- `/news`, `/news/:postId` — Newsfeed with mandatory acknowledgement
+- `/events`, `/events/:eventId` — Events with RSVP and .ics export
+- `/knowledge`, `/knowledge/:documentId` — Knowledge shell (R2 placeholder)
+- `/goals`, `/goals/:goalId` — Goals shell (R3 placeholder)
+- `/search` — Global search
+- `/notifications` — Notification center
+- `/profile` — User profile
+- `/forbidden` — Permission error
 
 ## Prototype controls
 

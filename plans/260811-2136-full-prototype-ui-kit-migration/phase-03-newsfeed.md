@@ -114,18 +114,18 @@ if (!isEligible(user, post.audienceTeamIds)) return <Navigate to="/forbidden" re
 
 ## Todo List
 
-- [ ] List: eligibility + expired filtering
-- [ ] `SegmentedControl` tabs + topic `Chip` filters combine correctly
-- [ ] `rankCards` ordering applied (not `publishedAt desc`)
-- [ ] Featured story + grid + `EmptyState` variants
-- [ ] Search trigger → `/search?type=news`
-- [ ] Detail guard order: not-found → forbidden → render
-- [ ] Read marked synchronously on mount, never touches `acknowledged`
-- [ ] Detail section order per §17.4, ack panel sticky on desktop
-- [ ] Confirm `Modal` + `toast` receipt, no un-acknowledge path
-- [ ] Related content by topic
-- [ ] Read/ack badge matrix matches table
-- [ ] `typecheck && build` clean
+- [x] List: eligibility + expired filtering
+- [x] `SegmentedControl` tabs + topic `Chip` filters combine correctly
+- [x] `rankCards` ordering applied (not `publishedAt desc`)
+- [x] Featured story + grid + `EmptyState` variants
+- [x] Search trigger → `/search?type=news`
+- [x] Detail guard order: not-found → forbidden → render
+- [x] Read marked synchronously on mount, never touches `acknowledged`
+- [x] Detail section order per §17.4, ack panel sticky on desktop
+- [x] Confirm `Modal` + `toast` receipt, no un-acknowledge path
+- [x] Related content by topic
+- [x] Read/ack badge matrix matches table
+- [x] `typecheck && build` clean
 
 ## Success Criteria
 

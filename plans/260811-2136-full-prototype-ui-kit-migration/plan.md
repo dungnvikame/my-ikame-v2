@@ -1,7 +1,7 @@
 ---
 title: "My iKame Full R0 Prototype — UI Kit Migration & Feature Completion"
 description: "Rebuild the My iKame R0 prototype on the company @frontend-team/ui-kit design system and expand it to cover every R0-scoped screen from the product spec, mock data only, no backend."
-status: pending
+status: in-progress
 priority: P1
 effort: 30h
 branch: n/a (no git remote configured yet; local repo initialized 2026-08-11 for this plan)
@@ -37,14 +37,14 @@ Resolved during red-team review: this repo now has a local git history (`git ini
 
 | # | Phase | Status | Effort | Link |
 |---|-------|--------|--------|------|
-| 1 | Foundation: UI kit migration, app shell, shared data/ranking contracts | Pending | 6h | [phase-01](./phase-01-foundation-and-ui-kit-migration.md) |
-| 2 | iKamer Home (`/home`) | Pending | 3h | [phase-02](./phase-02-ikamer-home.md) |
-| 3 | Newsfeed (`/news`, `/news/:postId`) | Pending | 4h | [phase-03](./phase-03-newsfeed.md) |
-| 4 | Events (`/events`, `/events/:eventId`) | Pending | 4h | [phase-04](./phase-04-events.md) |
-| 5 | Manager experience (`/manager/overview`, `/manager/team`) | Pending | 4h | [phase-05](./phase-05-manager-experience.md) |
-| 6 | Search, Notification Center, Profile | Pending | 3h | [phase-06](./phase-06-search-notifications-profile.md) |
-| 7 | Knowledge & Goals shells (R2/R3 placeholders) | Pending | 2h | [phase-07](./phase-07-knowledge-goals-shells.md) |
-| 8 | Hardening: responsive/a11y pass, cleanup, docs | Pending | 4h | [phase-08](./phase-08-hardening-and-cleanup.md) |
+| 1 | Foundation: UI kit migration, app shell, shared data/ranking contracts | Done (deferred ui-kit, hand-rolled build) | 6h | [phase-01](./phase-01-foundation-and-ui-kit-migration.md) |
+| 2 | iKamer Home (`/home`) | Done (deferred ui-kit, hand-rolled build) | 3h | [phase-02](./phase-02-ikamer-home.md) |
+| 3 | Newsfeed (`/news`, `/news/:postId`) | Done (deferred ui-kit, hand-rolled build) | 4h | [phase-03](./phase-03-newsfeed.md) |
+| 4 | Events (`/events`, `/events/:eventId`) | Done (deferred ui-kit, hand-rolled build) | 4h | [phase-04](./phase-04-events.md) |
+| 5 | Manager experience (`/manager/overview`, `/manager/team`) | Done (deferred ui-kit, hand-rolled build) | 4h | [phase-05](./phase-05-manager-experience.md) |
+| 6 | Search, Notification Center, Profile | Done (deferred ui-kit, hand-rolled build) | 3h | [phase-06](./phase-06-search-notifications-profile.md) |
+| 7 | Knowledge & Goals shells (R2/R3 placeholders) | Done (deferred ui-kit, hand-rolled build) | 2h | [phase-07](./phase-07-knowledge-goals-shells.md) |
+| 8 | Hardening: responsive/a11y pass, cleanup, docs | Partial (code fixes done, docs/manual-QA pending) | 4h | [phase-08](./phase-08-hardening-and-cleanup.md) |
 
 ## Execution strategy (parallel mode)
 

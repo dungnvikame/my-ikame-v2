@@ -96,19 +96,19 @@ selected = visible.find(m => m.id === selectedId)   // drives Drawer
 
 ## Todo List
 
-- [ ] Phase 1 dependencies verified present
-- [ ] Scope filter (`teamId`) applied before ranking on both pages
-- [ ] `toRankable` mapping + `rankCards` + `slice(0,5)` queue
-- [ ] Overview sections 1–5 in spec order, all counts derived
-- [ ] Team snapshot ≤3 KPIs, each with interpretation + drill-down
-- [ ] Attention empty state
-- [ ] TeamPage consumes shared `TeamMember[]`; local array gone
-- [ ] Search + 3 filter chips (+ Tất cả) with counts
-- [ ] Desktop `DataTable` + mobile compact list
-- [ ] Row-click `Drawer` side panel (no modal), keyboard accessible
-- [ ] No-result `EmptyState` with clear-filter action
-- [ ] Gherkin scenario 1 + 2 both verified
-- [ ] `npm run typecheck && npm run build` clean
+- [x] Phase 1 dependencies verified present
+- [x] Scope filter (`teamId`) applied before ranking on both pages
+- [x] `toRankable` mapping + `rankCards` + `slice(0,5)` queue
+- [x] Overview sections 1–5 in spec order, all counts derived
+- [x] Team snapshot ≤3 KPIs, each with interpretation + drill-down
+- [x] Attention empty state
+- [x] TeamPage consumes shared `TeamMember[]`; local array gone
+- [x] Search + 3 filter chips (+ Tất cả) with counts
+- [x] Desktop `DataTable` + mobile compact list
+- [x] Row-click `Drawer` side panel (no modal), keyboard accessible
+- [x] No-result `EmptyState` with clear-filter action
+- [x] Gherkin scenario 1 + 2 both verified
+- [x] `npm run typecheck && npm run build` clean
 
 ## Success Criteria
 

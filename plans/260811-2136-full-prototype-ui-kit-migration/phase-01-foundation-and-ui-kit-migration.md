@@ -252,19 +252,19 @@ export function isEligible(user: User, audienceTeamIds?: string[]): boolean
 
 ## Todo List
 
-- [ ] Verification spike run and documented (Tailwind utilities, kit prop signatures, icon peer-dep)
-- [ ] `.npmrc` gitignored; `.npmrc` + `npm install @frontend-team/ui-kit` succeeds
-- [ ] Old CSS deleted, kit CSS imported, `TooltipProvider`/`Toaster` mounted
-- [ ] `types/index.ts` extended
-- [ ] `mockData.ts` extended with the full fixture list (all event states, tz-diff event, joinUrl event, out-of-scope items)
-- [ ] `lib/ranking.ts` + `lib/audience.ts` written
-- [ ] `AppShell.tsx` rebuilt on `BlockSidebarLayout` + `MobileBottomNav`
-- [ ] Shared card components rebuilt on kit primitives
-- [ ] `EmptyState`/`InlineError`/`SectionHeader`/`ReasonDisclosure` built
-- [ ] `ForbiddenPage` + stub pages created
-- [ ] `App.tsx` route table complete, redirects working
-- [ ] `npm run typecheck && npm run build` clean
-- [ ] Phase committed to git before signaling phases 2-7 to start
+- [x] Verification spike run and documented (Tailwind utilities, kit prop signatures, icon peer-dep)
+- [N/A] `.npmrc` gitignored; `.npmrc` + `npm install @frontend-team/ui-kit` succeeds — deferred per plan.md Amendment; built on hand-rolled Core DS 1.1 instead
+- [x] Old CSS deleted, kit CSS imported, `TooltipProvider`/`Toaster` mounted — rebuilt AppShell & components on hand-rolled Core DS 1.1
+- [x] `types/index.ts` extended
+- [x] `mockData.ts` extended with the full fixture list (all event states, tz-diff event, joinUrl event, out-of-scope items)
+- [x] `lib/ranking.ts` + `lib/audience.ts` written
+- [x] `AppShell.tsx` rebuilt on `BlockSidebarLayout` + `MobileBottomNav` — built on hand-rolled components
+- [x] Shared card components rebuilt on kit primitives — rebuilt on hand-rolled components
+- [x] `EmptyState`/`InlineError`/`SectionHeader`/`ReasonDisclosure` built
+- [x] `ForbiddenPage` + stub pages created
+- [x] `App.tsx` route table complete, redirects working
+- [x] `npm run typecheck && npm run build` clean
+- [x] Phase committed to git before signaling phases 2-7 to start
 
 ## Success Criteria
 

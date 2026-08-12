@@ -1,5 +1,7 @@
 # Core DS 1.1 Application — My iKame R0
 
+> **Future Migration Note (Aug 2026):** This document describes hand-rolled Core DS 1.1 CSS rules enforced directly in feature code. A future pass may migrate these rules to the `@frontend-team/ui-kit` component library (currently deferred due to network/registry access limitations). Until then, all rules below are manually applied and validated against `src/styles/core-ds-1.1.css`, `app.css`, and component definitions in `components/UI.tsx` and `components/ContentCards.tsx`.
+
 ## Surface types
 
 - Primary: three-tier SaaS experience — fixed navigation, work area, focal content.

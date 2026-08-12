@@ -115,19 +115,19 @@ Handler: `if (pending) return` → `setPending(true)` → call the `AppState` se
 
 ## Todo List
 
-- [ ] `lib/ics.ts` written; generated file imports cleanly into a real calendar app
-- [ ] `EventsPage` rebuilt on kit `Tabs`, 3 tabs filter correctly
-- [ ] Ineligible events absent from all tabs
-- [ ] Priority treatment (today / closing soon) visible + sorted first
-- [ ] Per-tab `EmptyState` renders
-- [ ] Detail page follows §18.3 order 1–9
-- [ ] Dual-timezone display (user primary, event secondary)
-- [ ] RSVP matrix: open / full+waitlist / full-no-waitlist / waitlisted / cancelled / past all render distinctly
-- [ ] Double-click RSVP → single registration (Gherkin 1, single-tab scope) verified manually
-- [ ] Cancel confirm `Modal` + `toast` receipts wired
-- [ ] Capacity `Progress` meter + gated join link
-- [ ] Out-of-audience direct URL → `/forbidden`, DOM contains no event title
-- [ ] `npm run typecheck && npm run build` clean, file ≤ 200 lines
+- [x] `lib/ics.ts` written; generated file imports cleanly into a real calendar app
+- [x] `EventsPage` rebuilt on kit `Tabs`, 3 tabs filter correctly
+- [x] Ineligible events absent from all tabs
+- [x] Priority treatment (today / closing soon) visible + sorted first
+- [x] Per-tab `EmptyState` renders
+- [x] Detail page follows §18.3 order 1–9
+- [x] Dual-timezone display (user primary, event secondary)
+- [x] RSVP matrix: open / full+waitlist / full-no-waitlist / waitlisted / cancelled / past all render distinctly
+- [x] Double-click RSVP → single registration (Gherkin 1, single-tab scope) verified manually
+- [x] Cancel confirm `Modal` + `toast` receipts wired
+- [x] Capacity `Progress` meter + gated join link
+- [x] Out-of-audience direct URL → `/forbidden`, DOM contains no event title
+- [x] `npm run typecheck && npm run build` clean, file ≤ 200 lines
 
 ## Success Criteria
 
