@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { MagnifyingGlass, UserCircle, X } from '@phosphor-icons/react';
 import { teamMembers } from '../data/mockData';
 import { Button, EmptyState, IconButton, SectionHeader, StatusPill } from '../components/UI';
@@ -29,6 +29,8 @@ export function TeamPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const drawerRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Scope boundary: roster never includes members outside this manager's own team.
   const roster = teamMembers.filter((member: TeamMember) => member.teamId === user.teamId);
@@ -52,7 +54,33 @@ export function TeamPage() {
 
   const closePanel = () => {
     setSelectedId(null);
-    triggerRef.current?.focus();
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  };
+
+  useEffect(() => {
+    if (selectedId) closeButtonRef.current?.focus();
+  }, [selectedId]);
+
+  const onDrawerKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closePanel();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+    );
+    if (!focusable?.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   };
 
   const resetFilters = () => {
@@ -125,13 +153,13 @@ export function TeamPage() {
 
       {selected && (
         <div className="drawer-layer" role="presentation" onMouseDown={closePanel}>
-          <aside className="notification-drawer" role="dialog" aria-modal="true" aria-label={`Chi tiết ${selected.name}`} onMouseDown={(event) => event.stopPropagation()}>
+          <aside ref={drawerRef} className="notification-drawer" role="dialog" aria-modal="true" aria-label={`Chi tiết ${selected.name}`} onKeyDown={onDrawerKeyDown} onMouseDown={(event) => event.stopPropagation()}>
             <div className="drawer-header">
               <div>
                 <h2>{selected.name}</h2>
                 <p>{selected.role}</p>
               </div>
-              <IconButton label="Đóng" onClick={closePanel}><X size={20} /></IconButton>
+              <IconButton ref={closeButtonRef} label="Đóng" onClick={closePanel}><X size={20} /></IconButton>
             </div>
             <div className="drawer-toolbar">
               <StatusPill tone={STATUS_TONE[selected.status]}>{STATUS_LABEL[selected.status]}</StatusPill>

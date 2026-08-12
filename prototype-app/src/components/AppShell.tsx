@@ -11,10 +11,11 @@ import {
   UsersThree,
   X,
 } from '@phosphor-icons/react';
-import type { PropsWithChildren } from 'react';
+import { useEffect, useRef, type KeyboardEvent, type PropsWithChildren } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { IconButton, StatusPill } from './UI';
+import { NotificationList } from '../pages/NotificationsPage';
 
 const iKamerNav = [
   { label: 'Trang chủ', to: '/home', icon: House },
@@ -59,52 +60,63 @@ function PerspectiveSwitch() {
   );
 }
 
-function NotificationsDrawer() {
+function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement | null> }) {
   const {
+    notifications,
     notificationOpen,
     setNotificationOpen,
-    notifications,
-    markNotificationRead,
     markAllNotificationsRead,
   } = useAppState();
-  const navigate = useNavigate();
+  const drawerRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const close = () => {
+    setNotificationOpen(false);
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  };
+
+  useEffect(() => {
+    if (notificationOpen) closeButtonRef.current?.focus();
+  }, [notificationOpen]);
 
   if (!notificationOpen) return null;
 
+  const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+    );
+    if (!focusable?.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   return (
-    <div className="drawer-layer" role="presentation" onMouseDown={() => setNotificationOpen(false)}>
-      <aside className="notification-drawer" role="dialog" aria-modal="true" aria-label="Thông báo" onMouseDown={(event) => event.stopPropagation()}>
+    <div className="drawer-layer" role="presentation" onMouseDown={close}>
+      <aside ref={drawerRef} className="notification-drawer" role="dialog" aria-modal="true" aria-label="Thông báo" onKeyDown={onKeyDown} onMouseDown={(event) => event.stopPropagation()}>
         <div className="drawer-header">
           <div>
             <h2>Thông báo</h2>
             <p>Ưu tiên những việc cần bạn hành động.</p>
           </div>
-          <IconButton label="Đóng thông báo" onClick={() => setNotificationOpen(false)}><X size={20} /></IconButton>
+          <IconButton ref={closeButtonRef} label="Đóng thông báo" onClick={close}><X size={20} /></IconButton>
         </div>
         <div className="drawer-toolbar">
           <button className="text-link" onClick={markAllNotificationsRead}>Đánh dấu tất cả đã đọc</button>
-          <NavLink className="text-link" to="/notifications" onClick={() => setNotificationOpen(false)}>Xem tất cả</NavLink>
+          <NavLink className="text-link" to="/notifications" onClick={close}>Xem tất cả</NavLink>
         </div>
-        <div className="notification-list">
-          {notifications.map((item) => (
-            <button
-              key={item.id}
-              className={`notification-item ${item.read ? '' : 'is-unread'}`}
-              onClick={() => {
-                markNotificationRead(item.id);
-                setNotificationOpen(false);
-                navigate(item.href);
-              }}
-            >
-              <span className="notification-dot" aria-label={item.read ? 'Đã đọc' : 'Chưa đọc'} />
-              <span className="notification-copy">
-                <span className="notification-title">{item.title}</span>
-                <span>{item.body}</span>
-                <span className="notification-time">{item.time}</span>
-              </span>
-            </button>
-          ))}
-        </div>
+        <NotificationList items={notifications} compact onItemOpen={close} />
       </aside>
     </div>
   );
@@ -114,6 +126,7 @@ export function AppShell({ children }: PropsWithChildren) {
   const { perspective, user, notifications, theme, setTheme, setNotificationOpen } = useAppState();
   const navItems = perspective === 'manager' ? managerNav : iKamerNav;
   const unreadCount = notifications.filter((item) => !item.read).length;
+  const notificationTriggerRef = useRef<HTMLButtonElement>(null);
 
   return (
     <div className="app-shell" data-theme={theme}>
@@ -153,7 +166,7 @@ export function AppShell({ children }: PropsWithChildren) {
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </IconButton>
             <div className="notification-trigger-wrap">
-              <IconButton label="Mở thông báo" onClick={() => setNotificationOpen(true)}><Bell size={20} /></IconButton>
+              <IconButton ref={notificationTriggerRef} label="Mở thông báo" onClick={() => setNotificationOpen(true)}><Bell size={20} /></IconButton>
               {unreadCount > 0 && <span className="notification-count">{unreadCount}</span>}
             </div>
             <StatusPill tone="neutral">H2 Prototype</StatusPill>
@@ -169,7 +182,7 @@ export function AppShell({ children }: PropsWithChildren) {
           ))}
         </nav>
       </div>
-      <NotificationsDrawer />
+      <NotificationsDrawer triggerRef={notificationTriggerRef} />
     </div>
   );
 }

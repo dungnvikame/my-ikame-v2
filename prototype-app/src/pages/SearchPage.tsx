@@ -60,8 +60,12 @@ export function SearchPage() {
   const pending = trimmedQuery.length >= 2 && trimmedQuery !== applied;
 
   const results = useMemo(() => ({
-    news: term ? news.filter((item) => isEligible(user, item.audienceTeamIds)).filter((item) => matchesNews(item, term)) : [],
-    events: term ? events.filter((item) => isEligible(user, item.audienceTeamIds)).filter((item) => matchesEvent(item, term)) : [],
+    news: term
+      ? news.filter((item) => isEligible(user, item.audienceTeamIds) && !item.expired).filter((item) => matchesNews(item, term))
+      : [],
+    events: term
+      ? events.filter((item) => isEligible(user, item.audienceTeamIds) && item.status !== 'past' && item.status !== 'cancelled').filter((item) => matchesEvent(item, term))
+      : [],
   }), [events, news, term, user]);
 
   const showNews = typeFilter !== 'events';

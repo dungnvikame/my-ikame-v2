@@ -63,7 +63,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         }
         const status = item.status === 'cancelled' || item.status === 'past'
           ? item.status
-          : (remaining ?? 0) <= 0 && next !== 'going' ? 'full' : 'open';
+          : (remaining ?? 0) <= 0 ? 'full' : 'open';
         return { ...item, myRegistration: next, remaining, status };
       }));
     },

@@ -2,7 +2,6 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
-import chromiumBinary from '@sparticuz/chromium';
 import { chromium, expect } from '@playwright/test';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -26,8 +25,6 @@ for (let attempt = 0; attempt < 30; attempt += 1) {
 }
 
 const browser = await chromium.launch({
-  executablePath: await chromiumBinary.executablePath(),
-  args: chromiumBinary.args,
   headless: true,
 });
 
@@ -37,7 +34,7 @@ try {
   await desktop.screenshot({ path: path.join(output, 'ikamer-home-desktop.png'), fullPage: true });
 
   await desktop.getByRole('button', { name: 'Manager' }).click();
-  await desktop.waitForURL('**/manager');
+  await desktop.waitForURL('**/manager/overview');
   await desktop.screenshot({ path: path.join(output, 'manager-overview-desktop.png'), fullPage: true });
 
   await desktop.goto(`${baseUrl}/news/security-update`, { waitUntil: 'networkidle' });

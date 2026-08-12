@@ -40,7 +40,15 @@ function groupByKey(items: NotificationItem[]) {
   return rows;
 }
 
-export function NotificationList({ items, compact = false }: { items: NotificationItem[]; compact?: boolean }) {
+export function NotificationList({
+  items,
+  compact = false,
+  onItemOpen,
+}: {
+  items: NotificationItem[];
+  compact?: boolean;
+  onItemOpen?: () => void;
+}) {
   const { markNotificationRead } = useAppState();
   const navigate = useNavigate();
   const visible = compact ? items.slice(0, 5) : items;
@@ -48,6 +56,7 @@ export function NotificationList({ items, compact = false }: { items: Notificati
 
   const openItem = (item: NotificationItem) => {
     markNotificationRead(item.id);
+    onItemOpen?.();
     navigate(item.href);
   };
 

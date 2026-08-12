@@ -46,8 +46,8 @@ function NewspaperPattern() {
 }
 
 export function EventCard({ event, compact = false }: { event: EventItem; compact?: boolean }) {
-  const tone = event.status === 'going' ? 'success' : event.status === 'full' ? 'warning' : event.status === 'cancelled' ? 'error' : 'neutral';
-  const label = event.status === 'going' ? 'Đã đăng ký' : event.status === 'full' ? 'Hết chỗ' : event.status === 'cancelled' ? 'Đã hủy' : event.remaining ? `Còn ${event.remaining} chỗ` : 'Mở đăng ký';
+  const tone = event.myRegistration === 'going' ? 'success' : event.myRegistration === 'waitlisted' ? 'info' : event.status === 'full' ? 'warning' : event.status === 'cancelled' ? 'error' : 'neutral';
+  const label = event.myRegistration === 'going' ? 'Đã đăng ký' : event.myRegistration === 'waitlisted' ? 'Đang chờ' : event.status === 'full' ? 'Hết chỗ' : event.status === 'cancelled' ? 'Đã hủy' : event.remaining ? `Còn ${event.remaining} chỗ` : 'Mở đăng ký';
 
   return (
     <article className={`content-card event-card ${compact ? 'is-compact' : ''}`}>
