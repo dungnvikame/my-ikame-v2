@@ -1,1 +1,56 @@
 /* Knowledge & Goals concept demo styles — owned by Phase 3 (knowledge-goals-concept-demos). */
+
+.knowledge-card .card-body h3 {
+  min-height: 44px;
+}
+
+.goal-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.goal-card .button {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.goal-progress {
+  height: 8px;
+  margin-top: 14px;
+  border-radius: var(--radius-round);
+  background: var(--bg-tertiary);
+  overflow: hidden;
+}
+
+.goal-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-round);
+  background: var(--fg-blue-strong);
+  transition: width 0.2s ease;
+}
+
+.goal-progress-label {
+  margin-top: 6px;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+  line-height: var(--body-xs-line);
+}
+
+.goal-detail-card {
+  max-width: 480px;
+}
+
+.goal-detail-card h1 {
+  margin-top: 12px;
+  font-size: var(--headline-s-size);
+  line-height: var(--headline-s-line);
+}
+
+.goal-detail-card .button {
+  margin-top: 18px;
+}
+
+@media (max-width: 640px) {
+  .goal-grid {
+    grid-template-columns: 1fr;
+  }
+}
