@@ -15,6 +15,13 @@ export type KnowledgeDoc = {
   updatedAt: string;
   /** undefined/empty = company-wide (same audience contract as NewsPost/EventItem) */
   audienceTeamIds?: string[];
+  /** Demo v2 — Tri thức learning hub. */
+  authorName?: string;
+  authorShort?: string;
+  emoji?: string;
+  readingTime?: string;
+  recommended?: boolean;
+  recentlyViewedLabel?: string;
 };
 
 export type GoalStatus = 'needs_update' | 'on_track' | 'at_risk' | 'done';
@@ -69,6 +76,9 @@ export type NewsPost = {
 
 export type EventRegistration = 'not_registered' | 'going' | 'waitlisted';
 
+/** Demo v2 — Events upgrade (agenda + live timeline). */
+export type EventAgendaItem = { time: string; title: string; speaker?: string };
+
 export type EventItem = {
   id: string;
   title: string;
@@ -88,6 +98,13 @@ export type EventItem = {
   waitlistEnabled?: boolean;
   joinUrl?: string;
   myRegistration: EventRegistration;
+  /** ISO timestamp w/ +07:00 offset — powers live countdown + 6-month timeline (demo v2). */
+  startsAt?: string;
+  agenda?: EventAgendaItem[];
+  participantNames?: string[];
+  closingSoon?: boolean;
+  registrationDeadlineLabel?: string;
+  featured?: boolean;
 };
 
 export type AttentionItem = {
@@ -128,3 +145,73 @@ export type NotificationItem = {
   href: string;
   groupKey?: string;
 };
+
+/** Shared AI citation shape — reused by the search-answer store. ai-scripts.ts keeps its
+ * own structurally identical local `Citation` (Phase 6 may re-point it, 1-line, safe). */
+export type Citation = { title: string; source: string; href: string };
+
+/** Cộng đồng (Demo v2 social module). */
+export type ReactionKind = 'heart' | 'clap';
+export type PostCover = { pattern: 'aurora' | 'grid' | 'wave' | 'confetti'; emoji: string; caption?: string };
+export type Comment = { id: string; authorName: string; authorShort: string; role?: string; text: string; time: string };
+export type Post = {
+  id: string;
+  authorName: string;
+  authorShort: string;
+  role: string;
+  time: string;
+  body: string;
+  topic?: string;
+  cover?: PostCover;
+  official?: boolean;
+  pinned?: boolean;
+  pinnedUntilLabel?: string;
+  mentionsMe?: boolean;
+  saved?: boolean;
+  reactions: Record<ReactionKind, number>;
+  myReactions: ReactionKind[];
+  comments: Comment[];
+  /** undefined/empty = company-wide (same audience contract as NewsPost/EventItem) */
+  audienceTeamIds?: string[];
+};
+
+/** Right rail + profile. */
+export type BirthdayPerson = { id: string; name: string; shortName: string; role: string; team: string; dateLabel: string; postId: string; congratulated: boolean };
+export type Milestone = { id: string; name: string; shortName: string; years: number; dateLabel: string; note: string };
+export type TopFan = { id: string; name: string; shortName: string; points: number; note: string };
+export type DailyCheckIn = { done: boolean; mode?: 'WFO' | 'Remote'; timeLabel?: string };
+export type LeaveBalance = { annualTotal: number; annualUsed: number; annualRemaining: number; carriedOver: number; sickUsed: number; insuranceLabel: string; healthCheckLabel: string };
+export type Equipment = { id: string; name: string; model: string; serial: string; assignedAt: string; condition: string };
+export type SeniorityEntry = { id: string; dateLabel: string; title: string; note: string };
+
+/** Mục tiêu — iGoal-style OKR tree. */
+export type OkrLevel = 'company' | 'team' | 'personal';
+export type KeyResult = { id: string; title: string; progress: number; unitLabel: string; status: GoalStatus };
+export type Objective = {
+  id: string;
+  title: string;
+  level: OkrLevel;
+  parentId?: string;
+  ownerName: string;
+  ownerShort: string;
+  progress: number;
+  cycle: string;
+  keyResults: KeyResult[];
+  linkedGoalId?: string;
+};
+export type CheckInReport = {
+  id: string;
+  goalId: string;
+  goalTitle: string;
+  authorName: string;
+  periodLabel: string;
+  progressBefore: number;
+  progressAfter: number;
+  content: string;
+  blockers?: string;
+  submittedAt: string;
+  source: 'manual' | 'ai';
+};
+
+/** Search AI answers — empty store filled by Phase 6; palette itself never changes. */
+export type SearchSeedAnswer = { id: string; keywords: string[]; question: string; level: AiLevel; paragraphs: string[]; citations: Citation[] };

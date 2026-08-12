@@ -2,6 +2,7 @@ import {
   Bell,
   BookBookmark,
   CalendarDots,
+  ChatsCircle,
   Compass,
   House,
   MagnifyingGlass,
@@ -19,19 +20,53 @@ import { useAppState } from '../AppState';
 import { IconButton, StatusPill } from './UI';
 import { NotificationList } from '../pages/NotificationsPage';
 import { AskIKamePanel } from './assistant/AskIKamePanel';
+import { SearchPalette } from './search/SearchPalette';
 
-const iKamerNav = [
+type NavEntry = { label: string; to: string; icon: typeof House };
+type NavGroup = { label: string; items: NavEntry[] };
+
+const iKamerNavGroups: NavGroup[] = [
+  { label: 'KHÔNG GIAN CỦA BẠN', items: [
+    { label: 'Trang chủ', to: '/home', icon: House },
+    { label: 'Cộng đồng', to: '/community', icon: ChatsCircle },
+    { label: 'Tin tức', to: '/news', icon: Newspaper },
+    { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+  ] },
+  { label: 'PHÁT TRIỂN', items: [
+    { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
+    { label: 'Mục tiêu', to: '/goals', icon: Target },
+  ] },
+];
+
+// Manager's home is "Tổng quan" in the QUẢN LÝ group — group 1 omits Trang chủ.
+const managerNavGroups: NavGroup[] = [
+  { label: 'KHÔNG GIAN CỦA BẠN', items: [
+    { label: 'Cộng đồng', to: '/community', icon: ChatsCircle },
+    { label: 'Tin tức', to: '/news', icon: Newspaper },
+    { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+  ] },
+  { label: 'PHÁT TRIỂN', items: [
+    { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
+    { label: 'Mục tiêu', to: '/goals', icon: Target },
+  ] },
+  { label: 'QUẢN LÝ', items: [
+    { label: 'Tổng quan', to: '/manager/overview', icon: House },
+    { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
+  ] },
+];
+
+// Fixed 5 — NOT navGroups.flat().slice(0,5); mobile bottom-nav has its own curated set.
+const iKamerBottomNav: NavEntry[] = [
   { label: 'Trang chủ', to: '/home', icon: House },
-  { label: 'Tin tức', to: '/news', icon: Newspaper },
+  { label: 'Cộng đồng', to: '/community', icon: ChatsCircle },
   { label: 'Sự kiện', to: '/events', icon: CalendarDots },
   { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
   { label: 'Mục tiêu', to: '/goals', icon: Target },
 ];
 
-const managerNav = [
+const managerBottomNav: NavEntry[] = [
   { label: 'Tổng quan', to: '/manager/overview', icon: House },
-  { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
-  { label: 'Tin tức', to: '/news', icon: Newspaper },
+  { label: 'Cộng đồng', to: '/community', icon: ChatsCircle },
   { label: 'Sự kiện', to: '/events', icon: CalendarDots },
   { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
   { label: 'Mục tiêu', to: '/goals', icon: Target },
@@ -126,10 +161,24 @@ function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLB
 }
 
 export function AppShell({ children }: PropsWithChildren) {
-  const { perspective, user, notifications, theme, setTheme, setNotificationOpen, setAskOpen } = useAppState();
-  const navItems = perspective === 'manager' ? managerNav : iKamerNav;
+  const { perspective, user, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
+  const navGroups = perspective === 'manager' ? managerNavGroups : iKamerNavGroups;
+  const bottomNav = perspective === 'manager' ? managerBottomNav : iKamerBottomNav;
   const unreadCount = notifications.filter((item) => !item.read).length;
   const notificationTriggerRef = useRef<HTMLButtonElement>(null);
+
+  // ⌘K / Ctrl+K opens the palette from any route. Deliberately no `/` shortcut — it would
+  // hijack the character inside every text input on the page (typing trap).
+  useEffect(() => {
+    function onKeyDown(event: globalThis.KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [setSearchOpen]);
 
   return (
     <div className="app-shell" data-theme={theme}>
@@ -138,12 +187,16 @@ export function AppShell({ children }: PropsWithChildren) {
         <div className="sidebar-top">
           <Logo />
           <nav className="primary-nav" aria-label="Điều hướng chính">
-            <p className="nav-label">KHÔNG GIAN CỦA BẠN</p>
-            {navItems.map(({ label, to, icon: Icon }) => (
-              <NavLink key={to} to={to} end className={({ isActive }) => `nav-item ${isActive ? 'is-active' : ''}`}>
-                <Icon size={18} />
-                <span>{label}</span>
-              </NavLink>
+            {navGroups.map((group) => (
+              <div key={group.label} className="nav-group">
+                <p className="nav-label">{group.label}</p>
+                {group.items.map(({ label, to, icon: Icon }) => (
+                  <NavLink key={to} to={to} end className={({ isActive }) => `nav-item ${isActive ? 'is-active' : ''}`}>
+                    <Icon size={18} />
+                    <span>{label}</span>
+                  </NavLink>
+                ))}
+              </div>
             ))}
           </nav>
         </div>
@@ -163,11 +216,11 @@ export function AppShell({ children }: PropsWithChildren) {
       <div className="work-area">
         <header className="topbar">
           <div className="mobile-logo"><Logo /></div>
-          <NavLink className="search-trigger" to="/search">
+          <button type="button" className="search-trigger" aria-label="Tìm kiếm (⌘K)" onClick={() => setSearchOpen(true)}>
             <MagnifyingGlass size={18} />
             <span>Tìm tin tức, sự kiện...</span>
             <kbd>⌘ K</kbd>
-          </NavLink>
+          </button>
           <div className="topbar-actions">
             <IconButton label="Hỏi iKame" onClick={() => setAskOpen(true)}>
               <Sparkle size={20} />
@@ -184,7 +237,7 @@ export function AppShell({ children }: PropsWithChildren) {
         </header>
         <main id="main-content" className="main-content">{children}</main>
         <nav className="bottom-nav" aria-label="Điều hướng mobile">
-          {navItems.slice(0, 5).map(({ label, to, icon: Icon }) => (
+          {bottomNav.map(({ label, to, icon: Icon }) => (
             <NavLink key={to} to={to} end className={({ isActive }) => isActive ? 'is-active' : ''}>
               <Icon size={20} />
               <span>{label}</span>
@@ -193,6 +246,7 @@ export function AppShell({ children }: PropsWithChildren) {
         </nav>
       </div>
       <NotificationsDrawer triggerRef={notificationTriggerRef} />
+      <SearchPalette />
       <AskIKamePanel />
     </div>
   );

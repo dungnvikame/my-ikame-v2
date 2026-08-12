@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppStateProvider, useAppState } from './AppState';
 import { AppShell } from './components/AppShell';
+import { CommunityPage } from './pages/CommunityPage';
 import { EventDetailPage, EventsPage } from './pages/EventPages';
 import { ForbiddenPage } from './pages/ForbiddenPage';
 import { GoalDetailPage, GoalsPage } from './pages/GoalPages';
@@ -27,6 +28,8 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<PerspectiveGuard expected="ikamer"><HomePage /></PerspectiveGuard>} />
+        {/* Accessible in both perspectives — no PerspectiveGuard by design. */}
+        <Route path="/community" element={<CommunityPage />} />
         <Route path="/manager" element={<Navigate to="/manager/overview" replace />} />
         <Route path="/manager/overview" element={<PerspectiveGuard expected="manager"><ManagerPage /></PerspectiveGuard>} />
         <Route path="/manager/team" element={<PerspectiveGuard expected="manager"><TeamPage /></PerspectiveGuard>} />

@@ -7,6 +7,11 @@ import './styles/assistant.css';
 import './styles/vision.css';
 import './styles/knowledge-goals.css';
 import './styles/manager-vision.css';
+import './styles/search-palette.css';
+import './styles/community.css';
+import './styles/events-v2.css';
+import './styles/goals-v2.css';
+import './styles/profile-v2.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><App /></React.StrictMode>,

@@ -1,7 +1,7 @@
 import { CalendarDots, MagnifyingGlass, Newspaper } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { isEligible } from '../lib/audience';
 import { SectionHeader, StatusPill } from '../components/UI';
@@ -39,8 +39,12 @@ function highlight(text: string, term: string): ReactNode {
 
 export function SearchPage() {
   const { user, news, events } = useAppState();
-  const [query, setQuery] = useState('');
-  const [applied, setApplied] = useState('');
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get('q') ?? '';
+  const [query, setQuery] = useState(initialQuery);
+  // Palette Enter navigates here with `?q=` already answered — seed `applied` too so
+  // results render immediately instead of waiting out the 250ms debounce.
+  const [applied, setApplied] = useState(initialQuery.trim());
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [recent, setRecent] = useState<string[]>([]);
 

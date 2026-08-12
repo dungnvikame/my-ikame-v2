@@ -2,15 +2,29 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 import {
   attentionItems,
+  equipment,
+  initialBirthdays,
+  initialCheckInReports,
+  initialDailyCheckIn,
   initialEvents,
   initialGoals,
+  initialMilestones,
   initialNews,
   initialNotifications,
+  initialPosts,
+  initialTopFans,
   knowledgeDocs,
+  leaveBalance,
+  okrTree,
+  seniorityEntries,
   users,
 } from './data/mockData';
 import type {
   AttentionItem,
+  BirthdayPerson,
+  CheckInReport,
+  Comment,
+  DailyCheckIn,
   EventRegistration,
   EventItem,
   Goal,
@@ -18,6 +32,8 @@ import type {
   NewsPost,
   NotificationItem,
   Perspective,
+  Post,
+  ReactionKind,
   User,
 } from './types';
 
@@ -45,6 +61,22 @@ function writeStored(key: string, value: string) {
   }
 }
 
+function generateId(prefix: string) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function nowTimeLabel() {
+  return new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+}
+
+/** Shared by `addComment` and `congratulate` (DRY) — appends a comment to one post. */
+function appendComment(posts: Post[], postId: string, comment: Comment): Post[] {
+  return posts.map((post) => (post.id === postId ? { ...post, comments: [...post.comments, comment] } : post));
+}
+
+type NewPostInput = { body: string; cover?: Post['cover']; official?: boolean };
+type SubmitReportInput = Omit<CheckInReport, 'id' | 'submittedAt'>;
+
 type AppStateValue = {
   perspective: Perspective;
   user: User;
@@ -59,6 +91,21 @@ type AppStateValue = {
   askOpen: boolean;
   /** Increments on resetDemo() — the Ask panel keys its conversation-clearing effect off this. */
   demoResetCount: number;
+  // Demo v2 — Cộng đồng feed.
+  posts: Post[];
+  birthdays: BirthdayPerson[];
+  dailyCheckIn: DailyCheckIn;
+  // Demo v2 — Mục tiêu check-in reports.
+  checkInReports: CheckInReport[];
+  // Demo v2 — ⌘K palette open state.
+  searchOpen: boolean;
+  // Demo v2 — read-only pass-through fixtures (no mutator; nothing writes to these — YAGNI).
+  milestones: typeof initialMilestones;
+  topFans: typeof initialTopFans;
+  leaveBalance: typeof leaveBalance;
+  equipment: typeof equipment;
+  seniorityEntries: typeof seniorityEntries;
+  okrTree: typeof okrTree;
   setPerspective: (perspective: Perspective) => void;
   setTheme: (theme: Theme) => void;
   setNotificationOpen: (open: boolean) => void;
@@ -70,6 +117,14 @@ type AppStateValue = {
   markAllNotificationsRead: () => void;
   resolveAttentionItem: (id: string) => void;
   checkInGoal: (id: string) => void;
+  addPost: (input: NewPostInput) => void;
+  toggleReaction: (postId: string, kind: ReactionKind) => void;
+  addComment: (postId: string, text: string) => void;
+  toggleSavePost: (postId: string) => void;
+  congratulate: (birthdayId: string) => void;
+  submitDailyCheckIn: (mode: 'WFO' | 'Remote') => void;
+  submitReport: (input: SubmitReportInput) => void;
+  setSearchOpen: (open: boolean) => void;
   resetDemo: () => void;
 };
 
@@ -88,6 +143,11 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
   const [demoResetCount, setDemoResetCount] = useState(0);
+  const [posts, setPosts] = useState(initialPosts);
+  const [birthdays, setBirthdays] = useState(initialBirthdays);
+  const [dailyCheckIn, setDailyCheckIn] = useState(initialDailyCheckIn);
+  const [checkInReports, setCheckInReports] = useState(initialCheckInReports);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => { writeStored(THEME_STORAGE_KEY, theme); }, [theme]);
   useEffect(() => { writeStored(PERSPECTIVE_STORAGE_KEY, perspective); }, [perspective]);
@@ -107,6 +167,17 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     notificationOpen,
     askOpen,
     demoResetCount,
+    posts,
+    birthdays,
+    dailyCheckIn,
+    checkInReports,
+    searchOpen,
+    milestones: initialMilestones,
+    topFans: initialTopFans,
+    leaveBalance,
+    equipment,
+    seniorityEntries,
+    okrTree,
     setPerspective,
     setTheme,
     setNotificationOpen,
@@ -148,6 +219,69 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         ? { ...item, lastCheckIn: 'Vừa xong', status: 'on_track' }
         : item));
     },
+    addPost: ({ body, cover, official }) => {
+      setPosts((items) => [{
+        id: generateId('post'),
+        authorName: user.name,
+        authorShort: user.shortName,
+        role: user.role,
+        time: 'Vừa xong',
+        body,
+        cover,
+        official,
+        reactions: { heart: 0, clap: 0 },
+        myReactions: [],
+        comments: [],
+      }, ...items]);
+    },
+    toggleReaction: (postId, kind) => {
+      setPosts((items) => items.map((item) => {
+        if (item.id !== postId) return item;
+        const has = item.myReactions.includes(kind);
+        return {
+          ...item,
+          reactions: { ...item.reactions, [kind]: item.reactions[kind] + (has ? -1 : 1) },
+          myReactions: has ? item.myReactions.filter((entry) => entry !== kind) : [...item.myReactions, kind],
+        };
+      }));
+    },
+    addComment: (postId, text) => {
+      setPosts((items) => appendComment(items, postId, {
+        id: generateId('comment'),
+        authorName: user.name,
+        authorShort: user.shortName,
+        role: user.role,
+        text,
+        time: 'Vừa xong',
+      }));
+    },
+    toggleSavePost: (postId) => {
+      setPosts((items) => items.map((item) => item.id === postId ? { ...item, saved: !item.saved } : item));
+    },
+    congratulate: (birthdayId) => {
+      const person = birthdays.find((item) => item.id === birthdayId);
+      setBirthdays((items) => items.map((item) => item.id === birthdayId ? { ...item, congratulated: true } : item));
+      if (person) {
+        setPosts((items) => appendComment(items, person.postId, {
+          id: generateId('comment-congrats'),
+          authorName: user.name,
+          authorShort: user.shortName,
+          role: user.role,
+          text: `Chúc mừng sinh nhật ${person.name}! 🎉`,
+          time: 'Vừa xong',
+        }));
+      }
+    },
+    submitDailyCheckIn: (mode) => {
+      setDailyCheckIn({ done: true, mode, timeLabel: nowTimeLabel() });
+    },
+    submitReport: (input) => {
+      setCheckInReports((items) => [{ ...input, id: generateId('report'), submittedAt: 'Vừa xong' }, ...items]);
+      setGoals((items) => items.map((item) => item.id === input.goalId
+        ? { ...item, status: 'on_track', lastCheckIn: 'Vừa xong', progress: input.progressAfter }
+        : item));
+    },
+    setSearchOpen,
     // Restores every mutable slice so the presenter can re-run the golden path.
     // Deliberately does NOT reset theme/perspective (RED TEAM F13).
     resetDemo: () => {
@@ -158,9 +292,15 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       setGoals(initialGoals);
       setNotificationOpen(false);
       setAskOpen(false);
+      setPosts(initialPosts);
+      setBirthdays(initialBirthdays);
+      setDailyCheckIn(initialDailyCheckIn);
+      setCheckInReports(initialCheckInReports);
+      setSearchOpen(false);
       setDemoResetCount((count) => count + 1);
     },
-  }), [askOpen, attention, demoResetCount, events, goals, news, notificationOpen, notifications, perspective, theme, user]);
+  }), [askOpen, attention, birthdays, checkInReports, dailyCheckIn, demoResetCount, events, goals, news,
+    notificationOpen, notifications, perspective, posts, searchOpen, theme, user]);
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;
 }
