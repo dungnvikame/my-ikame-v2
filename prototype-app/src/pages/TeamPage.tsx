@@ -143,9 +143,15 @@ export function TeamPage() {
               }}
             >
               <div className="person-cell"><span className="avatar"><UserCircle size={22} /></span><span><strong>{member.name}</strong><small>{member.role}</small></span></div>
-              <StatusPill tone={STATUS_TONE[member.status]}>{STATUS_LABEL[member.status]}</StatusPill>
-              <span className="muted-text">{member.lastUpdated}</span>
-              <span className="text-link" aria-hidden="true">Xem</span>
+              {/* display:contents on desktop keeps these as the grid's 3 trailing columns;
+                  the ≤620px override turns this into a real flex row instead of relying on
+                  the table's horizontal-scroll fallback, which had no scroll affordance and
+                  read as a cut-off "Trạng thái" header on a phone screen. */}
+              <div className="people-row-meta">
+                <StatusPill tone={STATUS_TONE[member.status]}>{STATUS_LABEL[member.status]}</StatusPill>
+                <span className="muted-text">{member.lastUpdated}</span>
+                <span className="text-link" aria-hidden="true">Xem</span>
+              </div>
             </article>
           ))}
         </section>

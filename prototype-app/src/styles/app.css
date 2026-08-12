@@ -1399,6 +1399,10 @@ p {
   border-bottom: 0;
 }
 
+.people-row-meta {
+  display: contents;
+}
+
 .person-cell {
   display: flex;
   align-items: center;
@@ -1841,6 +1845,34 @@ p {
   .filter-row {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  /* Stack the roster row into a name line + a meta line instead of the 4-column grid
+     (760px min-width) that only fit via horizontal scroll with no visible affordance. */
+  .people-table {
+    overflow-x: visible;
+  }
+
+  .people-table-header {
+    display: none;
+  }
+
+  .people-row {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    row-gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .people-row-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .people-row-meta .text-link {
+    display: none;
   }
 
   .neutral-tabs {
