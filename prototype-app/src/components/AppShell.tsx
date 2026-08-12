@@ -2,10 +2,12 @@ import {
   Bell,
   BookBookmark,
   CalendarDots,
+  Compass,
   House,
   MagnifyingGlass,
   Moon,
   Newspaper,
+  Sparkle,
   Target,
   Sun,
   UsersThree,
@@ -16,6 +18,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { IconButton, StatusPill } from './UI';
 import { NotificationList } from '../pages/NotificationsPage';
+import { AskIKamePanel } from './assistant/AskIKamePanel';
 
 const iKamerNav = [
   { label: 'Trang chủ', to: '/home', icon: House },
@@ -123,7 +126,7 @@ function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLB
 }
 
 export function AppShell({ children }: PropsWithChildren) {
-  const { perspective, user, notifications, theme, setTheme, setNotificationOpen } = useAppState();
+  const { perspective, user, notifications, theme, setTheme, setNotificationOpen, setAskOpen } = useAppState();
   const navItems = perspective === 'manager' ? managerNav : iKamerNav;
   const unreadCount = notifications.filter((item) => !item.read).length;
   const notificationTriggerRef = useRef<HTMLButtonElement>(null);
@@ -145,6 +148,10 @@ export function AppShell({ children }: PropsWithChildren) {
           </nav>
         </div>
         <div className="sidebar-account">
+          <NavLink to="/vision" className="sidebar-vision-link">
+            <Compass size={18} />
+            <span>Tầm nhìn</span>
+          </NavLink>
           <PerspectiveSwitch />
           <NavLink to="/profile" className="account-row">
             <span className="avatar" aria-hidden="true">{user.shortName.slice(0, 1)}</span>
@@ -162,6 +169,9 @@ export function AppShell({ children }: PropsWithChildren) {
             <kbd>⌘ K</kbd>
           </NavLink>
           <div className="topbar-actions">
+            <IconButton label="Hỏi iKame" onClick={() => setAskOpen(true)}>
+              <Sparkle size={20} />
+            </IconButton>
             <IconButton label={theme === 'light' ? 'Bật giao diện tối' : 'Bật giao diện sáng'} onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </IconButton>
@@ -183,6 +193,7 @@ export function AppShell({ children }: PropsWithChildren) {
         </nav>
       </div>
       <NotificationsDrawer triggerRef={notificationTriggerRef} />
+      <AskIKamePanel />
     </div>
   );
 }

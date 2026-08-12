@@ -1,4 +1,4 @@
-import type { AttentionItem, EventItem, NewsPost, NotificationItem, TeamMember, User } from '../types';
+import type { AttentionItem, EventItem, Goal, KnowledgeDoc, NewsPost, NotificationItem, TeamMember, User } from '../types';
 
 export const TEAM_PRODUCT = 'team_product';
 export const TEAM_FINANCE = 'team_finance';
@@ -163,6 +163,9 @@ export const initialEvents: EventItem[] = [
     remaining: 40,
     myRegistration: 'going',
   },
+  // DÀNH RIÊNG cho kịch bản A4 của Ask iKame — beat "RSVP hàng thật" trong demo
+  // dùng `global-webinar-us` (đăng ký) + `design-sprint-full` (waitlist).
+  // KHÔNG demo RSVP tay trên event này trước beat A4 (idempotent fizzle — RED TEAM F3).
   {
     id: 'ai-product-workshop',
     title: 'Workshop: Product Builder with AI Agents',
@@ -397,5 +400,121 @@ export const initialNotifications: NotificationItem[] = [
     read: true,
     href: '/news/office-update',
     groupKey: 'news-digest',
+  },
+];
+
+// Knowledge (R2 concept demo) — nội dung hư cấu, nguồn iWiki giả lập.
+// `finance-budget-guideline` audience-scoped TEAM_FINANCE: chứng minh permission filter
+// trong Knowledge search VÀ beat A2 "Không đủ dữ liệu" của Ask iKame.
+export const knowledgeDocs: KnowledgeDoc[] = [
+  {
+    id: 'security-policy-guide',
+    title: 'Chính sách bảo mật tài khoản nội bộ (bản đầy đủ)',
+    summary: 'Quy định mật khẩu, thiết bị, quyền truy cập và quy trình báo cáo sự cố.',
+    body: [
+      'Mật khẩu tối thiểu 12 ký tự, bật xác thực hai lớp trên mọi công cụ nội bộ.',
+      'Thiết bị cá nhân truy cập dữ liệu nội bộ phải đăng ký với IT và bật mã hoá ổ đĩa.',
+      'Phát hiện đăng nhập bất thường: đổi mật khẩu ngay và báo IT qua kênh #security-support.',
+    ],
+    source: 'iWiki',
+    topic: 'Chính sách',
+    updatedAt: 'Cập nhật 05/08/2026',
+  },
+  {
+    id: 'onboarding-guide',
+    title: 'Hướng dẫn onboarding thành viên mới',
+    summary: 'Checklist 2 tuần đầu: tài khoản, buddy, đào tạo bắt buộc và mục tiêu thử việc.',
+    body: [
+      'Tuần 1: nhận tài khoản, gặp buddy, hoàn tất đào tạo an toàn thông tin.',
+      'Tuần 2: thống nhất mục tiêu thử việc với quản lý trực tiếp và ghi vào iGoal.',
+      'Quản lý trực tiếp xác nhận hoàn thành checklist trên HRIS trước ngày 14.',
+    ],
+    source: 'iWiki',
+    topic: 'Nhân sự',
+    updatedAt: 'Cập nhật 01/08/2026',
+  },
+  {
+    id: 'meeting-room-booking',
+    title: 'Quy trình đặt phòng họp và không gian chung',
+    summary: 'Cách đặt phòng, quy tắc ưu tiên và xử lý trùng lịch tại văn phòng tầng 4-6.',
+    body: [
+      'Đặt phòng qua công cụ Office Booking; giữ chỗ tối đa 2 giờ cho nhóm dưới 8 người.',
+      'Phòng Town Hall tầng 6 cần phê duyệt của Office Operations trước 48 giờ.',
+      'Huỷ phòng ít nhất 30 phút trước giờ họp để hệ thống giải phóng chỗ.',
+    ],
+    source: 'iWiki',
+    topic: 'Văn phòng',
+    updatedAt: 'Cập nhật 28/07/2026',
+  },
+  {
+    id: 'okr-template',
+    title: 'Template OKR và hướng dẫn check-in chu kỳ quý',
+    summary: 'Cấu trúc Objective/Key Result chuẩn iKame và nhịp check-in 2 tuần/lần.',
+    body: [
+      'Mỗi Objective tối đa 4 Key Result, có chủ sở hữu và số đo rõ ràng.',
+      'Check-in 2 tuần/lần trên iGoal: cập nhật tiến độ, trạng thái và rủi ro.',
+      'Cuối quý: chấm điểm 0.0-1.0, mục tiêu đạt 0.7 được coi là tham vọng hợp lý.',
+    ],
+    source: 'iWiki',
+    topic: 'Mục tiêu',
+    updatedAt: 'Cập nhật 30/07/2026',
+  },
+  {
+    id: 'finance-budget-guideline',
+    title: 'Hướng dẫn lập ngân sách quý — team Finance',
+    summary: 'Quy trình lập, phê duyệt và điều chỉnh ngân sách quý (chỉ dành cho Finance).',
+    body: [
+      'Tài liệu giới hạn cho team Finance: định mức chi tiêu, ngưỡng phê duyệt theo cấp.',
+      'Đề xuất điều chỉnh ngân sách gửi trước ngày 15 của tháng cuối quý.',
+    ],
+    source: 'iWiki',
+    topic: 'Vận hành',
+    updatedAt: 'Cập nhật 03/08/2026',
+    audienceTeamIds: [TEAM_FINANCE],
+  },
+];
+
+// Goals (R3 concept demo) — 4 goal phủ đủ 4 trạng thái, owner = An.
+// `goal-design-refresh` (needs_update, nextDue gần kề) là goal demo check-in flip.
+export const initialGoals: Goal[] = [
+  {
+    id: 'goal-design-refresh',
+    title: 'Hoàn thiện design system Core DS 1.1 cho 5 module chính',
+    status: 'needs_update',
+    progress: 55,
+    cycle: 'Q3-2026',
+    lastCheckIn: '2 tuần trước',
+    nextDue: 'Hạn check-in: hôm nay',
+    owner: 'Nguyễn Hoàng An',
+  },
+  {
+    id: 'goal-onboarding-journey',
+    title: 'Tái thiết kế hành trình onboarding nhân viên mới',
+    status: 'on_track',
+    progress: 70,
+    cycle: 'Q3-2026',
+    lastCheckIn: '3 ngày trước',
+    nextDue: 'Check-in tiếp: 22/08',
+    owner: 'Nguyễn Hoàng An',
+  },
+  {
+    id: 'goal-research-repo',
+    title: 'Xây kho research insight dùng chung cho khối Product',
+    status: 'at_risk',
+    progress: 30,
+    cycle: 'Q3-2026',
+    lastCheckIn: '5 ngày trước',
+    nextDue: 'Check-in tiếp: 18/08',
+    owner: 'Nguyễn Hoàng An',
+  },
+  {
+    id: 'goal-a11y-audit',
+    title: 'Audit accessibility toàn bộ màn hình iKamer Home',
+    status: 'done',
+    progress: 100,
+    cycle: 'Q3-2026',
+    lastCheckIn: '1 tuần trước',
+    nextDue: 'Đã hoàn thành',
+    owner: 'Nguyễn Hoàng An',
   },
 ];

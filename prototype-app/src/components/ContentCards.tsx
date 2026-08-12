@@ -68,7 +68,12 @@ export function EventCard({ event, compact = false }: { event: EventItem; compac
   );
 }
 
-export function AttentionCard({ item, primary = false }: { item: AttentionItem; primary?: boolean }) {
+export function AttentionCard({ item, primary = false, onAction, onResolve }: {
+  item: AttentionItem;
+  primary?: boolean;
+  onAction?: () => void;
+  onResolve?: () => void;
+}) {
   const tone = item.severity === 'critical' ? 'error' : item.severity === 'warning' ? 'warning' : 'info';
   return (
     <article className={`attention-card attention-card--${item.severity}`}>
@@ -81,7 +86,8 @@ export function AttentionCard({ item, primary = false }: { item: AttentionItem; 
         <p>{item.people}</p>
         <div className="source-line"><span>{item.source}</span><span aria-hidden="true">·</span><span>{item.freshness}</span></div>
       </div>
-      <Button variant={primary ? 'primary' : 'borderless'}>{item.action}<ArrowRight size={16} /></Button>
+      <Button variant={primary ? 'primary' : 'borderless'} onClick={onAction}>{item.action}<ArrowRight size={16} /></Button>
+      {onResolve && <Button variant="borderless" onClick={onResolve}>Đánh dấu đã xử lý</Button>}
     </article>
   );
 }

@@ -1,4 +1,35 @@
 export type Perspective = 'ikamer' | 'manager';
+
+/** AI maturity ladder (spec §23): A1 Tóm tắt · A2 Xuyên nguồn · A3 Soạn thảo · A4 Thực thi. */
+export type AiLevel = 'A1' | 'A2' | 'A3' | 'A4';
+/** Release tags for concept labeling: R1 shipped-grade carries no badge. */
+export type ReleaseTag = 'R1' | 'R2' | 'R3' | 'R4' | 'R5';
+
+export type KnowledgeDoc = {
+  id: string;
+  title: string;
+  summary: string;
+  body: string[];
+  source: 'iWiki';
+  topic: string;
+  updatedAt: string;
+  /** undefined/empty = company-wide (same audience contract as NewsPost/EventItem) */
+  audienceTeamIds?: string[];
+};
+
+export type GoalStatus = 'needs_update' | 'on_track' | 'at_risk' | 'done';
+
+export type Goal = {
+  id: string;
+  title: string;
+  status: GoalStatus;
+  /** 0-100 */
+  progress: number;
+  cycle: string;
+  lastCheckIn: string;
+  nextDue: string;
+  owner: string;
+};
 export type PriorityBand = 'P0' | 'P1' | 'P2' | 'P3' | 'P4' | 'P5';
 export type Severity = 'critical' | 'warning' | 'info';
 

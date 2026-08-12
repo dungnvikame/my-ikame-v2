@@ -13,6 +13,7 @@ import { NotificationsPage } from './pages/NotificationsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SearchPage } from './pages/SearchPage';
 import { TeamPage } from './pages/TeamPage';
+import { VisionPage } from './pages/VisionPage';
 
 function PerspectiveGuard({ children, expected }: { children: React.ReactNode; expected: 'ikamer' | 'manager' }) {
   const { perspective } = useAppState();
@@ -40,6 +41,8 @@ function AppRoutes() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        {/* Accessible in both perspectives — no PerspectiveGuard by design. */}
+        <Route path="/vision" element={<VisionPage />} />
         <Route path="/forbidden" element={<ForbiddenPage />} />
         <Route path="/not-found" element={<NotFoundPage />} />
         <Route path="*" element={<NotFoundPage />} />
