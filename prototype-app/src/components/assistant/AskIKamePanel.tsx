@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type KeyboardEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { X } from '@phosphor-icons/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppState } from '../../AppState';
@@ -24,6 +24,7 @@ export function AskIKamePanel() {
   const navigate = useNavigate();
   const panelRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [closeBlockedNotice, setCloseBlockedNotice] = useState(false);
 
   const { conversation, hasPendingDraft, askChip, markRevealed, updateDraft, cancelDraft, sendDraft, confirmExecute } =
     useAskConversation(demoResetCount, setEventRegistration);
@@ -49,7 +50,13 @@ export function AskIKamePanel() {
   const chips = useMemo(() => scriptsForContext(pathname, perspective), [pathname, perspective]);
 
   function attemptClose() {
-    if (hasPendingDraft) return; // guard: confirm-or-ignore while a draft is unsent (F4)
+    if (hasPendingDraft) {
+      // Guard while a draft is unsent (F4) — with visible feedback so a dead Esc
+      // never reads as a freeze on stage.
+      setCloseBlockedNotice(true);
+      return;
+    }
+    setCloseBlockedNotice(false);
     setAskOpen(false);
     requestAnimationFrame(() => document.querySelector<HTMLButtonElement>(ASK_TRIGGER_SELECTOR)?.focus());
   }
@@ -114,6 +121,11 @@ export function AskIKamePanel() {
           />
         </div>
 
+        {closeBlockedNotice && hasPendingDraft && (
+          <p className="ask-panel-guard-note" role="status">
+            Đang có bản nháp chưa gửi — bấm "Duyệt & gửi" hoặc "Hủy" trước khi đóng.
+          </p>
+        )}
         <div className="ask-panel-chips">
           {chips.map((script) => (
             <button key={script.id} type="button" className="ai-chip" onClick={() => askChip(script, ctx)}>

@@ -45,6 +45,8 @@ export function AiActionBlock({
   }
 
   if (action.kind === 'draft') {
+    // Nothing left to act on — the message paragraph already explains why (F2).
+    if (already) return null;
     if (sent) {
       return (
         <div className="receipt ai-receipt">

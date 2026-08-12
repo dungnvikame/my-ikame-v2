@@ -31,13 +31,17 @@ export function useAskConversation(demoResetCount: number, setEventRegistration:
     lockRef.current.clear();
   }, [demoResetCount]);
 
-  const hasPendingDraft = conversation.some((turn) => turn.script.action?.kind === 'draft' && !turn.sent);
+  const hasPendingDraft = conversation.some((turn) => turn.script.action?.kind === 'draft' && !turn.sent && !turn.already);
 
   function askChip(script: AiScript, ctx: ScriptCtx) {
     const id = `turn-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     const turn: Turn = { id, script, ctx, revealed: false };
     const { action } = script;
-    if (action?.kind === 'draft') turn.draftText = action.draftText(ctx);
+    if (action?.kind === 'draft') {
+      // F2: never offer a draft the current state can't honor (e.g. item already resolved).
+      turn.already = !action.isApplicable(ctx);
+      if (!turn.already) turn.draftText = action.draftText(ctx);
+    }
     if (action?.kind === 'execute') {
       const target = ctx.events.find((event) => event.id === action.targetEventId);
       turn.already = target?.myRegistration === 'going';

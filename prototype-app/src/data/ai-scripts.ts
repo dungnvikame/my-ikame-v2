@@ -22,7 +22,14 @@ export type ScriptCtx = {
 export type Citation = { title: string; source: string; href: string };
 
 export type AiScriptAction =
-  | { kind: 'draft'; draftText: (ctx: ScriptCtx) => string; confirmLabel: string; receipt: string }
+  | {
+    kind: 'draft';
+    draftText: (ctx: ScriptCtx) => string;
+    confirmLabel: string;
+    receipt: string;
+    /** F2: no draft offered when there is nothing left to act on (e.g. item already resolved). */
+    isApplicable: (ctx: ScriptCtx) => boolean;
+  }
   | { kind: 'execute'; targetEventId: string; confirmLabel: string; receipt: string }
   | { kind: 'denied' };
 
@@ -115,6 +122,7 @@ const s3NudgeUnresponsive: AiScript = {
   citations: () => [{ title: '3 thành viên chưa phản hồi iConnect tháng 8', source: 'My iKame Event', href: '/manager/team' }],
   action: {
     kind: 'draft',
+    isApplicable: (ctx) => ctx.unresponsiveCount > 0,
     draftText: () => 'Chào cả nhóm, mình thấy bạn chưa xác nhận tham gia iConnect tháng 8 (20/08). Bạn phản hồi giúp mình trước khi RSVP đóng nhé, để team chuẩn bị chỗ chính xác. Cảm ơn bạn!',
     confirmLabel: 'Duyệt & gửi',
     receipt: 'Đã gửi tới 3 người · #RCPT-xxxx · 2 kênh: chat + notification — item vẫn ở queue để bạn xác nhận đã xử lý.',

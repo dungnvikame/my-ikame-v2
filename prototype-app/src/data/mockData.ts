@@ -347,8 +347,9 @@ export const teamMembers: TeamMember[] = [
   { id: 'member_lan', name: 'Lan Nguyễn', role: 'Product Designer', teamId: TEAM_PRODUCT, attentionSummary: 'Cần cập nhật mục tiêu', status: 'needs_attention', lastUpdated: '09:20' },
   { id: 'member_minh', name: 'Minh Trần', role: 'Frontend Developer', teamId: TEAM_PRODUCT, attentionSummary: 'Cần cập nhật mục tiêu', status: 'needs_attention', lastUpdated: '09:20' },
   { id: 'member_ha', name: 'Hà Phạm', role: 'QA Engineer', teamId: TEAM_PRODUCT, attentionSummary: 'Chưa phản hồi sự kiện', status: 'needs_attention', lastUpdated: '08:45' },
-  { id: 'member_tuan', name: 'Tuấn Lê', role: 'Backend Developer', teamId: TEAM_PRODUCT, attentionSummary: 'Đang ổn', status: 'ok', lastUpdated: 'Hôm qua' },
-  { id: 'member_ngocanh', name: 'Ngọc Anh', role: 'Business Analyst', teamId: TEAM_PRODUCT, attentionSummary: 'Đang ổn', status: 'ok', lastUpdated: 'Hôm qua' },
+  // Hà + Tuấn + Ngọc Anh = "3 thành viên chưa phản hồi iConnect" (khớp attention item `event-response` và kịch bản S3).
+  { id: 'member_tuan', name: 'Tuấn Lê', role: 'Backend Developer', teamId: TEAM_PRODUCT, attentionSummary: 'Chưa phản hồi sự kiện', status: 'needs_attention', lastUpdated: '08:45' },
+  { id: 'member_ngocanh', name: 'Ngọc Anh', role: 'Business Analyst', teamId: TEAM_PRODUCT, attentionSummary: 'Chưa phản hồi sự kiện', status: 'needs_attention', lastUpdated: '08:45' },
   { id: 'member_giahuy', name: 'Gia Huy', role: 'Product Designer', teamId: TEAM_PRODUCT, attentionSummary: 'Sắp gia nhập · 17/08', status: 'no_data', lastUpdated: '17/08', momentType: 'new_joiner' },
   { id: 'member_binh_out_of_scope', name: 'Đỗ Quang Bình', role: 'Finance Analyst', teamId: TEAM_FINANCE, attentionSummary: 'Ngoài phạm vi quản lý', status: 'needs_attention', lastUpdated: '07:30' },
 ];

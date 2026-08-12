@@ -178,6 +178,15 @@
   gap: 8px;
 }
 
+.ask-panel-guard-note {
+  padding: 8px 12px;
+  border-radius: var(--radius-8);
+  background: var(--bg-amber-subtle);
+  color: var(--fg-amber-strong);
+  font-size: var(--body-xs-size);
+  line-height: var(--body-xs-line);
+}
+
 .ask-panel-chips {
   display: flex;
   flex-wrap: wrap;
