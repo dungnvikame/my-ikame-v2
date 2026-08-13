@@ -71,6 +71,197 @@
   color: var(--text-secondary);
 }
 
+.ai-brief-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ai-brief-footer-row .ai-brief-footer {
+  margin-top: 16px;
+}
+
+.ai-brief-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 16px;
+  color: var(--fg-accent-primary);
+  font-size: var(--body-s-size);
+  font-weight: var(--font-semibold);
+}
+
+/* ---------- Dải stat Tổng quan manager ---------- */
+.manager-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 20px 0 24px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-12);
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.manager-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  min-width: 0;
+  color: var(--text-primary);
+}
+
+.manager-stat:hover {
+  background: var(--bg-secondary);
+}
+
+.manager-stat + .manager-stat {
+  border-left: 1px solid var(--border-primary);
+}
+
+.manager-stat strong {
+  display: block;
+  font-size: var(--body-l-size);
+  line-height: var(--body-l-line);
+  font-weight: var(--font-semibold);
+}
+
+.manager-stat span:last-child {
+  color: var(--text-secondary);
+  font-size: var(--body-xs-size);
+}
+
+.manager-stat-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-8);
+}
+
+.manager-stat-icon--danger { background: var(--bg-error); color: var(--fg-error); }
+.manager-stat-icon--amber { background: var(--bg-amber-subtle); color: var(--fg-amber-strong); }
+.manager-stat-icon--success { background: var(--bg-success); color: var(--fg-success); }
+.manager-stat-icon--info { background: var(--bg-blue-subtle); color: var(--fg-blue-strong); }
+
+/* ---------- Cột chính Tổng quan ---------- */
+.manager-main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+}
+
+/* ---------- Hàng đợi duyệt ---------- */
+.approval-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.approval-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-primary);
+  border-left: 3px solid var(--bg-accent-primary);
+  border-radius: var(--radius-12);
+  background: var(--bg-primary);
+}
+
+.approval-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.approval-copy-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.approval-copy-head strong {
+  font-size: var(--body-s-size);
+  font-weight: var(--font-semibold);
+}
+
+.approval-copy small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.approval-copy p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: var(--body-s-size);
+}
+
+.approval-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.approval-decided {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.approval-decided-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.approval-decided-row--approved svg { color: var(--fg-success); }
+.approval-decided-row--rejected svg { color: var(--fg-error); }
+
+/* ---------- Drawer thành viên (Đội ngũ) ---------- */
+.member-drawer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-primary);
+}
+
+@media (max-width: 960px) {
+  .manager-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .manager-stat:nth-child(n + 3) {
+    border-top: 1px solid var(--border-primary);
+  }
+
+  .manager-stat:nth-child(3) {
+    border-left: none;
+  }
+
+  .approval-row {
+    flex-wrap: wrap;
+  }
+
+  .approval-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+}
+
 .resolve-receipt {
   margin: 12px 0 0;
   padding: 10px 14px;

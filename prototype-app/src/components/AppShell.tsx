@@ -42,22 +42,21 @@ const iKamerNavGroups: NavGroup[] = [
   ] },
 ];
 
-// Manager's home is "Tổng quan" in the QUẢN LÝ group — group 1 omits Trang chủ.
+// Manager's home is "Tổng quan" — the QUẢN LÝ group leads the sidebar so the
+// management workspace (overview, team, team OKR) is always first in view.
 const managerNavGroups: NavGroup[] = [
+  { label: 'QUẢN LÝ', items: [
+    { label: 'Tổng quan', to: '/manager/overview', icon: House },
+    { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
+    { label: 'Mục tiêu team', to: '/goals', icon: Target },
+  ] },
   { label: 'KHÔNG GIAN CỦA BẠN', items: [
     { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
     { label: 'iKame Feed', to: '/community', icon: ChatsCircle },
     { label: 'Tin tức', to: '/news', icon: Newspaper },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-    { label: 'iRequest', to: '/requests', icon: Ticket },
-  ] },
-  { label: 'PHÁT TRIỂN', items: [
     { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
-    { label: 'Mục tiêu', to: '/goals', icon: Target },
-  ] },
-  { label: 'QUẢN LÝ', items: [
-    { label: 'Tổng quan', to: '/manager/overview', icon: House },
-    { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
+    { label: 'iRequest', to: '/requests', icon: Ticket },
   ] },
 ];
 
@@ -73,9 +72,9 @@ const iKamerBottomNav: NavEntry[] = [
 const managerBottomNav: NavEntry[] = [
   { label: 'Tổng quan', to: '/manager/overview', icon: House },
   { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
-  { label: 'Feed', to: '/community', icon: ChatsCircle },
-  { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+  { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
   { label: 'Mục tiêu', to: '/goals', icon: Target },
+  { label: 'Feed', to: '/community', icon: ChatsCircle },
 ];
 
 function Logo() {

@@ -1,4 +1,7 @@
-import type { EventItem, Goal, KnowledgeDoc, LeaveBalance, NewsPost, RequestType, User } from '../../types';
+import type {
+  ApprovalItem, AttentionItem, EventItem, Goal, KnowledgeDoc, LeaveBalance,
+  MemberEksStat, NewsPost, Perspective, RequestType, User,
+} from '../../types';
 
 /**
  * Trợ lý AI page — keyword-routed intent engine over LIVE mock data.
@@ -67,6 +70,11 @@ export type AgentCtx = {
   goals: Goal[];
   knowledgeDocs: KnowledgeDoc[];
   leaveBalance: LeaveBalance;
+  // Manager scope — dùng cho các intent quản lý (chỉ khi perspective = 'manager').
+  perspective: Perspective;
+  attention: AttentionItem[];
+  memberEksStats: MemberEksStat[];
+  approvals: ApprovalItem[];
 };
 
 const MEETING_ROOMS = [
@@ -97,8 +105,140 @@ function extractDocTitle(question: string): string {
   return stripped.charAt(0).toUpperCase() + stripped.slice(1);
 }
 
+const GOAL_STATUS_SHORT: Record<Goal['status'], string> = {
+  needs_update: 'Trễ check-in',
+  on_track: 'Đúng tiến độ',
+  at_risk: 'Có rủi ro',
+  done: 'Hoàn thành',
+};
+
+/** Các intent quản lý — chỉ chạy ở góc nhìn manager, đặt TRƯỚC intent cá nhân
+ * vì regex giao nhau (check-in, OKR, duyệt). */
+function buildManagerReply(q: string, ctx: AgentCtx): AgentMessage | null {
+  if (ctx.perspective !== 'manager') return null;
+
+  if (/team.*chú ý|chú ý.*team|tình hình team/.test(q)) {
+    const scoped = ctx.attention.filter((item) => item.teamId === ctx.user.teamId && item.state === 'open');
+    const openApprovals = ctx.approvals.filter((item) => item.state === 'open').length;
+    if (scoped.length === 0 && openApprovals === 0) {
+      return { role: 'assistant', text: 'Team của bạn đang sạch việc tồn đọng — không có mục cần chú ý hay đơn chờ duyệt nào. 🎉' };
+    }
+    return {
+      role: 'assistant',
+      text: `Team ${ctx.user.team} đang có ${scoped.length} việc cần chú ý${openApprovals > 0 ? ` và ${openApprovals} đơn chờ bạn duyệt` : ''}. Chi tiết ở khung bên phải — mở Tổng quan để xử lý từng mục.`,
+      links: [{ label: 'Mở Tổng quan để xử lý', to: '/manager/overview' }],
+      workspace: {
+        kind: 'info',
+        breadcrumb: 'Manager / Tình hình team',
+        title: `Việc cần chú ý · ${ctx.user.team}`,
+        badge: `${scoped.length + openApprovals} mục`,
+        fields: [
+          ...scoped.map((item) => ({
+            label: `${item.severity === 'critical' ? '🔴 Nghiêm trọng' : '🟡 Cần xử lý'} · ${item.source} · ${item.freshness}`,
+            value: `${item.title} — ${item.people}`,
+          })),
+          ...(openApprovals > 0 ? [{ label: '📋 Hàng đợi duyệt', value: `${openApprovals} đơn từ thành viên đang chờ quyết định của bạn` }] : []),
+        ],
+        steps: [
+          'Đã quét iGoal · Event · HRIS trong scope team',
+          'Đã xếp hạng theo mức nghiêm trọng và hạn xử lý',
+          'Đã gộp hàng đợi duyệt vào bức tranh chung',
+        ],
+      },
+    };
+  }
+
+  if (/nhắc.*check-in|check-in.*nhắc|soạn tin nhắn nhắc/.test(q)) {
+    const behind = ctx.memberEksStats.filter((member) => member.eksStatus === 'needs_update' || member.eksStatus === 'at_risk');
+    if (behind.length === 0) return { role: 'assistant', text: 'Cả team đã check-in đầy đủ — không ai cần nhắc cả. 🎉' };
+    const names = behind.map((member) => member.name).join(', ');
+    return {
+      role: 'assistant',
+      text: `Có ${behind.length} thành viên trễ nhịp check-in (${names}). Mình đã soạn sẵn lời nhắc thân thiện — bạn sửa lại giọng điệu nếu muốn rồi gửi.`,
+      action: { kind: 'confirm', label: `Gửi lời nhắc tới ${behind.length} thành viên`, receipt: 'Đã gửi lời nhắc qua Slack DM. Mình sẽ báo bạn khi từng người hoàn tất check-in.' },
+      workspace: {
+        kind: 'form',
+        breadcrumb: 'Manager / Nhắc check-in',
+        title: 'Soạn lời nhắc check-in',
+        badge: `${behind.length} người nhận`,
+        formFields: [
+          { id: 'to', label: 'Người nhận', value: names },
+          { id: 'channel', label: 'Kênh gửi', value: 'Slack DM (từng người)', type: 'select', options: ['Slack DM (từng người)', 'Email', 'Slack channel team'], half: true },
+          { id: 'when', label: 'Thời điểm gửi', value: 'Ngay bây giờ', type: 'select', options: ['Ngay bây giờ', '09:00 sáng mai'], half: true },
+          {
+            id: 'message', label: 'Nội dung (AI soạn — bạn hiệu chỉnh)', type: 'textarea',
+            value: `Chào bạn, tuần 33 sắp khép lại mà check-in EKS của bạn chưa được cập nhật. Bạn dành 5 phút cập nhật tiến độ trên My iKame nhé — có vướng mắc gì cứ nhắn mình trực tiếp. Cảm ơn bạn!`,
+          },
+        ],
+        steps: [
+          'Đã lọc thành viên trễ check-in từ iGoal',
+          `Đã tìm thấy ${behind.length} người: ${names}`,
+          'Đã soạn lời nhắc theo giọng hỗ trợ, không tạo áp lực',
+          'Chờ bạn duyệt để gửi',
+        ],
+      },
+    };
+  }
+
+  if (/(okr|tiến độ|mục tiêu).*(team|đội)|((team|đội).*(okr|tiến độ))/.test(q)) {
+    const stats = ctx.memberEksStats;
+    const average = Math.round(stats.reduce((sum, member) => sum + member.eksProgress, 0) / Math.max(stats.length, 1));
+    const behind = stats.filter((member) => member.eksStatus === 'needs_update' || member.eksStatus === 'at_risk').length;
+    return {
+      role: 'assistant',
+      text: `Tiến độ EKS trung bình của team là ${average}%, có ${behind}/${stats.length} thành viên cần theo sát. Bảng chi tiết ở khung bên phải.`,
+      links: [{ label: 'Mở OKR team đầy đủ', to: '/goals' }],
+      workspace: {
+        kind: 'info',
+        breadcrumb: 'Manager / OKR team',
+        title: `Tiến độ EKS · ${ctx.user.team}`,
+        badge: `TB ${average}%`,
+        fields: stats.map((member) => ({
+          label: `${member.role} · ${member.reportsSubmitted}/${member.reportsExpected} báo cáo · check-in ${member.lastCheckInLabel}`,
+          value: `${member.name} — ${member.eksProgress}% (${GOAL_STATUS_SHORT[member.eksStatus]})`,
+        })),
+        steps: [
+          'Đã tổng hợp EKS của từng thành viên từ iGoal',
+          'Đã đối chiếu nhịp báo cáo tuần (6 kỳ gần nhất)',
+          `Đã đánh dấu ${behind} thành viên cần theo sát`,
+        ],
+      },
+    };
+  }
+
+  if (/chờ duyệt|duyệt đơn|đơn nào/.test(q)) {
+    const open = ctx.approvals.filter((item) => item.state === 'open');
+    if (open.length === 0) return { role: 'assistant', text: 'Không còn đơn nào chờ duyệt. Hàng đợi của bạn đang sạch!' };
+    return {
+      role: 'assistant',
+      text: `Bạn có ${open.length} đơn chờ duyệt. Xem tóm tắt bên phải — bấm Duyệt/Từ chối ngay trên trang Tổng quan.`,
+      links: [{ label: 'Mở hàng đợi duyệt trên Tổng quan', to: '/manager/overview' }],
+      workspace: {
+        kind: 'info',
+        breadcrumb: 'Manager / Hàng đợi duyệt',
+        title: 'Đơn chờ bạn quyết định',
+        badge: `${open.length} đơn`,
+        fields: open.map((item) => ({
+          label: `${item.kind} · ${item.memberName} · ${item.submittedAtLabel}`,
+          value: `${item.title} — ${item.detail}`,
+        })),
+        steps: [
+          'Đã gom đơn từ iRequest trong scope team',
+          'Đã kiểm tra tính hợp lệ (số dư phép, chính sách cấp phát)',
+          'Chờ bạn quyết định trên Tổng quan',
+        ],
+      },
+    };
+  }
+
+  return null;
+}
+
 export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
   const q = question.toLowerCase();
+
+  const managerReply = buildManagerReply(q, ctx);
+  if (managerReply) return managerReply;
 
   if (/đặt phòng|phòng họp|booking/.test(q)) {
     return {

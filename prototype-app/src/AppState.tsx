@@ -4,6 +4,7 @@ import {
   attentionItems,
   contractInfo,
   eksObjectives,
+  initialApprovals,
   equipment,
   initialBirthdays,
   initialCheckInReports,
@@ -25,6 +26,7 @@ import {
   users,
 } from './data/mockData';
 import type {
+  ApprovalItem,
   AttentionItem,
   BirthdayPerson,
   CheckInReport,
@@ -108,6 +110,8 @@ type AppStateValue = {
   searchOpen: boolean;
   // iRequest center — mọi request (kể cả tạo qua Trợ lý AI) theo dõi ở đây.
   requests: RequestItem[];
+  // Hàng đợi duyệt của manager.
+  approvals: ApprovalItem[];
   // Demo v2 — read-only pass-through fixtures (no mutator; nothing writes to these — YAGNI).
   milestones: typeof initialMilestones;
   topFans: typeof initialTopFans;
@@ -139,6 +143,7 @@ type AppStateValue = {
   submitReport: (input: SubmitReportInput) => void;
   addRequest: (input: NewRequestInput) => void;
   addNewsComment: (postId: string, text: string) => void;
+  resolveApproval: (id: string, next: 'approved' | 'rejected') => void;
   setSearchOpen: (open: boolean) => void;
   resetDemo: () => void;
 };
@@ -164,6 +169,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const [checkInReports, setCheckInReports] = useState(initialCheckInReports);
   const [searchOpen, setSearchOpen] = useState(false);
   const [requests, setRequests] = useState(initialRequests);
+  const [approvals, setApprovals] = useState(initialApprovals);
 
   useEffect(() => { writeStored(THEME_STORAGE_KEY, theme); }, [theme]);
   useEffect(() => { writeStored(PERSPECTIVE_STORAGE_KEY, perspective); }, [perspective]);
@@ -189,6 +195,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     checkInReports,
     searchOpen,
     requests,
+    approvals,
     milestones: initialMilestones,
     topFans: initialTopFans,
     leaveBalance,
@@ -325,6 +332,9 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         }
         : item));
     },
+    resolveApproval: (id, next) => {
+      setApprovals((items) => items.map((item) => item.id === id ? { ...item, state: next } : item));
+    },
     setSearchOpen,
     // Restores every mutable slice so the presenter can re-run the golden path.
     // Deliberately does NOT reset theme/perspective (RED TEAM F13).
@@ -342,9 +352,10 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       setCheckInReports(initialCheckInReports);
       setSearchOpen(false);
       setRequests(initialRequests);
+      setApprovals(initialApprovals);
       setDemoResetCount((count) => count + 1);
     },
-  }), [askOpen, attention, birthdays, checkInReports, dailyCheckIn, demoResetCount, events, goals, news,
+  }), [approvals, askOpen, attention, birthdays, checkInReports, dailyCheckIn, demoResetCount, events, goals, news,
     notificationOpen, notifications, perspective, posts, requests, searchOpen, theme, user]);
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

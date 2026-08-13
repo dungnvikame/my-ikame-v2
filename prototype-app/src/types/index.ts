@@ -124,6 +124,19 @@ export type AttentionItem = {
   state: 'open' | 'resolved' | 'dismissed';
 };
 
+/** Hàng đợi duyệt của manager — đơn từ thành viên chờ quyết định. */
+export type ApprovalKind = 'Nghỉ phép' | 'Thiết bị' | 'Làm từ xa';
+export type ApprovalItem = {
+  id: string;
+  kind: ApprovalKind;
+  memberName: string;
+  memberShort: string;
+  title: string;
+  detail: string;
+  submittedAtLabel: string;
+  state: 'open' | 'approved' | 'rejected';
+};
+
 export type TeamMemberStatus = 'needs_attention' | 'ok' | 'no_data';
 
 export type TeamMember = {

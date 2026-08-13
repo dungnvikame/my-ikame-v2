@@ -1,4 +1,4 @@
-import type { ContractInfo, DailyCheckIn, Equipment, LeaveBalance, Payslip, RequestItem, SeniorityEntry } from '../types';
+import type { ApprovalItem, ContractInfo, DailyCheckIn, Equipment, LeaveBalance, Payslip, RequestItem, SeniorityEntry } from '../types';
 
 // Hồ sơ (Demo v2) — dữ liệu hư cấu của An, không dùng thông tin nhân viên thật.
 export const initialDailyCheckIn: DailyCheckIn = { done: false };
@@ -38,6 +38,25 @@ export const payslips: Payslip[] = [
   { id: 'payslip-07', periodLabel: 'Kỳ lương tháng 7/2026', amountMasked: '•• ••• ••• đ', amountRevealed: '32.400.000 đ', statusLabel: 'Đã thanh toán' },
   { id: 'payslip-06', periodLabel: 'Kỳ lương tháng 6/2026', amountMasked: '•• ••• ••• đ', amountRevealed: '31.850.000 đ', statusLabel: 'Đã thanh toán' },
   { id: 'payslip-05', periodLabel: 'Kỳ lương tháng 5/2026', amountMasked: '•• ••• ••• đ', amountRevealed: '31.850.000 đ', statusLabel: 'Đã thanh toán' },
+];
+
+// Hàng đợi duyệt của manager (Mai) — đơn từ thành viên team Product, khớp mạch demo iRequest.
+export const initialApprovals: ApprovalItem[] = [
+  {
+    id: 'appr-lan-leave', kind: 'Nghỉ phép', memberName: 'Lan Nguyễn', memberShort: 'Lan',
+    title: 'Đơn nghỉ phép 2 ngày (18–19/08)', detail: 'Lý do: việc gia đình · Còn 6/12 ngày phép · Bàn giao cho An',
+    submittedAtLabel: 'Hôm nay · 08:20', state: 'open',
+  },
+  {
+    id: 'appr-minh-device', kind: 'Thiết bị', memberName: 'Minh Trần', memberShort: 'Minh',
+    title: 'Xin cấp màn hình phụ 27"', detail: 'Lý do: làm việc với design file lớn · IT Assets đã xác nhận còn hàng',
+    submittedAtLabel: 'Hôm qua · 16:45', state: 'open',
+  },
+  {
+    id: 'appr-ha-remote', kind: 'Làm từ xa', memberName: 'Hà Phạm', memberShort: 'Hà',
+    title: 'Làm từ xa tuần 34 (17–21/08)', detail: 'Lý do: sửa nhà · Cam kết online đầy đủ các buổi họp sprint',
+    submittedAtLabel: 'Hôm nay · 09:05', state: 'open',
+  },
 ];
 
 // iRequest — seed 3 request ở 3 trạng thái để danh sách có chuyện để kể ngay khi mở.

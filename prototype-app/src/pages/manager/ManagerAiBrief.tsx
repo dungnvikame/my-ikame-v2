@@ -57,7 +57,12 @@ export function ManagerAiBrief({ items }: { items: AttentionItem[] }) {
               </li>
             ))}
           </ul>
-          <p className="ai-brief-footer">Tổng hợp từ iGoal · Event · HRIS — mô phỏng khái niệm.</p>
+          <div className="ai-brief-footer-row">
+            <p className="ai-brief-footer">Tổng hợp từ iGoal · Event · HRIS — mô phỏng khái niệm.</p>
+            <Link className="ai-brief-cta" to={`/assistant?q=${encodeURIComponent('Team tôi hôm nay có gì cần chú ý?')}`}>
+              Hỏi Trợ lý AI về team<ArrowRight size={14} />
+            </Link>
+          </div>
         </>
       )}
     </section>

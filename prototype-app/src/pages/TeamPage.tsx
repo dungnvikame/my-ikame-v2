@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { MagnifyingGlass, UserCircle, X } from '@phosphor-icons/react';
+import { BellRinging, MagnifyingGlass, Target, UserCircle, X } from '@phosphor-icons/react';
+import { useNavigate } from 'react-router-dom';
 import { teamMembers } from '../data/mockData';
-import { Button, EmptyState, IconButton, SectionHeader, StatusPill } from '../components/UI';
+import { Button, EmptyState, IconButton, StatusPill } from '../components/UI';
 import { useAppState } from '../AppState';
 import type { TeamMember, TeamMemberStatus } from '../types';
 
@@ -25,6 +26,7 @@ function normalize(value: string) {
 
 export function TeamPage() {
   const { user } = useAppState();
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -94,7 +96,7 @@ export function TeamPage() {
         <div>
           <p className="eyebrow">MANAGER · {user.team.toUpperCase()}</p>
           <h1>Đội ngũ của tôi</h1>
-          <p>{roster.length} thành viên · {visible.length} đang hiển thị</p>
+          <p>{roster.length} thành viên · {visible.length} đang hiển thị · chỉ trong phạm vi team của bạn</p>
         </div>
       </header>
 
@@ -173,13 +175,22 @@ export function TeamPage() {
             <div className="notification-list">
               <p className="inline-guidance">{selected.attentionSummary}</p>
               <p className="muted-text">Cập nhật: {selected.lastUpdated}</p>
+              <div className="member-drawer-actions">
+                <Button
+                  variant="primary"
+                  icon={<BellRinging size={16} />}
+                  onClick={() => navigate(`/assistant?q=${encodeURIComponent(`Soạn tin nhắn nhắc check-in cho ${selected.name}`)}`)}
+                >
+                  Nhắc check-in (AI)
+                </Button>
+                <Button variant="dim" icon={<Target size={16} />} onClick={() => navigate('/goals')}>
+                  Xem EKS trong OKR team
+                </Button>
+              </div>
             </div>
           </aside>
         </div>
       )}
-
-      <SectionHeader title="Nguyên tắc hiển thị" />
-      <p className="inline-guidance">Danh sách chỉ hiển thị thành viên thuộc team của bạn ({user.team}).</p>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
-  AirplaneTilt, ArrowRight, CalendarPlus, CheckCircle, CircleNotch, ClockCounterClockwise,
-  NotePencil, PaperPlaneTilt, SealCheck, Sparkle, Target, Trash, Wrench,
+  AirplaneTilt, ArrowRight, BellRinging, CalendarPlus, CheckCircle, CircleNotch, ClipboardText,
+  ClockCounterClockwise, NotePencil, PaperPlaneTilt, SealCheck, Sparkle, Target, Trash, UsersThree, Wrench,
 } from '@phosphor-icons/react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
@@ -20,7 +20,7 @@ function stepsOf(message: ThreadMessage): string[] {
   return message.workspace?.steps ?? GENERIC_STEPS;
 }
 
-const CAPABILITIES = [
+const IKAMER_CAPABILITIES = [
   { icon: CalendarPlus, title: 'Đặt phòng họp', prompt: 'Đặt phòng họp 14:00 hôm nay cho 6 người' },
   { icon: Wrench, title: 'Request IT support', prompt: 'Tạo request IT support: laptop không kết nối được wifi' },
   { icon: Target, title: 'Mục tiêu & check-in', prompt: 'Mục tiêu nào của tôi cần cập nhật?' },
@@ -29,7 +29,15 @@ const CAPABILITIES = [
   { icon: SealCheck, title: 'Việc cần xác nhận', prompt: 'Tôi có việc gì cần xác nhận?' },
 ];
 
-const CHIPS = CAPABILITIES.map((capability) => capability.prompt);
+/** Manager có bộ nghiệp vụ quản lý riêng — team, check-in, OKR, hàng đợi duyệt. */
+const MANAGER_CAPABILITIES = [
+  { icon: UsersThree, title: 'Tình hình team', prompt: 'Team tôi hôm nay có gì cần chú ý?' },
+  { icon: BellRinging, title: 'Nhắc check-in', prompt: 'Soạn tin nhắn nhắc check-in cho thành viên trễ hạn' },
+  { icon: Target, title: 'OKR của team', prompt: 'Tóm tắt tiến độ OKR của team tuần này' },
+  { icon: ClipboardText, title: 'Đơn chờ duyệt', prompt: 'Tôi có đơn nào đang chờ duyệt?' },
+  { icon: CalendarPlus, title: 'Đặt phòng họp', prompt: 'Đặt phòng họp 14:00 hôm nay cho 6 người' },
+  { icon: Wrench, title: 'Request IT support', prompt: 'Tạo request IT support: laptop không kết nối được wifi' },
+];
 
 function generateReceiptId() {
   return Math.random().toString(36).slice(2, 6).toUpperCase();
@@ -86,7 +94,13 @@ function HistoryList({ sessions, onResume, onDelete }: {
 }
 
 export function AssistantPage() {
-  const { user, news, events, goals, knowledgeDocs, leaveBalance, demoResetCount, acknowledgeNews, submitReport, addRequest } = useAppState();
+  const {
+    user, news, events, goals, knowledgeDocs, leaveBalance, demoResetCount,
+    perspective, attention, memberEksStats, approvals,
+    acknowledgeNews, submitReport, addRequest,
+  } = useAppState();
+  const capabilities = perspective === 'manager' ? MANAGER_CAPABILITIES : IKAMER_CAPABILITIES;
+  const chips = capabilities.map((capability) => capability.prompt);
   const [messages, setMessages] = useState<ThreadMessage[]>([]);
   const [input, setInput] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
@@ -219,7 +233,7 @@ export function AssistantPage() {
     const trimmed = question.trim();
     if (!trimmed || busy) return;
     if (!activeSessionId) setActiveSessionId(`s-${Date.now().toString(36)}`);
-    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance };
+    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance, perspective, attention, memberEksStats, approvals };
     setMessages((prev) => [
       ...prev,
       { id: generateMessageId(), role: 'user', text: trimmed },
@@ -278,7 +292,7 @@ export function AssistantPage() {
   const composer = (
     <div className="assistant-composer">
       <div className="assistant-chips">
-        {CHIPS.map((chip) => (
+        {chips.map((chip) => (
           <button key={chip} type="button" className="ai-suggestion-chip" onClick={() => ask(chip)}>{chip}</button>
         ))}
       </div>
@@ -316,7 +330,7 @@ export function AssistantPage() {
             <button type="submit" className="assistant-send" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} weight="fill" /></button>
           </form>
           <div className="assistant-capabilities">
-            {CAPABILITIES.map(({ icon: Icon, title, prompt }) => (
+            {capabilities.map(({ icon: Icon, title, prompt }) => (
               <button key={title} type="button" className="assistant-capability" onClick={() => ask(prompt)}>
                 <span className="assistant-capability-icon"><Icon size={20} /></span>
                 <strong>{title}</strong>
