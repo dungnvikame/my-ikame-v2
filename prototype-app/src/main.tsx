@@ -4,7 +4,7 @@ import App from './App';
 import './styles/core-ds-1.1.css';
 import './styles/app.css';
 import './styles/assistant.css';
-import './styles/vision.css';
+import './styles/assistant-page.css';
 import './styles/knowledge-goals.css';
 import './styles/manager-vision.css';
 import './styles/search-palette.css';

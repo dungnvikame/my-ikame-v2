@@ -1,6 +1,5 @@
-import { ArrowSquareOut } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
-import { Button } from '../../components/UI';
+import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import { CYCLE_OPTIONS, type CycleOption } from './build-okr-tree';
 
 type GoalsCycleHeaderProps = {
@@ -28,7 +27,7 @@ export function GoalsCycleHeader({ eyebrow, title, cycle, onCycleChange, childre
             </button>
           ))}
         </div>
-        <Button variant="borderless" icon={<ArrowSquareOut size={17} />} title="Demo — sẽ deep-link sang hệ thống nguồn">Cấu hình trong iGoal</Button>
+        <PlatformHandoffButton platform="iGoal" action="thiết lập cây mục tiêu và liên kết OKR" label="Cấu hình trên iGoal" />
       </div>
     </header>
   );

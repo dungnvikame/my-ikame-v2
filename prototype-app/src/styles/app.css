@@ -97,6 +97,11 @@ p {
   padding: 0 20px;
 }
 
+.brand-logo {
+  display: block;
+  object-fit: contain;
+}
+
 .brand-mark {
   width: 32px;
   height: 32px;
@@ -314,12 +319,50 @@ p {
 }
 
 /* Sidebar collapse (topbar toggle) — desktop only; mobile already uses bottom-nav. */
+/* Thu gọn = mini icon-rail (52px) — vẫn giữ shortcut điều hướng, không ẩn hẳn. */
 .app-shell.sidebar-collapsed .sidebar {
-  display: none;
+  width: var(--sidebar-collapsed-width);
 }
 
 .app-shell.sidebar-collapsed .work-area {
-  margin-left: 0;
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+.app-shell.sidebar-collapsed .brand-name,
+.app-shell.sidebar-collapsed .nav-label,
+.app-shell.sidebar-collapsed .nav-item span,
+.app-shell.sidebar-collapsed .perspective-switch,
+.app-shell.sidebar-collapsed .account-copy {
+  display: none;
+}
+
+.app-shell.sidebar-collapsed .brand {
+  justify-content: center;
+  padding: 0;
+}
+
+.app-shell.sidebar-collapsed .primary-nav {
+  padding: 18px 8px;
+}
+
+.app-shell.sidebar-collapsed .nav-group {
+  align-items: center;
+}
+
+.app-shell.sidebar-collapsed .nav-item {
+  width: 38px;
+  justify-content: center;
+  padding: 7px;
+}
+
+.app-shell.sidebar-collapsed .sidebar-account {
+  padding: 10px 8px 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.app-shell.sidebar-collapsed .account-row {
+  padding: 0;
 }
 
 .icon-button {
@@ -425,6 +468,26 @@ p {
   border: 1px solid var(--border-error);
   border-radius: var(--radius-12);
   background: var(--bg-error);
+}
+
+.priority-hero--compact {
+  min-height: 0;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+.priority-hero--compact .priority-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.priority-hero--compact .priority-copy h2 {
+  margin: 4px 0 0;
+  font-size: var(--body-m-size);
+  line-height: var(--body-m-line);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .priority-icon {
@@ -664,36 +727,29 @@ p {
   display: none;
 }
 
-.visual-pattern {
-  width: 100%;
+/* Cover tin tức theo chủ đề — gradient palette dùng chung với Events (events-v2-cover--*). */
+.news-cover {
+  position: relative;
+  min-height: 120px;
+  align-items: flex-end;
+  padding: 14px 16px;
 }
 
-.visual-kicker {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--fg-blue-strong);
+.news-cover-emoji {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 44px;
+  opacity: 0.85;
+  filter: drop-shadow(0 4px 10px rgb(0 0 0 / 0.18));
+}
+
+.news-cover-topic {
+  color: rgb(255 255 255 / 0.92);
   font-size: var(--body-xxs-size);
   font-weight: var(--font-semibold);
-  letter-spacing: 0.12em;
-}
-
-.visual-line {
-  display: block;
-  width: 68%;
-  height: 8px;
-  margin-top: 7px;
-  border-radius: var(--radius-round);
-  background: var(--bg-blue-medium);
-}
-
-.visual-line--long {
-  width: 90%;
-  height: 13px;
-  background: var(--fg-blue-strong);
-}
-
-.visual-line--short {
-  width: 42%;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .card-body {
@@ -1064,7 +1120,395 @@ p {
   color: var(--fg-indigo-strong);
 }
 
-.news-feature-visual span,
+.news-feature-visual,
+.article-visual.events-v2-cover {
+  position: relative;
+  color: rgb(255 255 255 / 0.95);
+}
+
+.article-visual.events-v2-cover strong {
+  margin-top: 6px;
+  font-size: var(--headline-s-size);
+  line-height: var(--headline-s-line);
+}
+
+/* Chip lọc chủ đề — nhẹ hơn hàng tab chính để phân cấp rõ ràng. */
+.topic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 24px;
+}
+
+.topic-chip {
+  padding: 6px 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-round);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: var(--body-xs-size);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+}
+
+.topic-chip:hover {
+  border-color: var(--bg-accent-primary);
+  color: var(--fg-accent-primary);
+}
+
+.topic-chip.is-active {
+  border-color: var(--bg-accent-primary);
+  background: var(--bg-accent-primary);
+  color: var(--fg-on-accent);
+}
+
+/* ---------- Platform handoff (mô phỏng SSO sang platform gốc) ---------- */
+.handoff-button,
+.handoff-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: var(--font-semibold);
+}
+
+.handoff-button {
+  min-height: var(--button-m-height);
+  padding: 5px 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-8);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--body-s-size);
+}
+
+.handoff-button:hover {
+  border-color: var(--bg-accent-primary);
+  color: var(--fg-accent-primary);
+}
+
+.handoff-link {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: var(--fg-accent-primary);
+  font-size: var(--body-s-size);
+}
+
+.handoff-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.handoff-card {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-16);
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-l);
+}
+
+.handoff-card--sso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 36px 48px;
+  text-align: center;
+}
+
+.handoff-card--sso strong {
+  font-size: var(--body-l-size);
+  font-weight: var(--font-semibold);
+}
+
+.handoff-card--sso p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.handoff-emoji {
+  font-size: 34px;
+}
+
+.handoff-spinner {
+  color: var(--fg-accent-primary);
+  animation: assistant-spin 0.9s linear infinite;
+}
+
+.handoff-card--working {
+  width: min(560px, 100%);
+  overflow: hidden;
+}
+
+.handoff-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
+}
+
+.handoff-window-bar strong {
+  display: block;
+  font-size: var(--body-m-size);
+  font-weight: var(--font-semibold);
+}
+
+.handoff-window-bar small {
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.handoff-window-body {
+  padding: 20px;
+}
+
+.handoff-window-body p {
+  margin: 0 0 10px;
+}
+
+.handoff-note {
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.handoff-window-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px 20px;
+}
+
+.handoff-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-success);
+  border-radius: var(--radius-round);
+  background: var(--bg-success);
+  color: var(--fg-success);
+  box-shadow: var(--shadow-m);
+  font-size: var(--body-s-size);
+}
+
+/* ---------- iRequest ---------- */
+.request-type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.request-type-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-12);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.request-type-card:hover {
+  border-color: var(--bg-accent-primary);
+}
+
+.request-type-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.request-type-copy strong {
+  font-size: var(--body-s-size);
+  font-weight: var(--font-semibold);
+}
+
+.request-type-copy small {
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.request-type-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: var(--radius-round);
+  background: var(--bg-accent-primary-subtle);
+  color: var(--fg-accent-primary);
+  font-size: var(--body-xxs-size);
+  font-weight: var(--font-semibold);
+}
+
+.request-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.request-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-12);
+  background: var(--bg-primary);
+}
+
+.request-list--done .request-row {
+  opacity: 0.72;
+}
+
+.request-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-8);
+  background: var(--bg-accent-primary-subtle);
+  color: var(--fg-accent-primary);
+}
+
+.request-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.request-copy strong {
+  display: block;
+  font-size: var(--body-s-size);
+  font-weight: var(--font-semibold);
+}
+
+.request-copy small {
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+@media (max-width: 960px) {
+  .request-type-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---------- Bình luận bài Tin tức ---------- */
+.article-comments {
+  margin-top: 8px;
+  padding: 20px 28px 28px;
+  border-top: 1px solid var(--border-primary);
+}
+
+.article-comments h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: var(--body-m-size);
+  font-weight: var(--font-semibold);
+}
+
+.article-comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.article-comment-list li {
+  display: flex;
+  gap: 10px;
+}
+
+.article-comment-body {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-12);
+  background: var(--bg-secondary);
+}
+
+.article-comment-meta {
+  margin: 0 0 3px;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.article-comment-meta strong {
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+}
+
+.article-comment-body > p:last-child {
+  margin: 0;
+}
+
+.article-comment-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.article-comment-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-round);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--body-s-size);
+}
+
+.article-comment-form input:focus-visible {
+  outline: none;
+  border-color: var(--bg-accent-primary);
+  box-shadow: 0 0 0 3px var(--bg-accent-primary-subtle);
+}
+
+.article-comment-form .assistant-send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.news-feature-emoji {
+  position: absolute;
+  top: 50%;
+  right: 32px;
+  transform: translateY(-50%);
+  font-size: 120px;
+  opacity: 0.28;
+  filter: drop-shadow(0 8px 24px rgb(0 0 0 / 0.25));
+  pointer-events: none;
+}
+
+.news-feature-kicker,
 .article-visual span {
   font-size: var(--body-xs-size);
   font-weight: var(--font-semibold);
@@ -1075,10 +1519,6 @@ p {
   margin-top: 6px;
   font-size: var(--headline-l-size);
   line-height: var(--headline-l-line);
-}
-
-.news-feature-visual small {
-  font-size: var(--body-s-size);
 }
 
 .news-feature-copy {
@@ -1980,22 +2420,6 @@ p {
 .ai-badge--a4 {
   background: var(--bg-emerald-subtle);
   color: var(--fg-emerald-strong);
-}
-
-.sidebar-vision-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: var(--radius-6);
-  color: var(--text-secondary);
-  font-size: 13px;
-  text-decoration: none;
-}
-
-.sidebar-vision-link:hover {
-  background: var(--bg-canvas-tertiary);
-  color: var(--text-primary);
 }
 
 /* Base drawer geometry for the Ask iKame panel; visual detail lives in assistant.css (Phase 2).

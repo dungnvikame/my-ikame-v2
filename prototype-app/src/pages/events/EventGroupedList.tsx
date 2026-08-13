@@ -32,14 +32,19 @@ function EventGroup({ title, events, highlightedId, cardRefs }: Omit<EventGroupe
   );
 }
 
+/** Sự kiện đã hủy chìm xuống cuối nhóm — không chen giữa các sự kiện còn hiệu lực. */
+function sinkCancelled(list: EventItem[]): EventItem[] {
+  return [...list].sort((a, b) => Number(a.status === 'cancelled') - Number(b.status === 'cancelled'));
+}
+
 /** Splits the "Sắp diễn ra" tab into TUẦN NÀY / SẮP TỚI buckets (spec §Requirements 4). */
 export function EventGroupedList({ events, now, highlightedId, cardRefs }: EventGroupedListProps) {
-  const thisWeek = events.filter((event) => {
+  const thisWeek = sinkCancelled(events.filter((event) => {
     const date = eventDate(event);
     return date ? isThisWeek(date, now) : false;
-  });
+  }));
   const thisWeekIds = new Set(thisWeek.map((event) => event.id));
-  const later = events.filter((event) => !thisWeekIds.has(event.id));
+  const later = sinkCancelled(events.filter((event) => !thisWeekIds.has(event.id)));
   return (
     <>
       <EventGroup title="TUẦN NÀY" events={thisWeek} highlightedId={highlightedId} cardRefs={cardRefs} />

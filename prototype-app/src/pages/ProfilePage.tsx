@@ -1,19 +1,21 @@
-import { ArrowCounterClockwise, Moon, Sun } from '@phosphor-icons/react';
+import { ArrowCounterClockwise, Clock, EnvelopeSimple, Moon, SlackLogo, Sun } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useAppState } from '../AppState';
-import { Button, SectionHeader, StatusPill } from '../components/UI';
+import { Button, StatusPill } from '../components/UI';
 import { ProfileActivity } from './profile/ProfileActivity';
-import { ProfileHrSection } from './profile/ProfileHrSection';
+import { ProfileEquipment, ProfileLeave, ProfilePay, ProfileTimeline } from './profile/ProfileHrSection';
 import { ProfileOrgSection } from './profile/ProfileOrgSection';
 
-/** Phase 6 rebuild — 7 sections (spec §3): Header · Tổ chức · Thâm niên & cột mốc ·
- * Nghỉ phép & phúc lợi · Thiết bị được cấp · Hoạt động gần đây (live) · Hiển thị + Demo.
- * Sections 3-5 live in `ProfileHrSection` and section 6 in `ProfileActivity` to keep this
- * file under the 200-line budget (plan's suggested split). */
+/**
+ * Hồ sơ redesign — theo pattern employee-profile của các HR platform (BambooHR/HiBob):
+ * hero cover + identity + quick-stats, body 2 cột (main: hoạt động live + timeline;
+ * rail: tổ chức, nghỉ phép, thiết bị), cài đặt gộp gọn cuối trang.
+ */
 export function ProfilePage() {
   const {
     user, theme, setTheme, resetDemo, demoResetCount,
     news, events, checkInReports, posts, leaveBalance, equipment, seniorityEntries,
+    payslips, contractInfo,
   } = useAppState();
   const [resetReceipt, setResetReceipt] = useState(false);
 
@@ -22,43 +24,83 @@ export function ProfilePage() {
     if (demoResetCount > 0) setResetReceipt(true);
   }, [demoResetCount]);
 
-  return (
-    <div className="page collection-page profile-page">
-      <header className="page-heading">
-        <div><p className="eyebrow">TÀI KHOẢN</p><h1>Hồ sơ</h1><p>Thông tin cá nhân, tổ chức và phúc lợi của bạn.</p></div>
-      </header>
+  const latestMilestone = seniorityEntries[seniorityEntries.length - 1];
+  const activityCount =
+    news.filter((item) => item.acknowledged).length +
+    events.filter((item) => item.myRegistration === 'going' || item.myRegistration === 'waitlisted').length +
+    checkInReports.filter((report) => report.authorName === user.name).length +
+    posts.filter((post) => post.authorName === user.name).length;
 
-      <section className="side-info profile-section profile-header">
-        <span className="avatar avatar--large" aria-hidden="true">{user.shortName.slice(0, 1)}</span>
-        <div className="profile-header-info">
-          <h2>{user.name}</h2>
-          <p>{user.role} · {user.team}</p>
-          <div className="profile-contact-rows">
-            <span>an.nguyen@ikameglobal.com</span>
-            <span>Slack @an.nguyen</span>
-            <span>{user.timezone}</span>
+  return (
+    <div className="page profile-page">
+      <section className="profile-hero" aria-label="Thông tin cá nhân">
+        <div className="profile-cover" aria-hidden="true" />
+        <div className="profile-identity">
+          <span className="profile-avatar" aria-hidden="true">{user.shortName.slice(0, 1)}</span>
+          <div className="profile-identity-main">
+            <div className="profile-identity-name">
+              <h1>{user.name}</h1>
+              <StatusPill tone="success">Nhân viên chính thức</StatusPill>
+            </div>
+            <p className="profile-identity-role">{user.role} · {user.team}</p>
+            <div className="profile-contact-chips">
+              <span><EnvelopeSimple size={14} />an.nguyen@ikameglobal.com</span>
+              <span><SlackLogo size={14} />@an.nguyen</span>
+              <span><Clock size={14} />{user.timezone}</span>
+            </div>
           </div>
-          <StatusPill tone="success">Nhân viên chính thức</StatusPill>
+        </div>
+        <div className="profile-stats" role="list">
+          <div role="listitem">
+            <strong>{latestMilestone?.title ?? '—'}</strong>
+            <small>Cột mốc gần nhất · {latestMilestone?.dateLabel ?? ''}</small>
+          </div>
+          <div role="listitem">
+            <strong>{leaveBalance.annualRemaining}/{leaveBalance.annualTotal} ngày</strong>
+            <small>Phép năm còn lại</small>
+          </div>
+          <div role="listitem">
+            <strong>{equipment.length} thiết bị</strong>
+            <small>Đang được cấp</small>
+          </div>
+          <div role="listitem">
+            <strong>{activityCount}</strong>
+            <small>Hoạt động gần đây</small>
+          </div>
         </div>
       </section>
 
-      <ProfileOrgSection user={user} />
-      <ProfileHrSection seniorityEntries={seniorityEntries} leaveBalance={leaveBalance} equipment={equipment} />
-      <ProfileActivity user={user} news={news} events={events} checkInReports={checkInReports} posts={posts} />
+      <div className="profile-grid">
+        <div className="profile-main">
+          <ProfileActivity user={user} news={news} events={events} checkInReports={checkInReports} posts={posts} />
+          <ProfileTimeline entries={seniorityEntries} />
+        </div>
+        <aside className="profile-rail">
+          <ProfileOrgSection user={user} />
+          <ProfileLeave leaveBalance={leaveBalance} />
+          <ProfilePay payslips={payslips} contractInfo={contractInfo} />
+          <ProfileEquipment equipment={equipment} />
+        </aside>
+      </div>
 
-      <section className="side-info profile-section">
-        <SectionHeader title="Hiển thị" />
-        <p>Chuyển đổi giao diện sáng/tối cho toàn bộ ứng dụng.</p>
-        <Button icon={theme === 'light' ? <Moon size={18} /> : <Sun size={18} />} onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-          {theme === 'light' ? 'Bật giao diện tối' : 'Bật giao diện sáng'}
-        </Button>
-      </section>
-
-      <section className="side-info profile-section">
-        <SectionHeader title="Demo" />
-        <p>Đưa toàn bộ dữ liệu demo (tin tức, sự kiện, thông báo, mục chú ý, mục tiêu, Cộng đồng, hội thoại Ask iKame) về trạng thái ban đầu. Giao diện sáng/tối và góc nhìn được giữ nguyên.</p>
-        <Button icon={<ArrowCounterClockwise size={18} />} onClick={resetDemo}>Đặt lại dữ liệu demo</Button>
-        {resetReceipt && <p className="receipt" role="status">Đã đặt lại dữ liệu demo về trạng thái ban đầu.</p>}
+      <section className="profile-settings" aria-label="Cài đặt">
+        <div className="side-info profile-section profile-setting-card">
+          <div>
+            <strong>Hiển thị</strong>
+            <p>Chuyển đổi giao diện sáng/tối cho toàn bộ ứng dụng.</p>
+          </div>
+          <Button icon={theme === 'light' ? <Moon size={18} /> : <Sun size={18} />} onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+            {theme === 'light' ? 'Giao diện tối' : 'Giao diện sáng'}
+          </Button>
+        </div>
+        <div className="side-info profile-section profile-setting-card">
+          <div>
+            <strong>Demo</strong>
+            <p>Đưa dữ liệu demo (tin tức, sự kiện, mục tiêu, iKame Feed, hội thoại AI) về trạng thái ban đầu.</p>
+            {resetReceipt && <p className="receipt" role="status">Đã đặt lại dữ liệu demo về trạng thái ban đầu.</p>}
+          </div>
+          <Button icon={<ArrowCounterClockwise size={18} />} onClick={resetDemo}>Đặt lại demo</Button>
+        </div>
       </section>
     </div>
   );

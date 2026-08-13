@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 import {
   attentionItems,
+  contractInfo,
   eksObjectives,
   equipment,
   initialBirthdays,
@@ -13,11 +14,13 @@ import {
   initialNews,
   initialNotifications,
   initialPosts,
+  initialRequests,
   initialTopFans,
   knowledgeDocs,
   leaveBalance,
   memberEksStats,
   okrTree,
+  payslips,
   seniorityEntries,
   users,
 } from './data/mockData';
@@ -36,6 +39,7 @@ import type {
   Perspective,
   Post,
   ReactionKind,
+  RequestItem,
   User,
 } from './types';
 
@@ -78,6 +82,7 @@ function appendComment(posts: Post[], postId: string, comment: Comment): Post[] 
 
 type NewPostInput = { body: string; cover?: Post['cover']; official?: boolean };
 type SubmitReportInput = Omit<CheckInReport, 'id' | 'submittedAt'>;
+type NewRequestInput = Omit<RequestItem, 'id' | 'createdAtLabel' | 'status'>;
 
 type AppStateValue = {
   perspective: Perspective;
@@ -101,12 +106,16 @@ type AppStateValue = {
   checkInReports: CheckInReport[];
   // Demo v2 — ⌘K palette open state.
   searchOpen: boolean;
+  // iRequest center — mọi request (kể cả tạo qua Trợ lý AI) theo dõi ở đây.
+  requests: RequestItem[];
   // Demo v2 — read-only pass-through fixtures (no mutator; nothing writes to these — YAGNI).
   milestones: typeof initialMilestones;
   topFans: typeof initialTopFans;
   leaveBalance: typeof leaveBalance;
   equipment: typeof equipment;
   seniorityEntries: typeof seniorityEntries;
+  payslips: typeof payslips;
+  contractInfo: typeof contractInfo;
   okrTree: typeof okrTree;
   eks: typeof eksObjectives;
   memberEksStats: typeof memberEksStats;
@@ -128,6 +137,8 @@ type AppStateValue = {
   congratulate: (birthdayId: string) => void;
   submitDailyCheckIn: (mode: 'WFO' | 'Remote') => void;
   submitReport: (input: SubmitReportInput) => void;
+  addRequest: (input: NewRequestInput) => void;
+  addNewsComment: (postId: string, text: string) => void;
   setSearchOpen: (open: boolean) => void;
   resetDemo: () => void;
 };
@@ -152,6 +163,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const [dailyCheckIn, setDailyCheckIn] = useState(initialDailyCheckIn);
   const [checkInReports, setCheckInReports] = useState(initialCheckInReports);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [requests, setRequests] = useState(initialRequests);
 
   useEffect(() => { writeStored(THEME_STORAGE_KEY, theme); }, [theme]);
   useEffect(() => { writeStored(PERSPECTIVE_STORAGE_KEY, perspective); }, [perspective]);
@@ -176,11 +188,14 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     dailyCheckIn,
     checkInReports,
     searchOpen,
+    requests,
     milestones: initialMilestones,
     topFans: initialTopFans,
     leaveBalance,
     equipment,
     seniorityEntries,
+    payslips,
+    contractInfo,
     okrTree,
     eks: eksObjectives,
     memberEksStats,
@@ -287,6 +302,29 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         ? { ...item, status: 'on_track', lastCheckIn: 'Vừa xong', progress: input.progressAfter }
         : item));
     },
+    addRequest: (input) => {
+      setRequests((items) => [{
+        ...input,
+        id: generateId('req'),
+        status: 'pending',
+        createdAtLabel: `Hôm nay · ${nowTimeLabel()}`,
+      }, ...items]);
+    },
+    addNewsComment: (postId, text) => {
+      setNews((items) => items.map((item) => item.id === postId
+        ? {
+          ...item,
+          comments: [...(item.comments ?? []), {
+            id: generateId('news-comment'),
+            authorName: user.name,
+            authorShort: user.shortName,
+            role: user.role,
+            text,
+            time: 'Vừa xong',
+          }],
+        }
+        : item));
+    },
     setSearchOpen,
     // Restores every mutable slice so the presenter can re-run the golden path.
     // Deliberately does NOT reset theme/perspective (RED TEAM F13).
@@ -303,10 +341,11 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       setDailyCheckIn(initialDailyCheckIn);
       setCheckInReports(initialCheckInReports);
       setSearchOpen(false);
+      setRequests(initialRequests);
       setDemoResetCount((count) => count + 1);
     },
   }), [askOpen, attention, birthdays, checkInReports, dailyCheckIn, demoResetCount, events, goals, news,
-    notificationOpen, notifications, perspective, posts, searchOpen, theme, user]);
+    notificationOpen, notifications, perspective, posts, requests, searchOpen, theme, user]);
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;
 }

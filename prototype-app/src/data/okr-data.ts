@@ -43,7 +43,7 @@ export const okrTree: Objective[] = [
     cycle: 'H2-2026',
     keyResults: [
       { id: 'kr-people-1', title: 'Tăng tỉ lệ hoàn thành onboarding đúng hạn', progress: 78, unitLabel: '% hoàn thành', status: 'on_track' },
-      { id: 'kr-people-2', title: 'Triển khai Cộng đồng nội bộ cho 100% iKamer', progress: 64, unitLabel: '% hoàn thành', status: 'on_track' },
+      { id: 'kr-people-2', title: 'Triển khai iKame Feed cho 100% iKamer', progress: 64, unitLabel: '% hoàn thành', status: 'on_track' },
     ],
   },
   {

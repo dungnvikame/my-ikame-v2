@@ -1,7 +1,8 @@
-import { ArrowRight, CheckCircle, Clock, Newspaper, ShieldWarning } from '@phosphor-icons/react';
+import { ArrowRight, BookBookmark, ChatsCircle, CheckCircle, Clock, Newspaper, ShieldWarning, Target, Users } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { useAppState } from '../AppState';
-import { EventCard, NewsCard, QuickAction } from '../components/ContentCards';
+import { AIAssistant } from '../components/AIAssistant';
+import { EventCard, NewsCard } from '../components/ContentCards';
 import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
 import { isEligible } from '../lib/audience';
 import { rankCards, type RankableCard } from '../lib/ranking';
@@ -73,8 +74,11 @@ function eventStatusLabel(event: EventItem): string {
 }
 
 export function HomePage() {
-  const { user, news, events } = useAppState();
+  const { user, news, events, goals, knowledgeDocs, posts } = useAppState();
   const now = new Date();
+
+  const needsCheckInCount = goals.filter((goal) => goal.status === 'needs_update').length;
+  const eligibleDocsCount = knowledgeDocs.filter((doc) => isEligible(user, doc.audienceTeamIds)).length;
 
   const eligibleNews = news.filter((post) => !post.expired && isEligible(user, post.audienceTeamIds));
   const eligibleEvents = events.filter((event) => event.status !== 'past' && event.status !== 'cancelled' && isEligible(user, event.audienceTeamIds));
@@ -97,44 +101,27 @@ export function HomePage() {
   const upcomingCandidates = eligibleEvents.map((event): HomeCard => ({ kind: 'event', event }));
   const upcomingEvents = eventsFrom(rankHomeCards(upcomingCandidates, now)).slice(0, 2);
 
-  const unreadNewsCount = eligibleNews.filter((post) => !post.read).length;
   const activeTotal = registeredEvents.length + targetedUnreadNews.length;
 
-  const weekday = now.toLocaleDateString('vi-VN', { weekday: 'long' });
-  const dayMonth = now.toLocaleDateString('vi-VN', { day: '2-digit', month: 'long' });
-  const greeting = now.getHours() < 12 ? 'Chào buổi sáng' : now.getHours() < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
   const statusLine = activeTotal > 0
     ? `Bạn có ${activeTotal} việc cần chú ý và ${eligibleEvents.length} sự kiện sắp diễn ra.`
     : `Bạn đã xử lý hết việc cần chú ý, còn ${eligibleEvents.length} sự kiện sắp diễn ra.`;
 
   return (
     <div className="page overview-page">
-      <header className="context-header">
-        <div>
-          <p className="eyebrow">{`${weekday}, ${dayMonth}`.toUpperCase()}</p>
-          <h1>{greeting}, {user.shortName}</h1>
-          <p>{statusLine}</p>
-        </div>
-        <div className="day-signal"><span className="signal-dot" />Mọi hệ thống hoạt động bình thường</div>
-      </header>
+      <AIAssistant subtitle={statusLine} />
 
       {hero && (
-        <section className="priority-hero" aria-labelledby="priority-title">
-          <div className="priority-icon"><ShieldWarning size={28} weight="duotone" /></div>
+        <section className="priority-hero priority-hero--compact" aria-labelledby="priority-title">
+          <div className="priority-icon"><ShieldWarning size={18} weight="duotone" /></div>
           <div className="priority-copy">
             <div className="card-badges">
               <StatusPill tone="error">Cần xác nhận</StatusPill>
               {hero.dueLabel && <StatusPill>{hero.dueLabel}</StatusPill>}
             </div>
             <h2 id="priority-title">{hero.title}</h2>
-            <p>{hero.summary}</p>
-            <span className="reason-text">
-              {hero.audienceTeamIds?.length
-                ? 'Hiển thị vì đây là thông báo bắt buộc dành riêng cho team của bạn.'
-                : 'Hiển thị vì đây là thông báo bắt buộc dành cho toàn bộ iKamer.'}
-            </span>
           </div>
-          <Link className="button button--primary" to={`/news/${hero.id}`}>Đọc và xác nhận<ArrowRight size={17} /></Link>
+          <Link className="button button--primary" to={`/news/${hero.id}`}>Đọc & xác nhận<ArrowRight size={16} /></Link>
         </section>
       )}
 
@@ -176,11 +163,28 @@ export function HomePage() {
 
         <aside className="home-rail">
           <section>
-            <SectionHeader title="Thao tác nhanh" />
+            <SectionHeader title="Lối tắt của bạn" />
             <div className="quick-actions">
-              <QuickAction icon="event" label="Sự kiện đã đăng ký" note={`${registeredEvents.length} sự kiện sắp tới`} />
-              <QuickAction icon="news" label="Bài viết chưa đọc" note={`${unreadNewsCount} bài viết`} />
-              <QuickAction icon="team" label="Danh bạ iKame" note="Tìm đồng nghiệp" />
+              <Link className="quick-action" to="/goals">
+                <span className="quick-action-icon"><Target size={20} /></span>
+                <span><strong>Mục tiêu của tôi</strong><small>{needsCheckInCount > 0 ? `${needsCheckInCount} mục tiêu cần check-in` : 'Tất cả đã cập nhật'}</small></span>
+                <ArrowRight size={16} />
+              </Link>
+              <Link className="quick-action" to="/knowledge">
+                <span className="quick-action-icon"><BookBookmark size={20} /></span>
+                <span><strong>Tri thức</strong><small>{eligibleDocsCount} tài liệu dành cho bạn</small></span>
+                <ArrowRight size={16} />
+              </Link>
+              <Link className="quick-action" to="/community">
+                <span className="quick-action-icon"><ChatsCircle size={20} /></span>
+                <span><strong>iKame Feed</strong><small>{posts.length} bài viết từ đồng nghiệp</small></span>
+                <ArrowRight size={16} />
+              </Link>
+              <Link className="quick-action" to="/search">
+                <span className="quick-action-icon"><Users size={20} /></span>
+                <span><strong>Danh bạ iKame</strong><small>Tìm đồng nghiệp, tin tức, tài liệu</small></span>
+                <ArrowRight size={16} />
+              </Link>
             </div>
           </section>
           <section className="section-block">
@@ -196,21 +200,6 @@ export function HomePage() {
         </aside>
       </div>
 
-      <section className="section-block">
-        <SectionHeader title="Sắp có trên My iKame" meta="Đang được phát triển" />
-        <div className="quick-actions">
-          <Link className="quick-action" to="/knowledge">
-            <StatusPill tone="info">R2</StatusPill>
-            <span><strong>Tri thức gợi ý</strong><small>Sắp ra mắt</small></span>
-            <ArrowRight size={16} />
-          </Link>
-          <Link className="quick-action" to="/goals">
-            <StatusPill tone="info">R3</StatusPill>
-            <span><strong>Mục tiêu của tôi</strong><small>Sắp ra mắt</small></span>
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }

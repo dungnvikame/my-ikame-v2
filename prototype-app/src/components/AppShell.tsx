@@ -3,7 +3,6 @@ import {
   BookBookmark,
   CalendarDots,
   ChatsCircle,
-  Compass,
   House,
   MagnifyingGlass,
   Moon,
@@ -11,6 +10,7 @@ import {
   SidebarSimple,
   Sparkle,
   Target,
+  Ticket,
   Sun,
   UsersThree,
   X,
@@ -18,6 +18,7 @@ import {
 import { useEffect, useRef, useState, type KeyboardEvent, type PropsWithChildren } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
+import { BrandLogo } from './BrandLogo';
 import { IconButton, StatusPill } from './UI';
 import { NotificationList } from '../pages/NotificationsPage';
 import { AskIKamePanel } from './assistant/AskIKamePanel';
@@ -29,9 +30,11 @@ type NavGroup = { label: string; items: NavEntry[] };
 const iKamerNavGroups: NavGroup[] = [
   { label: 'KHÔNG GIAN CỦA BẠN', items: [
     { label: 'Trang chủ', to: '/home', icon: House },
-    { label: 'Cộng đồng', to: '/community', icon: ChatsCircle },
+    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
+    { label: 'iKame Feed', to: '/community', icon: ChatsCircle },
     { label: 'Tin tức', to: '/news', icon: Newspaper },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+    { label: 'iRequest', to: '/requests', icon: Ticket },
   ] },
   { label: 'PHÁT TRIỂN', items: [
     { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
@@ -42,9 +45,11 @@ const iKamerNavGroups: NavGroup[] = [
 // Manager's home is "Tổng quan" in the QUẢN LÝ group — group 1 omits Trang chủ.
 const managerNavGroups: NavGroup[] = [
   { label: 'KHÔNG GIAN CỦA BẠN', items: [
-    { label: 'Cộng đồng', to: '/community', icon: ChatsCircle },
+    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
+    { label: 'iKame Feed', to: '/community', icon: ChatsCircle },
     { label: 'Tin tức', to: '/news', icon: Newspaper },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+    { label: 'iRequest', to: '/requests', icon: Ticket },
   ] },
   { label: 'PHÁT TRIỂN', items: [
     { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
@@ -59,24 +64,24 @@ const managerNavGroups: NavGroup[] = [
 // Fixed 5 — NOT navGroups.flat().slice(0,5); mobile bottom-nav has its own curated set.
 const iKamerBottomNav: NavEntry[] = [
   { label: 'Trang chủ', to: '/home', icon: House },
-  { label: 'Cộng đồng', to: '/community', icon: ChatsCircle },
+  { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
+  { label: 'Feed', to: '/community', icon: ChatsCircle },
   { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-  { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
   { label: 'Mục tiêu', to: '/goals', icon: Target },
 ];
 
 const managerBottomNav: NavEntry[] = [
   { label: 'Tổng quan', to: '/manager/overview', icon: House },
-  { label: 'Cộng đồng', to: '/community', icon: ChatsCircle },
+  { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
+  { label: 'Feed', to: '/community', icon: ChatsCircle },
   { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-  { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
   { label: 'Mục tiêu', to: '/goals', icon: Target },
 ];
 
 function Logo() {
   return (
     <div className="brand" aria-label="My iKame">
-      <span className="brand-mark" aria-hidden="true">iK</span>
+      <BrandLogo size={36} />
       <span className="brand-name">My iKame</span>
     </div>
   );
@@ -200,7 +205,7 @@ export function AppShell({ children }: PropsWithChildren) {
               <div key={group.label} className="nav-group">
                 <p className="nav-label">{group.label}</p>
                 {group.items.map(({ label, to, icon: Icon }) => (
-                  <NavLink key={to} to={to} end className={({ isActive }) => `nav-item ${isActive ? 'is-active' : ''}`}>
+                  <NavLink key={to} to={to} end title={label} className={({ isActive }) => `nav-item ${isActive ? 'is-active' : ''}`}>
                     <Icon size={18} />
                     <span>{label}</span>
                   </NavLink>
@@ -210,10 +215,6 @@ export function AppShell({ children }: PropsWithChildren) {
           </nav>
         </div>
         <div className="sidebar-account">
-          <NavLink to="/vision" className="sidebar-vision-link">
-            <Compass size={18} />
-            <span>Tầm nhìn</span>
-          </NavLink>
           <PerspectiveSwitch />
           <NavLink to="/profile" className="account-row">
             <span className="avatar" aria-hidden="true">{user.shortName.slice(0, 1)}</span>

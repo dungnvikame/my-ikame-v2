@@ -4,8 +4,8 @@
     {
       "name": "my-ikame-prototype",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "prototype-app", "run", "dev", "--", "--port", "5173"],
-      "port": 5173
+      "runtimeArgs": ["--prefix", "prototype-app", "run", "dev", "--", "--port", "5180"],
+      "port": 5180
     }
   ]
 }

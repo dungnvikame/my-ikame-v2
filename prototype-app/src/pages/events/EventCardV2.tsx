@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { StatusPill } from '../../components/UI';
 import type { EventItem } from '../../types';
-import { audienceStatusLabel, eventCoverPalette, eventEmoji } from './event-visuals';
+import { eventCoverPalette, eventEmoji } from './event-visuals';
 
 export type CapacityInfo = { registered: number; capacity: number; ratio: number; label: string };
 
@@ -108,7 +108,6 @@ export function EventCardV2({ event, highlighted = false, cardRef }: EventCardV2
             <ParticipantSummary event={event} />
           </div>
           <div className="events-v2-card-footer-right">
-            {event.myRegistration === 'going' && <StatusPill tone="success">{audienceStatusLabel(event)}</StatusPill>}
             {capacity && (
               <div className="events-v2-capacity" aria-label={capacity.label}>
                 <div className="events-v2-capacity-bar"><span style={{ width: `${capacity.ratio * 100}%` }} /></div>

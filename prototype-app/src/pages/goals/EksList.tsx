@@ -1,6 +1,5 @@
-import { SectionHeader, StatusPill } from '../../components/UI';
+import { SectionHeader } from '../../components/UI';
 import type { EksObjective } from '../../types';
-import { STATUS_META } from './build-okr-tree';
 
 type EksListProps = {
   eks: EksObjective[];
@@ -48,7 +47,6 @@ function EksObjectiveRow({ objective }: { objective: EksObjective }) {
               </div>
               <span>{ks.progress}%</span>
             </div>
-            <StatusPill tone={STATUS_META[ks.status].tone}>{STATUS_META[ks.status].label}</StatusPill>
           </li>
         ))}
       </ul>

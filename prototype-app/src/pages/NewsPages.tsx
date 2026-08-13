@@ -1,8 +1,8 @@
-import { ArrowLeft, CheckCircle, MagnifyingGlass, SealCheck, ShareNetwork, WarningCircle } from '@phosphor-icons/react';
-import { useEffect, useMemo, useState } from 'react';
+import { ArrowLeft, ChatCircleText, CheckCircle, MagnifyingGlass, PaperPlaneTilt, SealCheck, ShareNetwork, WarningCircle } from '@phosphor-icons/react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
-import { NewsCard } from '../components/ContentCards';
+import { NewsCard, newsTopicVisual } from '../components/ContentCards';
 import { Button, EmptyState, SectionHeader, SourceLine, StatusPill } from '../components/UI';
 import { isEligible } from '../lib/audience';
 import { rankCards } from '../lib/ranking';
@@ -59,10 +59,12 @@ export function NewsPage() {
         <label className="filter-input"><MagnifyingGlass size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Tìm trong tin tức" placeholder="Tìm trong tin tức" /></label>
       </div>
       {allTopics.length > 1 && (
-        <div className="neutral-tabs" role="group" aria-label="Lọc theo chủ đề">
-          <button aria-pressed={topics.size === 0} className={topics.size === 0 ? 'is-active' : ''} onClick={() => setTopics(new Set())}>Tất cả chủ đề</button>
+        <div className="topic-chips" role="group" aria-label="Lọc theo chủ đề">
+          <button type="button" aria-pressed={topics.size === 0} className={`topic-chip ${topics.size === 0 ? 'is-active' : ''}`} onClick={() => setTopics(new Set())}>Tất cả chủ đề</button>
           {allTopics.map((topic) => (
-            <button key={topic} aria-pressed={topics.has(topic)} className={topics.has(topic) ? 'is-active' : ''} onClick={() => toggleTopic(topic)}>{topic}</button>
+            <button key={topic} type="button" aria-pressed={topics.has(topic)} className={`topic-chip ${topics.has(topic) ? 'is-active' : ''}`} onClick={() => toggleTopic(topic)}>
+              {newsTopicVisual(topic).emoji} {topic}
+            </button>
           ))}
         </div>
       )}
@@ -70,7 +72,11 @@ export function NewsPage() {
       {highlighted ? (
         <>
           <section className="news-feature" aria-label="Tin nổi bật">
-            <div className="news-feature-visual" aria-hidden="true"><span>MY iKAME</span><strong>INSIDE</strong><small>Official updates for everyone</small></div>
+            <div className={`news-feature-visual events-v2-cover events-v2-cover--${newsTopicVisual(highlighted.topic).palette}`} aria-hidden="true">
+              <span className="news-feature-emoji">{newsTopicVisual(highlighted.topic).emoji}</span>
+              <span className="news-feature-kicker">TIN NỔI BẬT</span>
+              <strong>{highlighted.topic}</strong>
+            </div>
             <div className="news-feature-copy">
               <div className="card-badges">{highlighted.official && <StatusPill tone="info"><SealCheck size={14} />Chính thức</StatusPill>}<StatusPill>{highlighted.topic}</StatusPill></div>
               <h2>{highlighted.title}</h2>
@@ -108,6 +114,55 @@ export function ArticlePage() {
   return <ArticleDetail post={post} />;
 }
 
+/** Bình luận trên bài Tin tức — cùng contract Comment với iKame Feed. */
+function ArticleComments({ post }: { post: NewsPost }) {
+  const { user, addNewsComment } = useAppState();
+  const [text, setText] = useState('');
+  const comments = post.comments ?? [];
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    addNewsComment(post.id, trimmed);
+    setText('');
+  }
+
+  return (
+    <section className="article-comments" aria-label="Bình luận">
+      <h2><ChatCircleText size={18} />Bình luận ({comments.length})</h2>
+      {comments.length === 0 ? (
+        <p className="muted-text">Chưa có bình luận nào — hãy là người đầu tiên chia sẻ ý kiến.</p>
+      ) : (
+        <ul className="article-comment-list">
+          {comments.map((comment) => (
+            <li key={comment.id}>
+              <span className="avatar" aria-hidden="true">{comment.authorShort.slice(0, 1)}</span>
+              <div className="article-comment-body">
+                <p className="article-comment-meta"><strong>{comment.authorName}</strong>{comment.role && <span> · {comment.role}</span>}<span> · {comment.time}</span></p>
+                <p>{comment.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <form className="article-comment-form" onSubmit={handleSubmit}>
+        <span className="avatar" aria-hidden="true">{user.shortName.slice(0, 1)}</span>
+        <input
+          type="text"
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          placeholder="Viết bình luận..."
+          aria-label="Viết bình luận"
+        />
+        <button type="submit" className="assistant-send" aria-label="Gửi bình luận" disabled={!text.trim()}>
+          <PaperPlaneTilt size={16} weight="fill" />
+        </button>
+      </form>
+    </section>
+  );
+}
+
 function ArticleDetail({ post }: { post: NewsPost }) {
   const { acknowledgeNews, markNewsRead } = useAppState();
   const [receipt, setReceipt] = useState(false);
@@ -137,7 +192,11 @@ function ArticleDetail({ post }: { post: NewsPost }) {
             <p className="article-lead">{post.summary}</p>
             <SourceLine source={post.publisher} time={`${post.publishedAt} · ${post.readingTime}`} />
           </div>
-          <div className="article-visual" aria-hidden="true"><span>OFFICIAL UPDATE</span><strong>iKame<br />Security</strong></div>
+          <div className={`article-visual events-v2-cover events-v2-cover--${newsTopicVisual(post.topic).palette}`} aria-hidden="true">
+            <span className="news-feature-emoji">{newsTopicVisual(post.topic).emoji}</span>
+            <span>{post.official ? 'OFFICIAL UPDATE' : 'iKAME NEWS'}</span>
+            <strong>{post.topic}</strong>
+          </div>
           <div className="article-body">
             <h2>Điều bạn cần biết</h2>
             {post.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
@@ -148,6 +207,7 @@ function ArticleDetail({ post }: { post: NewsPost }) {
               <li>Chọn “Xác nhận đã đọc” sau khi hoàn tất.</li>
             </ul>
           </div>
+          <ArticleComments post={post} />
         </article>
 
         <aside className="action-rail">

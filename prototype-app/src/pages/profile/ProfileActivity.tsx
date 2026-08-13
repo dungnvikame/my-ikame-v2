@@ -33,7 +33,7 @@ export function ProfileActivity({ user, news, events, checkInReports, posts }: P
     })),
     ...posts.filter((post) => post.authorName === user.name).map((post): ActivityRow => ({
       id: `post-${post.id}`, icon: <Newspaper size={18} weight="duotone" />,
-      label: `Đã đăng lên Cộng đồng: ${post.body.slice(0, 60)}${post.body.length > 60 ? '…' : ''}`, href: '/community',
+      label: `Đã đăng lên iKame Feed: ${post.body.slice(0, 60)}${post.body.length > 60 ? '…' : ''}`, href: '/community',
     })),
   ].slice(0, 6);
 
@@ -41,7 +41,7 @@ export function ProfileActivity({ user, news, events, checkInReports, posts }: P
     <section className="side-info profile-section">
       <SectionHeader title="Hoạt động gần đây" />
       {rows.length === 0 ? (
-        <EmptyState title="Chưa có hoạt động nào" body="Xác nhận tin tức, đăng ký sự kiện, gửi báo cáo hoặc đăng bài trong Cộng đồng để thấy ở đây." />
+        <EmptyState title="Chưa có hoạt động nào" body="Xác nhận tin tức, đăng ký sự kiện, gửi báo cáo hoặc đăng bài trong iKame Feed để thấy ở đây." />
       ) : (
         <ul className="profile-activity-list">
           {rows.map((row) => (

@@ -87,6 +87,10 @@ export const initialNews: NewsPost[] = [
     highlighted: true,
     read: true,
     acknowledged: false,
+    comments: [
+      { id: 'nc-iconnect-1', authorName: 'Minh Trần', authorShort: 'Minh', role: 'Frontend Developer', text: 'Phần L&D tháng trước rất hay, mong chờ chủ đề lần này! 🙌', time: 'Hôm qua · 17:05' },
+      { id: 'nc-iconnect-2', authorName: 'Hà Phạm', authorShort: 'Hà', role: 'QA Engineer', text: 'Team QA sẽ có một phần chia sẻ ngắn về quality mindset nhé mọi người.', time: 'Hôm nay · 08:30' },
+    ],
   },
   {
     id: 'product-sharing',
@@ -638,7 +642,7 @@ export const knowledgeDocs: KnowledgeDoc[] = [
     body: [
       'iKame vận hành theo 5 giá trị cốt lõi — chi tiết trong tài liệu Chính sách văn hoá iKame 2026.',
       'Tuần đầu: nhận tài khoản, gặp buddy, cài đặt công cụ làm việc (My iKame, chat nội bộ, email).',
-      'Tuần hai: thống nhất mục tiêu thử việc với quản lý trực tiếp, tham gia Cộng đồng để kết nối với các team khác.',
+      'Tuần hai: thống nhất mục tiêu thử việc với quản lý trực tiếp, tham gia iKame Feed để kết nối với các team khác.',
     ],
     source: 'iWiki',
     topic: 'Nhân sự',

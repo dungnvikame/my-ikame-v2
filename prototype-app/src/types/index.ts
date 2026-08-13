@@ -72,6 +72,8 @@ export type NewsPost = {
   expired?: boolean;
   read: boolean;
   acknowledged: boolean;
+  /** Bình luận trên bài Tin tức — undefined coi như chưa có bình luận nào. */
+  comments?: Comment[];
 };
 
 export type EventRegistration = 'not_registered' | 'going' | 'waitlisted';
@@ -181,6 +183,21 @@ export type Milestone = { id: string; name: string; shortName: string; years: nu
 export type TopFan = { id: string; name: string; shortName: string; points: number; note: string };
 export type DailyCheckIn = { done: boolean; mode?: 'WFO' | 'Remote'; timeLabel?: string };
 export type LeaveBalance = { annualTotal: number; annualUsed: number; annualRemaining: number; carriedOver: number; sickUsed: number; insuranceLabel: string; healthCheckLabel: string };
+/** Lương & hợp đồng (Hồ sơ) — số tiền che mặc định, xem chi tiết qua handoff iHRM. */
+export type Payslip = { id: string; periodLabel: string; amountMasked: string; amountRevealed: string; statusLabel: string };
+export type ContractInfo = { type: string; signedAt: string; validity: string; workMode: string };
+/** iRequest center (demo) — mọi request tạo qua AI front door đều theo dõi được ở đây. */
+export type RequestType = 'IT support' | 'Nhân sự' | 'Hành chính' | 'Thiết bị';
+export type RequestStatus = 'pending' | 'in_progress' | 'done';
+export type RequestItem = {
+  id: string;
+  type: RequestType;
+  title: string;
+  status: RequestStatus;
+  createdAtLabel: string;
+  slaLabel?: string;
+  handlerLabel?: string;
+};
 export type Equipment = { id: string; name: string; model: string; serial: string; assignedAt: string; condition: string };
 export type SeniorityEntry = { id: string; dateLabel: string; title: string; note: string };
 

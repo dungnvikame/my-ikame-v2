@@ -283,21 +283,41 @@
 }
 
 /* --- Stat cards --- */
+/* Dải stat mỏng 1 hàng — không chiếm chiều dọc, đẩy danh sách sự kiện lên cao hơn. */
 .events-v2-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-12);
+  background: var(--bg-primary);
+  overflow: hidden;
 }
 
 .events-v2-stat-card {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  min-width: 0;
+}
+
+.events-v2-stat-card + .events-v2-stat-card {
+  border-left: 1px solid var(--border-primary);
+}
+
+.events-v2-stat-copy {
+  display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 18px;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-12);
-  background: var(--bg-primary);
+  min-width: 0;
+}
+
+.events-v2-stat-copy strong {
+  font-weight: var(--font-semibold);
+}
+
+.events-v2-stat-copy span {
+  font-size: var(--body-xs-size);
 }
 
 .events-v2-stat-icon {
@@ -313,8 +333,8 @@
 .events-v2-stat-icon--amber { background: var(--bg-amber-subtle); color: var(--fg-amber-accent); }
 
 .events-v2-stat-card strong {
-  font-size: var(--headline-l-size);
-  line-height: var(--headline-l-line);
+  font-size: var(--body-l-size);
+  line-height: var(--body-l-line);
 }
 
 .events-v2-stat-card span {

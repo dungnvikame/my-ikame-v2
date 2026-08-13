@@ -1,4 +1,4 @@
-import type { DailyCheckIn, Equipment, LeaveBalance, SeniorityEntry } from '../types';
+import type { ContractInfo, DailyCheckIn, Equipment, LeaveBalance, Payslip, RequestItem, SeniorityEntry } from '../types';
 
 // Hồ sơ (Demo v2) — dữ liệu hư cấu của An, không dùng thông tin nhân viên thật.
 export const initialDailyCheckIn: DailyCheckIn = { done: false };
@@ -24,4 +24,25 @@ export const seniorityEntries: SeniorityEntry[] = [
   { id: 'seniority-promo', dateLabel: '01/2024', title: 'Lên Product Designer', note: 'Được xác nhận chính thức vai trò Product Designer sau giai đoạn thử việc.' },
   { id: 'seniority-award', dateLabel: 'Q4-2025', title: 'Giải iKame Star Q4-2025', note: 'Ghi nhận đóng góp nổi bật trong dự án Core DS 1.1.' },
   { id: 'seniority-2years', dateLabel: '06/2025', title: 'Tròn 2 năm đồng hành', note: 'Kỷ niệm 2 năm gắn bó cùng iKame.' },
+];
+
+// Lương & hợp đồng — số liệu hư cấu; số tiền che mặc định, xem đầy đủ qua handoff iHRM.
+export const contractInfo: ContractInfo = {
+  type: 'HĐLĐ không xác định thời hạn',
+  signedAt: '01/12/2023',
+  validity: 'Đang hiệu lực',
+  workMode: 'Toàn thời gian · Hybrid (3 ngày văn phòng)',
+};
+
+export const payslips: Payslip[] = [
+  { id: 'payslip-07', periodLabel: 'Kỳ lương tháng 7/2026', amountMasked: '•• ••• ••• đ', amountRevealed: '32.400.000 đ', statusLabel: 'Đã thanh toán' },
+  { id: 'payslip-06', periodLabel: 'Kỳ lương tháng 6/2026', amountMasked: '•• ••• ••• đ', amountRevealed: '31.850.000 đ', statusLabel: 'Đã thanh toán' },
+  { id: 'payslip-05', periodLabel: 'Kỳ lương tháng 5/2026', amountMasked: '•• ••• ••• đ', amountRevealed: '31.850.000 đ', statusLabel: 'Đã thanh toán' },
+];
+
+// iRequest — seed 3 request ở 3 trạng thái để danh sách có chuyện để kể ngay khi mở.
+export const initialRequests: RequestItem[] = [
+  { id: 'req-hr-leave', type: 'Nhân sự', title: 'Đơn nghỉ phép 2 ngày (05–06/08)', status: 'done', createdAtLabel: '04/08 · 09:12', handlerLabel: 'HRBP đã duyệt' },
+  { id: 'req-admin-parking', type: 'Hành chính', title: 'Đăng ký chỗ gửi xe ô tô tầng B2', status: 'in_progress', createdAtLabel: '11/08 · 14:30', slaLabel: 'Phản hồi trong 2 ngày làm việc', handlerLabel: 'Office Operations' },
+  { id: 'req-device-monitor', type: 'Thiết bị', title: 'Xin cấp thêm màn hình phụ 27"', status: 'pending', createdAtLabel: 'Hôm nay · 08:45', slaLabel: 'Chờ quản lý duyệt', handlerLabel: 'IT Assets' },
 ];

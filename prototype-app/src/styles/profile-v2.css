@@ -1,66 +1,175 @@
-/* Hồ sơ rebuild (/profile) — Phase 6 owns this file. Classes prefixed `profile-`. */
+/* Hồ sơ redesign (/profile) — hero cover + quick stats + bố cục 2 cột. Prefix `profile-`. */
 
 .profile-page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+}
+
+/* ---------- Hero: cover + identity + stats ---------- */
+.profile-hero {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-16);
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.profile-cover {
+  height: 96px;
+  background:
+    radial-gradient(90% 160% at 15% 0%, rgb(247 98 38 / 0.28) 0%, transparent 60%),
+    radial-gradient(70% 140% at 85% 20%, rgb(247 98 38 / 0.16) 0%, transparent 55%),
+    var(--bg-accent-primary-subtle);
+}
+
+.profile-identity {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  padding: 0 24px 18px;
+  margin-top: -32px;
+}
+
+.profile-avatar {
+  flex-shrink: 0;
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  border: 4px solid var(--bg-primary);
+  border-radius: var(--radius-round);
+  background: var(--bg-accent-primary);
+  color: var(--fg-on-accent);
+  font-size: 32px;
+  font-weight: var(--font-semibold);
+}
+
+.profile-identity-main {
+  min-width: 0;
+  padding-top: 40px;
+}
+
+.profile-identity-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.profile-identity-name h1 {
+  margin: 0;
+  font-size: var(--body-xl-size);
+  line-height: var(--body-xl-line);
+  font-weight: var(--font-semibold);
+}
+
+.profile-identity-role {
+  margin: 2px 0 8px;
+  color: var(--text-secondary);
+}
+
+.profile-contact-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.profile-contact-chips span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-round);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: var(--body-xs-size);
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border-primary);
+}
+
+.profile-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 24px;
+  min-width: 0;
+}
+
+.profile-stats > div + div {
+  border-left: 1px solid var(--border-primary);
+}
+
+.profile-stats strong {
+  font-size: var(--body-m-size);
+  font-weight: var(--font-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-stats small {
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+/* ---------- Body: 2 cột ---------- */
+.profile-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.profile-main,
+.profile-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
 }
 
 .profile-section .section-header h2 {
   margin-top: 0;
 }
 
-/* Section 1 — header */
-.profile-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.profile-header-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.profile-header-info h2 {
-  margin-top: 0 !important;
-}
-
-.profile-contact-rows {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  color: var(--text-tertiary);
-  font-size: var(--body-xs-size);
-}
-
-/* Section 2 — Tổ chức */
+/* ---------- Tổ chức ---------- */
 .profile-org-manager {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-8);
+  background: var(--bg-secondary);
 }
 
 .profile-org-label {
-  margin-top: 12px;
+  margin-top: 14px;
   color: var(--text-tertiary);
   font-size: var(--body-xs-size);
+  font-weight: var(--font-semibold);
 }
 
 .profile-teammate-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .profile-teammate-list li {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 8px 0;
+}
+
+.profile-teammate-list li + li {
+  border-top: 1px solid var(--border-secondary);
 }
 
 .profile-teammate-list small,
@@ -70,43 +179,87 @@
   font-size: var(--body-xs-size);
 }
 
-/* Section 3 — Thâm niên & cột mốc */
+/* ---------- Thâm niên & cột mốc (timeline có đường nối) ---------- */
 .profile-timeline {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 4px;
-  padding-left: 4px;
+  gap: 18px;
+  margin-top: 6px;
+  padding-left: 2px;
 }
 
 .profile-timeline li {
+  position: relative;
   display: flex;
-  gap: 10px;
+  gap: 12px;
+}
+
+.profile-timeline li::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 18px;
+  bottom: -18px;
+  width: 2px;
+  background: var(--border-primary);
+}
+
+.profile-timeline li:last-child::before {
+  display: none;
 }
 
 .profile-timeline-dot {
+  position: relative;
+  z-index: 1;
   flex: none;
-  width: 10px;
-  height: 10px;
-  margin-top: 6px;
+  width: 12px;
+  height: 12px;
+  margin-top: 5px;
+  border: 2px solid var(--bg-primary);
   border-radius: var(--radius-round);
   background: var(--bg-accent-primary);
+  box-shadow: 0 0 0 1px var(--border-primary);
 }
 
-.profile-timeline small {
-  display: block;
+.profile-timeline-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.profile-timeline-head small {
   color: var(--text-tertiary);
   font-size: var(--body-xs-size);
 }
 
 .profile-timeline p {
   margin-top: 2px;
+  color: var(--text-secondary);
 }
 
-/* Section 4 — Nghỉ phép & phúc lợi */
+/* ---------- Nghỉ phép & phúc lợi ---------- */
+.profile-leave-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 2px 0 8px;
+}
+
+.profile-leave-summary strong {
+  font-size: 28px;
+  line-height: 1;
+  font-weight: var(--font-semibold);
+  color: var(--fg-accent-primary);
+}
+
+.profile-leave-summary span {
+  color: var(--text-secondary);
+}
+
 .profile-leave-bar {
-  height: 10px;
-  margin-top: 6px;
+  height: 8px;
   border-radius: var(--radius-round);
   background: var(--bg-tertiary);
   overflow: hidden;
@@ -118,42 +271,147 @@
   background: var(--bg-accent-primary);
 }
 
-.profile-leave-summary {
-  margin-top: 8px;
-  font-size: var(--body-m-size);
+.profile-leave-facts {
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0;
 }
 
-/* Section 5 — Thiết bị được cấp */
+.profile-leave-facts li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  font-size: var(--body-s-size);
+}
+
+.profile-leave-facts li + li {
+  border-top: 1px solid var(--border-secondary);
+}
+
+.profile-leave-facts span {
+  color: var(--text-secondary);
+}
+
+.profile-benefit-line {
+  margin-top: 4px;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+/* ---------- Lương & hợp đồng ---------- */
+.profile-contract {
+  padding: 12px 14px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-8);
+  background: var(--bg-secondary);
+}
+
+.profile-contract-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.profile-contract-head strong {
+  font-size: var(--body-s-size);
+  font-weight: var(--font-semibold);
+}
+
+.profile-contract small {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+}
+
+.profile-payslip-list {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0 12px;
+}
+
+.profile-payslip-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.profile-payslip-list li + li {
+  border-top: 1px solid var(--border-secondary);
+}
+
+.profile-payslip-copy strong {
+  display: block;
+  font-size: var(--body-s-size);
+  font-weight: var(--font-semibold);
+}
+
+.profile-payslip-copy small {
+  color: var(--fg-success);
+  font-size: var(--body-xs-size);
+}
+
+.profile-payslip-amount {
+  font-weight: var(--font-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.profile-payslip-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Thiết bị được cấp ---------- */
 .profile-equipment-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
   margin-top: 4px;
 }
 
 .profile-equipment-list li {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  gap: 12px;
   padding: 10px 0;
+}
+
+.profile-equipment-list li + li {
   border-top: 1px solid var(--border-secondary);
 }
 
-.profile-equipment-list li:first-child {
-  border-top: none;
-  padding-top: 0;
+.profile-equipment-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-8);
+  background: var(--bg-accent-primary-subtle);
+  color: var(--fg-accent-primary);
+}
+
+.profile-equipment-list small {
+  display: block;
+  color: var(--text-secondary);
+  font-size: var(--body-xs-size);
 }
 
 .profile-equipment-meta {
+  display: block;
+  margin-top: 2px;
   color: var(--text-tertiary);
   font-size: var(--body-xs-size);
 }
 
-/* Section 6 — Hoạt động gần đây (live) */
+/* ---------- Hoạt động gần đây (live) ---------- */
 .profile-activity-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   margin-top: 4px;
 }
 
@@ -161,10 +419,98 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--fg-accent-secondary);
+  padding: 9px 0;
+  color: var(--fg-accent-primary);
+}
+
+.profile-activity-list li + li {
+  border-top: 1px solid var(--border-secondary);
 }
 
 .profile-activity-list a {
   color: var(--text-primary);
   font-size: var(--body-s-size);
+}
+
+.profile-activity-list a:hover {
+  color: var(--fg-accent-primary);
+}
+
+/* ---------- Cài đặt ---------- */
+.profile-settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.profile-setting-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.profile-setting-card > div {
+  min-width: 0;
+}
+
+.profile-setting-card p {
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: var(--body-s-size);
+}
+
+.profile-setting-card .button {
+  flex-shrink: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-stats > div {
+    border-top: 1px solid var(--border-primary);
+  }
+
+  .profile-stats > div:nth-child(-n + 2) {
+    border-top: none;
+  }
+
+  .profile-stats > div:nth-child(3) {
+    border-left: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-identity {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-identity-main {
+    padding-top: 0;
+  }
+
+  .profile-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-stats > div {
+    border-left: none !important;
+  }
+
+  .profile-settings {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-setting-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

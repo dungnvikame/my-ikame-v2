@@ -19,22 +19,28 @@ export function EventStats({ events, now = new Date() }: EventStatsProps) {
     <div className="events-v2-stats">
       <article className="events-v2-stat-card">
         <span className="events-v2-stat-icon events-v2-stat-icon--blue"><CalendarDots size={20} weight="duotone" /></span>
-        <strong>{thisMonthCount}</strong>
-        <span>Sự kiện tháng này</span>
+        <div className="events-v2-stat-copy">
+          <strong>{thisMonthCount}</strong>
+          <span>Sự kiện tháng này</span>
+        </div>
       </article>
       <article className="events-v2-stat-card">
         <span className="events-v2-stat-icon events-v2-stat-icon--emerald"><CheckCircle size={20} weight="duotone" /></span>
-        <strong>{goingCount}</strong>
-        <span>Bạn sẽ tham gia</span>
-        {goingCount === 0 && <small className="events-v2-stat-helper events-v2-stat-helper--accent">Chọn 1 hoạt động bên dưới nhé!</small>}
+        <div className="events-v2-stat-copy">
+          <strong>{goingCount}</strong>
+          <span>Bạn sẽ tham gia</span>
+          {goingCount === 0 && <small className="events-v2-stat-helper events-v2-stat-helper--accent">Chọn 1 hoạt động bên dưới nhé!</small>}
+        </div>
       </article>
       <article className="events-v2-stat-card">
         <span className="events-v2-stat-icon events-v2-stat-icon--amber"><HourglassMedium size={20} weight="duotone" /></span>
-        <strong>{closingSoon.length}</strong>
-        <span>Sắp hết hạn đăng ký</span>
-        {closingSoon.length > 0 && closingSoon[0]?.registrationDeadlineLabel && (
-          <small className="events-v2-stat-helper events-v2-stat-helper--danger">{closingSoon[0].registrationDeadlineLabel}</small>
-        )}
+        <div className="events-v2-stat-copy">
+          <strong>{closingSoon.length}</strong>
+          <span>Sắp hết hạn đăng ký</span>
+          {closingSoon.length > 0 && closingSoon[0]?.registrationDeadlineLabel && (
+            <small className="events-v2-stat-helper events-v2-stat-helper--danger">{closingSoon[0].registrationDeadlineLabel}</small>
+          )}
+        </div>
       </article>
     </div>
   );

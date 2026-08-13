@@ -383,6 +383,12 @@
   gap: 8px;
 }
 
+/* Cột % cố định độ rộng để bar mọi hàng thẳng mép nhau ("55%" vs "100%"). */
+.eks-progress span {
+  min-width: 42px;
+  text-align: right;
+}
+
 .eks-ks-list {
   display: flex;
   flex-direction: column;
@@ -395,7 +401,7 @@
 
 .eks-ks-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
 }
@@ -651,8 +657,7 @@
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .eks-ks-row .eks-progress,
-  .eks-ks-row .status-pill {
+  .eks-ks-row .eks-progress {
     grid-column: 1 / -1;
     justify-content: flex-start;
     margin-left: 34px;

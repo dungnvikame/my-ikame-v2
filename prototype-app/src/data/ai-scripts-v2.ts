@@ -20,7 +20,7 @@ const c1CommunityHot: AiScript = {
     return [
       top
         ? `Bài viết được yêu thích nhất tuần này: "${top.body.slice(0, 70)}${top.body.length > 70 ? '…' : ''}" của ${top.authorName} (${top.reactions.heart + top.reactions.clap} lượt tương tác).`
-        : 'Cộng đồng chưa có bài viết nào.',
+        : 'iKame Feed chưa có bài viết nào.',
       uncongratulated.length > 0
         ? `Hôm nay có ${uncongratulated.length} người sinh nhật: ${uncongratulated.map((b) => b.name).join(', ')} — đừng quên gửi lời chúc.`
         : 'Không có sinh nhật nào cần chúc hôm nay.',
@@ -32,12 +32,12 @@ const c1CommunityHot: AiScript = {
   citations: (ctx) => {
     const citations: { title: string; source: string; href: string }[] = [];
     const top = [...ctx.posts].sort((a, b) => (b.reactions.heart + b.reactions.clap) - (a.reactions.heart + a.reactions.clap))[0];
-    if (top) citations.push({ title: top.body.slice(0, 40), source: 'Cộng đồng', href: '/community' });
+    if (top) citations.push({ title: top.body.slice(0, 40), source: 'iKame Feed', href: '/community' });
     const nextEvent = ctx.upcomingEvents[0];
     if (nextEvent) citations.push({ title: nextEvent.title, source: 'Event', href: `/events/${nextEvent.id}` });
     return citations;
   },
-  reason: 'Tổng hợp từ bài viết, sinh nhật và sự kiện đang hiển thị thật trên Cộng đồng — thứ tự và số liệu đổi ngay khi trạng thái đổi.',
+  reason: 'Tổng hợp từ bài viết, sinh nhật và sự kiện đang hiển thị thật trên iKame Feed — thứ tự và số liệu đổi ngay khi trạng thái đổi.',
 };
 
 const c2BirthdayWish: AiScript = {
@@ -48,11 +48,11 @@ const c2BirthdayWish: AiScript = {
   paragraphs: (ctx) => {
     const person = ctx.birthdays.find((b) => !b.congratulated);
     return person
-      ? [`Hôm nay có sinh nhật ${person.name} (${person.role} · ${person.team}) — iKame đã soạn sẵn một lời chúc, bạn xem lại và sửa trước khi đăng lên Cộng đồng.`]
+      ? [`Hôm nay có sinh nhật ${person.name} (${person.role} · ${person.team}) — iKame đã soạn sẵn một lời chúc, bạn xem lại và sửa trước khi đăng lên iKame Feed.`]
       : ['Tất cả sinh nhật hôm nay đã được chúc mừng — không còn ai cần lời chúc mới.'];
   },
   citations: (ctx) => (ctx.birthdays.some((b) => !b.congratulated)
-    ? [{ title: 'Sinh nhật hôm nay', source: 'Cộng đồng', href: '/community' }]
+    ? [{ title: 'Sinh nhật hôm nay', source: 'iKame Feed', href: '/community' }]
     : []),
   action: {
     kind: 'draft',
@@ -68,11 +68,11 @@ const c2BirthdayWish: AiScript = {
         : '';
     },
     confirmLabel: 'Duyệt & đăng',
-    receipt: 'Đã đăng lời chúc lên Cộng đồng · #RCPT-xxxx',
+    receipt: 'Đã đăng lời chúc lên iKame Feed · #RCPT-xxxx',
     commit: 'post',
     buildPost: (_ctx, text) => ({ body: text, cover: { pattern: 'confetti', emoji: '🎂' } }),
   },
-  reason: 'iKame chỉ soạn nội dung; bạn duyệt và sửa trước khi bài đăng thật xuất hiện trên Cộng đồng.',
+  reason: 'iKame chỉ soạn nội dung; bạn duyệt và sửa trước khi bài đăng thật xuất hiện trên iKame Feed.',
 };
 
 const e2EventsSuggest: AiScript = {

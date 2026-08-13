@@ -13,11 +13,25 @@ import { Link } from 'react-router-dom';
 import type { AttentionItem, EventItem, NewsPost } from '../types';
 import { Button, SourceLine, StatusPill } from './UI';
 
+/** Cover theo chủ đề — emoji + palette gradient dùng chung với Events (một hệ visual). */
+const NEWS_TOPIC_VISUALS: Record<string, { emoji: string; palette: string }> = {
+  'Chính sách': { emoji: '📋', palette: 'amber' },
+  'Văn hóa': { emoji: '🎉', palette: 'fuchsia' },
+  'Học tập': { emoji: '📚', palette: 'blue' },
+  'Văn phòng': { emoji: '🏢', palette: 'emerald' },
+};
+
+export function newsTopicVisual(topic: string): { emoji: string; palette: string } {
+  return NEWS_TOPIC_VISUALS[topic] ?? { emoji: '📰', palette: 'indigo' };
+}
+
 export function NewsCard({ post, compact = false }: { post: NewsPost; compact?: boolean }) {
+  const visual = newsTopicVisual(post.topic);
   return (
     <article className={`content-card news-card ${compact ? 'is-compact' : ''}`}>
-      <div className="card-visual card-visual--news" aria-hidden="true">
-        <NewspaperPattern />
+      <div className={`card-visual news-cover events-v2-cover events-v2-cover--${visual.palette}`} aria-hidden="true">
+        <span className="news-cover-emoji">{visual.emoji}</span>
+        <span className="news-cover-topic">{post.topic}</span>
       </div>
       <div className="card-body">
         <div className="card-badges">
@@ -31,17 +45,6 @@ export function NewsCard({ post, compact = false }: { post: NewsPost; compact?: 
         <SourceLine source={post.publisher} time={post.publishedAt} />
       </div>
     </article>
-  );
-}
-
-function NewspaperPattern() {
-  return (
-    <div className="visual-pattern">
-      <span className="visual-kicker">iKAME UPDATE</span>
-      <span className="visual-line visual-line--long" />
-      <span className="visual-line" />
-      <span className="visual-line visual-line--short" />
-    </div>
   );
 }
 

@@ -1,6 +1,7 @@
-import { ArrowLeft, ArrowSquareOut } from '@phosphor-icons/react';
+import { ArrowLeft } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
-import { Button, SourceLine, StatusPill } from '../../components/UI';
+import { PlatformHandoffButton } from '../../components/PlatformHandoff';
+import { SourceLine, StatusPill } from '../../components/UI';
 import type { KnowledgeDoc, User } from '../../types';
 
 type KnowledgeDetailProps = { doc: KnowledgeDoc; user: User; relatedDocs: KnowledgeDoc[] };
@@ -48,7 +49,8 @@ export function KnowledgeDetail({ doc, user, relatedDocs }: KnowledgeDetailProps
           <div className="side-info">
             <h2>Nguồn tài liệu</h2>
             <p>{doc.source} · {doc.updatedAt}</p>
-            <Button variant="borderless" icon={<ArrowSquareOut size={17} />} title="Demo — sẽ deep-link sang hệ thống nguồn">Mở trong iWiki</Button>
+            <p className="muted-text">Đọc và tra cứu ngay tại đây — biên tập nội dung thuộc về platform gốc.</p>
+            <PlatformHandoffButton platform="iWiki" action="biên tập bài viết này" label="Biên tập trên iWiki" />
           </div>
           <div className="side-info">
             <h2>Vì sao tôi thấy tài liệu này?</h2>
