@@ -139,6 +139,54 @@ export type ApprovalItem = {
 
 export type TeamMemberStatus = 'needs_attention' | 'ok' | 'no_data';
 
+/**
+ * Hồ sơ 360° của thành viên (góc nhìn manager) — gộp dữ liệu từ nhiều nguồn
+ * nội bộ: HRIS, iGoal, 1:1, iKame Feed, Learning. Mỗi số liệu đều mang nhãn
+ * `source` để manager biết dữ liệu đến từ đâu (nguyên tắc minh bạch nguồn).
+ */
+export type SignalTone = 'good' | 'watch' | 'risk' | 'neutral';
+export type MemberSignal = { key: string; label: string; value: string; hint: string; tone: SignalTone; source: string };
+export type MemberEks = { id: string; code: string; title: string; progress: number; status: GoalStatus; lastCheckIn: string };
+export type OneOnOneNote = { id: string; dateLabel: string; topics: string[]; outcome: string; mood: 'positive' | 'neutral' | 'concern' };
+export type MemberRecognition = { id: string; fromName: string; message: string; dateLabel: string; kind: 'praise' | 'award' };
+/** level/target theo thang 1–5 của khung năng lực iKame. */
+export type MemberSkill = { name: string; level: number; target: number };
+export type MemberLearning = { id: string; title: string; status: 'done' | 'in_progress' | 'not_started'; progress: number; dueLabel?: string };
+export type MemberActivityEntry = { id: string; source: 'iGoal' | 'iWiki' | 'iKame Feed' | 'Event' | 'HRIS' | 'iRequest'; text: string; timeLabel: string };
+
+export type MemberProfile360 = {
+  memberId: string;
+  // HRIS
+  email: string;
+  slack: string;
+  location: string;
+  joinedAt: string;
+  tenureLabel: string;
+  contractType: string;
+  managerName: string;
+  leaveRemaining: number;
+  leaveTotal: number;
+  upcomingLeaveLabel?: string;
+  // Tín hiệu tổng hợp + gợi ý AI
+  signals: MemberSignal[];
+  aiInsight: { headline: string; bullets: string[]; suggestion: string; suggestionPrompt: string };
+  // iGoal
+  eks: MemberEks[];
+  reportsSubmitted: number;
+  reportsExpected: number;
+  // Check-in & 1:1
+  nextOneOnOneLabel?: string;
+  oneOnOnes: OneOnOneNote[];
+  // Ghi nhận
+  recognitions: MemberRecognition[];
+  // Phát triển
+  skills: MemberSkill[];
+  learning: MemberLearning[];
+  careerNote: string;
+  // Dòng thời gian đa nguồn
+  activities: MemberActivityEntry[];
+};
+
 export type TeamMember = {
   id: string;
   name: string;

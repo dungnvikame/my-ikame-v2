@@ -187,8 +187,9 @@ export function ManagerPage() {
                 <span className="avatar avatar--large">{member.name.charAt(0)}</span>
                 <div>
                   <StatusPill tone="info">{momentLabel(member.momentType)}</StatusPill>
-                  <h3>{member.name}</h3>
+                  <h3><Link to={`/manager/team/${member.id}`}>{member.name}</Link></h3>
                   <p>{member.attentionSummary} · {member.role}</p>
+                  <Link className="text-link" to={`/manager/team/${member.id}`}>Xem hồ sơ 360°<ArrowRight size={14} /></Link>
                 </div>
               </article>
             ))

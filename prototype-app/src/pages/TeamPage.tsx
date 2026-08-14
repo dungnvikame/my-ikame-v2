@@ -1,46 +1,73 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { BellRinging, MagnifyingGlass, Target, UserCircle, X } from '@phosphor-icons/react';
-import { useNavigate } from 'react-router-dom';
-import { teamMembers } from '../data/mockData';
-import { Button, EmptyState, IconButton, StatusPill } from '../components/UI';
+import { useMemo, useState } from 'react';
+import { ArrowRight, MagnifyingGlass, Rows, SquaresFour } from '@phosphor-icons/react';
+import { Link } from 'react-router-dom';
+import { memberProfile, teamMembers } from '../data/mockData';
+import { Button, EmptyState, StatusPill } from '../components/UI';
 import { useAppState } from '../AppState';
 import type { TeamMember, TeamMemberStatus } from '../types';
+import { MemberCard } from './team/MemberCard';
+import {
+  initials, MiniProgress, normalize, riskLabel, riskScore, STATUS_LABEL, STATUS_TONE,
+} from './team/team-visuals';
 
 type StatusFilter = 'all' | TeamMemberStatus;
+type SortKey = 'attention' | 'name' | 'progress';
+type ViewMode = 'cards' | 'table';
 
-const STATUS_LABEL: Record<TeamMemberStatus, string> = {
-  needs_attention: 'Cần chú ý',
-  ok: 'Đã ổn',
-  no_data: 'Chưa có dữ liệu',
+const SORT_LABEL: Record<SortKey, string> = {
+  attention: 'Cần chú ý nhất',
+  name: 'Tên A → Z',
+  progress: 'Tiến độ EKS',
 };
 
-const STATUS_TONE: Record<TeamMemberStatus, 'error' | 'success' | 'info'> = {
-  needs_attention: 'error',
-  ok: 'success',
-  no_data: 'info',
-};
+function eksAverage(member: TeamMember): number {
+  const profile = memberProfile(member.id);
+  if (!profile || profile.eks.length === 0) return 0;
+  return Math.round(profile.eks.reduce((sum, item) => sum + item.progress, 0) / profile.eks.length);
+}
 
-function normalize(value: string) {
-  return value.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+/** Dải sức khỏe team — số liệu tổng hợp từ hồ sơ 360° của toàn bộ roster. */
+function TeamHealthStrip({ roster }: { roster: TeamMember[] }) {
+  const withProfile = roster.map((member) => memberProfile(member.id)).filter(Boolean);
+  const active = withProfile.filter((profile) => profile!.eks.length > 0);
+  const avgProgress = active.length > 0
+    ? Math.round(active.reduce((sum, profile) => sum + profile!.eks.reduce((s, e) => s + e.progress, 0) / profile!.eks.length, 0) / active.length)
+    : 0;
+  const checkinDone = withProfile.filter((profile) => profile!.reportsSubmitted === profile!.reportsExpected && profile!.reportsExpected > 0).length;
+  const needsOneOnOne = withProfile.filter((profile) => profile!.nextOneOnOneLabel === 'Chưa đặt lịch').length;
+  const highRisk = roster.filter((member) => riskScore(memberProfile(member.id)) >= 6).length;
+
+  return (
+    <div className="team-health" role="list">
+      <div role="listitem"><strong>{avgProgress}%</strong><span>Tiến độ EKS trung bình</span></div>
+      <div role="listitem"><strong>{checkinDone}/{active.length}</strong><span>Check-in đầy đủ kỳ này</span></div>
+      <div role="listitem"><strong>{needsOneOnOne}</strong><span>Chưa đặt lịch 1:1</span></div>
+      <div role="listitem"><strong>{highRisk}</strong><span>Thành viên ưu tiên cao</span></div>
+    </div>
+  );
 }
 
 export function TeamPage() {
   const { user } = useAppState();
-  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const triggerRef = useRef<HTMLElement | null>(null);
-  const drawerRef = useRef<HTMLElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [sortKey, setSortKey] = useState<SortKey>('attention');
+  const [view, setView] = useState<ViewMode>('cards');
 
   // Scope boundary: roster never includes members outside this manager's own team.
-  const roster = teamMembers.filter((member: TeamMember) => member.teamId === user.teamId);
+  const roster = useMemo(() => teamMembers.filter((member) => member.teamId === user.teamId), [user.teamId]);
   const normalizedQuery = normalize(query.trim());
-  const visible = roster
-    .filter((member) => !normalizedQuery || normalize(member.name).includes(normalizedQuery))
-    .filter((member) => statusFilter === 'all' || member.status === statusFilter);
-  const selected = roster.find((member) => member.id === selectedId) ?? null;
+
+  const visible = useMemo(() => {
+    const filtered = roster
+      .filter((member) => !normalizedQuery || normalize(member.name).includes(normalizedQuery) || normalize(member.role).includes(normalizedQuery))
+      .filter((member) => statusFilter === 'all' || member.status === statusFilter);
+    return [...filtered].sort((a, b) => {
+      if (sortKey === 'name') return a.name.localeCompare(b.name, 'vi');
+      if (sortKey === 'progress') return eksAverage(b) - eksAverage(a);
+      return riskScore(memberProfile(b.id)) - riskScore(memberProfile(a.id));
+    });
+  }, [roster, normalizedQuery, statusFilter, sortKey]);
 
   const chips: { key: StatusFilter; label: string; count: number }[] = [
     { key: 'all', label: 'Tất cả', count: roster.length },
@@ -49,147 +76,92 @@ export function TeamPage() {
     { key: 'no_data', label: STATUS_LABEL.no_data, count: roster.filter((m) => m.status === 'no_data').length },
   ];
 
-  const openMember = (id: string, row: HTMLElement) => {
-    triggerRef.current = row;
-    setSelectedId(id);
-  };
-
-  const closePanel = () => {
-    setSelectedId(null);
-    requestAnimationFrame(() => triggerRef.current?.focus());
-  };
-
-  useEffect(() => {
-    if (selectedId) closeButtonRef.current?.focus();
-  }, [selectedId]);
-
-  const onDrawerKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closePanel();
-      return;
-    }
-    if (event.key !== 'Tab') return;
-    const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
-    );
-    if (!focusable?.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  };
-
-  const resetFilters = () => {
-    setQuery('');
-    setStatusFilter('all');
-  };
+  const resetFilters = () => { setQuery(''); setStatusFilter('all'); };
 
   return (
-    <div className="page collection-page">
+    <div className="page team-page">
       <header className="page-heading">
         <div>
           <p className="eyebrow">MANAGER · {user.team.toUpperCase()}</p>
           <h1>Đội ngũ của tôi</h1>
-          <p>{roster.length} thành viên · {visible.length} đang hiển thị · chỉ trong phạm vi team của bạn</p>
+          <p>{roster.length} thành viên trong phạm vi quản lý · dữ liệu tổng hợp từ iGoal, HRIS, 1:1 và iKame Feed.</p>
         </div>
       </header>
 
-      <div className="filter-row">
+      <TeamHealthStrip roster={roster} />
+
+      <div className="team-toolbar">
         <label className="filter-input">
           <MagnifyingGlass size={17} />
-          <input aria-label="Tìm thành viên" placeholder="Tìm thành viên" value={query} onChange={(event) => setQuery(event.target.value)} />
+          <input aria-label="Tìm theo tên hoặc vai trò" placeholder="Tìm theo tên hoặc vai trò" value={query} onChange={(event) => setQuery(event.target.value)} />
         </label>
-        <div className="filter-row" role="group" aria-label="Lọc theo trạng thái">
-          {chips.map((chip) => (
-            <button
-              key={chip.key}
-              className={`button button--dim ${statusFilter === chip.key ? 'is-active' : ''}`}
-              aria-pressed={statusFilter === chip.key}
-              onClick={() => setStatusFilter(chip.key)}
-            >
-              {chip.label} ({chip.count})
+        <div className="team-toolbar-right">
+          <label className="team-sort">
+            <span>Sắp xếp</span>
+            <select value={sortKey} onChange={(event) => setSortKey(event.target.value as SortKey)}>
+              {(Object.keys(SORT_LABEL) as SortKey[]).map((key) => <option key={key} value={key}>{SORT_LABEL[key]}</option>)}
+            </select>
+          </label>
+          <div className="team-view-toggle" role="group" aria-label="Kiểu hiển thị">
+            <button type="button" aria-pressed={view === 'cards'} className={view === 'cards' ? 'is-active' : ''} onClick={() => setView('cards')} title="Dạng thẻ">
+              <SquaresFour size={17} />
             </button>
-          ))}
+            <button type="button" aria-pressed={view === 'table'} className={view === 'table' ? 'is-active' : ''} onClick={() => setView('table')} title="Dạng bảng">
+              <Rows size={17} />
+            </button>
+          </div>
         </div>
       </div>
 
-      {visible.length === 0 ? (
-        <>
-          <EmptyState title="Không tìm thấy thành viên" body="Không có thành viên phù hợp với bộ lọc hiện tại." />
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: -8 }}>
-            <Button variant="dim" onClick={resetFilters}>Xóa bộ lọc</Button>
-          </div>
-        </>
-      ) : (
-        <section className="people-table" aria-label="Danh sách đội ngũ">
-          <div className="people-table-header"><span>Thành viên</span><span>Trạng thái</span><span>Cập nhật</span><span /></div>
-          {visible.map((member) => (
-            <article
-              key={member.id}
-              className="people-row"
-              role="button"
-              tabIndex={0}
-              aria-label={`Xem chi tiết ${member.name}`}
-              onClick={(event) => openMember(member.id, event.currentTarget)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  openMember(member.id, event.currentTarget);
-                }
-              }}
-            >
-              <div className="person-cell"><span className="avatar"><UserCircle size={22} /></span><span><strong>{member.name}</strong><small>{member.role}</small></span></div>
-              {/* display:contents on desktop keeps these as the grid's 3 trailing columns;
-                  the ≤620px override turns this into a real flex row instead of relying on
-                  the table's horizontal-scroll fallback, which had no scroll affordance and
-                  read as a cut-off "Trạng thái" header on a phone screen. */}
-              <div className="people-row-meta">
-                <StatusPill tone={STATUS_TONE[member.status]}>{STATUS_LABEL[member.status]}</StatusPill>
-                <span className="muted-text">{member.lastUpdated}</span>
-                <span className="text-link" aria-hidden="true">Xem</span>
-              </div>
-            </article>
-          ))}
-        </section>
-      )}
+      <div className="team-filter-chips" role="group" aria-label="Lọc theo trạng thái">
+        {chips.map((chip) => (
+          <button
+            key={chip.key}
+            type="button"
+            className={`topic-chip ${statusFilter === chip.key ? 'is-active' : ''}`}
+            aria-pressed={statusFilter === chip.key}
+            onClick={() => setStatusFilter(chip.key)}
+          >
+            {chip.label} ({chip.count})
+          </button>
+        ))}
+      </div>
 
-      {selected && (
-        <div className="drawer-layer" role="presentation" onMouseDown={closePanel}>
-          <aside ref={drawerRef} className="notification-drawer" role="dialog" aria-modal="true" aria-label={`Chi tiết ${selected.name}`} onKeyDown={onDrawerKeyDown} onMouseDown={(event) => event.stopPropagation()}>
-            <div className="drawer-header">
-              <div>
-                <h2>{selected.name}</h2>
-                <p>{selected.role}</p>
-              </div>
-              <IconButton ref={closeButtonRef} label="Đóng" onClick={closePanel}><X size={20} /></IconButton>
-            </div>
-            <div className="drawer-toolbar">
-              <StatusPill tone={STATUS_TONE[selected.status]}>{STATUS_LABEL[selected.status]}</StatusPill>
-            </div>
-            <div className="notification-list">
-              <p className="inline-guidance">{selected.attentionSummary}</p>
-              <p className="muted-text">Cập nhật: {selected.lastUpdated}</p>
-              <div className="member-drawer-actions">
-                <Button
-                  variant="primary"
-                  icon={<BellRinging size={16} />}
-                  onClick={() => navigate(`/assistant?q=${encodeURIComponent(`Soạn tin nhắn nhắc check-in cho ${selected.name}`)}`)}
-                >
-                  Nhắc check-in (AI)
-                </Button>
-                <Button variant="dim" icon={<Target size={16} />} onClick={() => navigate('/goals')}>
-                  Xem EKS trong OKR team
-                </Button>
-              </div>
-            </div>
-          </aside>
+      {visible.length === 0 ? (
+        <div className="empty-state">
+          <EmptyState title="Không tìm thấy thành viên" body="Không có thành viên phù hợp với bộ lọc hiện tại." />
+          <Button variant="dim" onClick={resetFilters}>Xóa bộ lọc</Button>
         </div>
+      ) : view === 'cards' ? (
+        <div className="member-grid">
+          {visible.map((member) => <MemberCard key={member.id} member={member} profile={memberProfile(member.id)} />)}
+        </div>
+      ) : (
+        <section className="member-table" aria-label="Danh sách đội ngũ">
+          <div className="member-table-head">
+            <span>Thành viên</span><span>Tiến độ EKS</span><span>Check-in</span><span>1:1 gần nhất</span><span>Mức ưu tiên</span><span />
+          </div>
+          {visible.map((member) => {
+            const profile = memberProfile(member.id);
+            const risk = riskLabel(riskScore(profile));
+            const average = eksAverage(member);
+            return (
+              <Link key={member.id} className="member-table-row" to={`/manager/team/${member.id}`}>
+                <span className="member-table-person">
+                  <span className="avatar" aria-hidden="true">{initials(member.name)}</span>
+                  <span><strong>{member.name}</strong><small>{member.role}</small></span>
+                </span>
+                <span className="member-table-progress">
+                  {profile?.eks.length ? <><MiniProgress value={average} tone={average >= 60 ? 'good' : average >= 45 ? 'watch' : 'risk'} /><small>{average}%</small></> : <small className="muted-text">Chưa có</small>}
+                </span>
+                <span>{profile?.signals.find((s) => s.key === 'checkin')?.value ?? '—'}</span>
+                <span>{profile?.signals.find((s) => s.key === 'oneonone')?.value ?? '—'}</span>
+                <span><StatusPill tone={risk.tone === 'risk' ? 'error' : risk.tone === 'watch' ? 'warning' : 'success'}>{risk.label}</StatusPill></span>
+                <span className="member-table-go"><ArrowRight size={16} /></span>
+              </Link>
+            );
+          })}
+        </section>
       )}
     </div>
   );

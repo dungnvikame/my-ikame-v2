@@ -7,6 +7,7 @@ import './styles/assistant.css';
 import './styles/assistant-page.css';
 import './styles/knowledge-goals.css';
 import './styles/manager-vision.css';
+import './styles/manager-team.css';
 import './styles/search-palette.css';
 import './styles/community.css';
 import './styles/events-v2.css';

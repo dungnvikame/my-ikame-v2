@@ -9,6 +9,7 @@ import { GoalDetailPage, GoalsPage } from './pages/GoalPages';
 import { HomePage } from './pages/HomePage';
 import { KnowledgeDetailPage, KnowledgePage } from './pages/KnowledgePages';
 import { ManagerPage } from './pages/ManagerPage';
+import { MemberDetailPage } from './pages/MemberDetailPage';
 import { ArticlePage, NewsPage } from './pages/NewsPages';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { NotificationsPage } from './pages/NotificationsPage';
@@ -36,6 +37,7 @@ function AppRoutes() {
         <Route path="/manager" element={<Navigate to="/manager/overview" replace />} />
         <Route path="/manager/overview" element={<PerspectiveGuard expected="manager"><ManagerPage /></PerspectiveGuard>} />
         <Route path="/manager/team" element={<PerspectiveGuard expected="manager"><TeamPage /></PerspectiveGuard>} />
+        <Route path="/manager/team/:memberId" element={<PerspectiveGuard expected="manager"><MemberDetailPage /></PerspectiveGuard>} />
         <Route path="/news" element={<NewsPage />} />
         <Route path="/news/:postId" element={<ArticlePage />} />
         <Route path="/events" element={<EventsPage />} />
