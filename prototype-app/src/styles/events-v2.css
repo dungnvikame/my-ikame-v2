@@ -16,6 +16,24 @@
 .events-v2-cover--amber { background: linear-gradient(155deg, var(--bg-amber-medium), var(--bg-amber-contrast)); }
 .events-v2-cover--fuchsia { background: linear-gradient(155deg, var(--bg-fuchsia-medium), var(--bg-fuchsia-contrast)); }
 
+/* Biến thể compact cho rail/sidebar — cover mỏng, không footer. */
+.events-v2-card--compact .events-v2-card-cover {
+  min-height: 56px;
+}
+
+.events-v2-card--compact .events-v2-card-cover .events-v2-cover-emoji {
+  font-size: 30px;
+}
+
+.events-v2-card--compact .card-body {
+  padding: 12px 14px;
+}
+
+.events-v2-card--compact h3 {
+  font-size: var(--body-s-size);
+  line-height: var(--body-s-line);
+}
+
 .events-v2-cover::before {
   content: '';
   position: absolute;

@@ -21,7 +21,7 @@ function matches(term: string, ...fields: (string | undefined)[]) {
  * Permission filtering reuses `isEligible` — demo-fidelity only (see `lib/audience.ts`).
  */
 export function useSearchResults(query: string): SearchResults {
-  const { user, news, events, knowledgeDocs, goals } = useAppState();
+  const { user, news, events, knowledgeDocs, goals, perspective } = useAppState();
   const term = normalize(query.trim());
 
   return useMemo(() => {
@@ -46,9 +46,17 @@ export function useSearchResults(query: string): SearchResults {
       .filter((item) => matches(term, item.title, item.owner))
       .map((item) => ({ id: `goals-${item.id}`, title: item.title, meta: `Tiến độ ${item.progress}%`, href: `/goals/${item.id}` }));
 
+    // Đích điều hướng theo quyền: mình → Hồ sơ; manager + thành viên team mình →
+    // hồ sơ 360°; còn lại → iKame Feed (nơi thấy hoạt động đồng nghiệp), tránh
+    // dẫn iKamer vào route bị chặn quyền.
+    const memberHref = (entry: { id: string; name: string; teamId?: string }) => {
+      if (entry.name === user.name) return '/profile';
+      if (perspective === 'manager' && entry.teamId === user.teamId) return `/manager/team/${entry.id}`;
+      return '/community';
+    };
     const peopleSource = [
-      ...Object.values(users).map((entry) => ({ id: entry.id, name: entry.name, role: entry.role })),
-      ...teamMembers.map((entry) => ({ id: entry.id, name: entry.name, role: entry.role })),
+      ...Object.values(users).map((entry) => ({ id: entry.id, name: entry.name, role: entry.role, teamId: entry.teamId })),
+      ...teamMembers.map((entry) => ({ id: entry.id, name: entry.name, role: entry.role, teamId: entry.teamId })),
     ];
     const peopleItems: SearchResultItem[] = peopleSource
       .filter((entry) => matches(term, entry.name, entry.role))
@@ -56,7 +64,7 @@ export function useSearchResults(query: string): SearchResults {
         id: `people-${entry.id}`,
         title: entry.name,
         meta: entry.role,
-        href: entry.name === user.name ? '/profile' : '/manager/team',
+        href: memberHref(entry),
       }));
 
     const groups: SearchResultGroup[] = [
@@ -68,5 +76,5 @@ export function useSearchResults(query: string): SearchResults {
     ];
     const flat = groups.flatMap((group) => group.items);
     return { groups, flat, count: flat.length };
-  }, [events, goals, knowledgeDocs, news, term, user]);
+  }, [events, goals, knowledgeDocs, news, perspective, term, user]);
 }

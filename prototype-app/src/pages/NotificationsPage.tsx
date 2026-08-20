@@ -1,7 +1,8 @@
-import { CheckCircle } from '@phosphor-icons/react';
+import { CheckCircle, Info, SealCheck, WarningCircle } from '@phosphor-icons/react';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
+import { Tabs } from '../components/Tabs';
 import { Button, EmptyState } from '../components/UI';
 import type { NotificationItem } from '../types';
 
@@ -70,7 +71,13 @@ export function NotificationList({
               {row.items.length > 1 && <p className="muted-text">{row.items.length} thông báo liên quan</p>}
               {row.items.map((item) => (
                 <button key={item.id} className={`notification-item ${item.read ? '' : 'is-unread'}`} onClick={() => openItem(item)}>
-                  <span className="notification-dot" aria-label={item.read ? 'Đã đọc' : 'Chưa đọc'} />
+                  {/* Icon theo mức ưu tiên (không chỉ dựa vào màu chấm) + vẫn báo trạng thái đọc cho SR. */}
+                  <span className={`notification-icon notification-icon--${item.priority}`} aria-label={item.read ? 'Đã đọc' : 'Chưa đọc'}>
+                    {item.priority === 'critical' ? <WarningCircle size={18} weight="fill" />
+                      : item.priority === 'required' ? <SealCheck size={18} weight="fill" />
+                        : item.priority === 'transactional' ? <CheckCircle size={18} weight="fill" />
+                          : <Info size={18} weight="fill" />}
+                  </span>
                   <span className="notification-copy">
                     <span className="notification-title">{item.title}</span>
                     <span>{item.body}</span>
@@ -125,11 +132,16 @@ export function NotificationsPage() {
         </div>
       </header>
 
-      <div className="neutral-tabs" role="tablist" aria-label="Bộ lọc thông báo">
-        <button role="tab" aria-selected={tab === 'all'} className={tab === 'all' ? 'is-active' : ''} onClick={() => setTab('all')}>Tất cả ({lists.all.length})</button>
-        <button role="tab" aria-selected={tab === 'todo'} className={tab === 'todo' ? 'is-active' : ''} onClick={() => setTab('todo')}>Cần làm ({lists.todo.length})</button>
-        <button role="tab" aria-selected={tab === 'read'} className={tab === 'read' ? 'is-active' : ''} onClick={() => setTab('read')}>Đã đọc ({lists.read.length})</button>
-      </div>
+      <Tabs
+        tabs={[
+          { key: 'all' as TabKey, label: `Tất cả (${lists.all.length})` },
+          { key: 'todo' as TabKey, label: `Cần làm (${lists.todo.length})` },
+          { key: 'read' as TabKey, label: `Đã đọc (${lists.read.length})` },
+        ]}
+        active={tab}
+        onChange={setTab}
+        ariaLabel="Bộ lọc thông báo"
+      />
 
       {activeList.length > 0 ? <NotificationList items={activeList} /> : <EmptyState title={TAB_EMPTY_COPY[tab].title} body={TAB_EMPTY_COPY[tab].body} />}
     </div>

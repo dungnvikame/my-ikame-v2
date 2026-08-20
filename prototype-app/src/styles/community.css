@@ -319,8 +319,14 @@
   margin-bottom: 6px;
 }
 
-.community-widget-emoji {
-  font-size: 16px;
+.community-widget-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-6);
+  background: var(--bg-accent-primary-subtle);
+  color: var(--fg-accent-primary);
 }
 
 .community-widget-head h2 {
@@ -445,36 +451,13 @@
 }
 
 /* Toast (local-only host, F1) */
-.community-toast {
-  position: fixed;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%);
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  border-radius: var(--radius-8);
-  background: var(--bg-inverse);
-  color: var(--bg-primary);
-  font-size: var(--body-s-size);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-}
-
-.community-toast button {
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-weight: var(--font-semibold);
-  text-decoration: underline;
-  cursor: pointer;
-}
+/* Toast chuyển thành hệ toàn cục — style ở app.css (.app-toast). */
 
 @media (max-width: 1023px) {
   .community-layout {
-    grid-template-columns: 1fr;
+    /* minmax(0,1fr) — `1fr` trần có min=auto khiến hàng tab không wrap kéo giãn
+       cả layout viewport trên mobile (đo được 418px trên viewport 375). */
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .community-feed {

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, X } from '@phosphor-icons/react';
+import { ArrowRight, ChatsCircle, X } from '@phosphor-icons/react';
 import { useAppState } from '../AppState';
+import { Tabs } from '../components/Tabs';
 import { Button, EmptyState, IconButton } from '../components/UI';
 import { isEligible } from '../lib/audience';
 import type { Post } from '../types';
@@ -8,7 +9,7 @@ import { CommunityRail } from './community/CommunityRail';
 import { PinnedCarousel } from './community/PinnedCarousel';
 import { PostCard } from './community/PostCard';
 import { PostComposer } from './community/PostComposer';
-import { useToast } from './community/use-toast';
+import { useToast } from '../components/toast';
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -46,7 +47,7 @@ export function CommunityPage() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [feedFilter, setFeedFilter] = useState<FeedFilter>('company');
-  const { toast, show } = useToast();
+  const { showToast: show } = useToast();
   const postRefs = useRef(new Map<string, HTMLElement>());
 
   // Component-local UI state clears on resetDemo() (F4) — feed data itself lives in AppState.
@@ -117,22 +118,15 @@ export function CommunityPage() {
       <div className="community-layout">
         <div className="community-feed">
           <PostComposer userShort={user.shortName} demoResetCount={demoResetCount} onSubmit={handleSubmitPost} />
-          <div className="neutral-tabs community-feed-tabs" role="tablist" aria-label="Lọc bảng tin">
-            {FEED_FILTERS.map(({ key, label }) => (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                aria-selected={feedFilter === key}
-                className={feedFilter === key ? 'is-active' : ''}
-                onClick={() => setFeedFilter(key)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <Tabs
+            className="neutral-tabs community-feed-tabs"
+            tabs={FEED_FILTERS}
+            active={feedFilter}
+            onChange={setFeedFilter}
+            ariaLabel="Lọc bảng tin"
+          />
           {filteredFeed.length === 0 ? (
-            <EmptyState title={FILTER_EMPTY_COPY[feedFilter].title} body={FILTER_EMPTY_COPY[feedFilter].body} />
+            <EmptyState icon={<ChatsCircle size={44} weight="duotone" />} title={FILTER_EMPTY_COPY[feedFilter].title} body={FILTER_EMPTY_COPY[feedFilter].body} />
           ) : filteredFeed.map((post) => (
             <PostCard
               key={post.id}
@@ -159,12 +153,6 @@ export function CommunityPage() {
         />
       </div>
 
-      {toast && (
-        <div className="community-toast" role="status">
-          <span>{toast.message}</span>
-          {toast.action && <button type="button" onClick={toast.action.onClick}>{toast.action.label}</button>}
-        </div>
-      )}
     </div>
   );
 }

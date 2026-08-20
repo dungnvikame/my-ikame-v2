@@ -37,6 +37,59 @@
   margin-bottom: 24px;
 }
 
+/* --- Goal detail hero --- */
+.goal-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.goal-detail-card h1 {
+  margin: 10px 0 14px;
+  font-size: var(--body-xl-size);
+  line-height: var(--body-xl-line);
+  font-weight: var(--font-semibold);
+}
+
+.goal-detail-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.goal-detail-progress .okr-progress-bar {
+  flex: 1;
+}
+
+.goal-detail-progress strong {
+  font-size: var(--body-l-size);
+  font-weight: var(--font-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.goal-detail-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-secondary);
+}
+
+.goal-detail-facts dt {
+  color: var(--text-tertiary);
+  font-size: var(--body-xs-size);
+  font-weight: var(--font-semibold);
+}
+
+.goal-detail-facts dd {
+  margin: 2px 0 0;
+  font-size: var(--body-s-size);
+  font-weight: var(--font-semibold);
+}
+
 /* --- OKR tree (shared by list + diagram variants) --- */
 
 .okr-tree {

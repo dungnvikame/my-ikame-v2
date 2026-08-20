@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+// Self-host Inter (variable, latin + vietnamese) — trước đây token khai báo Inter
+// nhưng không load font nào, toàn app render Segoe UI fallback tùy máy.
+import '@fontsource-variable/inter/index.css';
 import './styles/core-ds-1.1.css';
 import './styles/app.css';
 import './styles/assistant.css';

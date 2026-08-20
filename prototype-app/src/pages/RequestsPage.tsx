@@ -1,4 +1,4 @@
-import { Buildings, DesktopTower, Sparkle, UserCircle, Wrench } from '@phosphor-icons/react';
+import { Buildings, DesktopTower, Sparkle, Ticket, UserCircle, Wrench } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
@@ -81,7 +81,7 @@ export function RequestsPage() {
       <section className="section-block">
         <SectionHeader title="Đang theo dõi" meta={`${open.length} request`} />
         {open.length === 0 ? (
-          <EmptyState title="Không có request nào đang mở" body="Tạo request mới bằng một trong các loại phía trên." />
+          <EmptyState icon={<Ticket size={44} weight="duotone" />} title="Không có request nào đang mở" body="Tạo request mới bằng một trong các loại phía trên." />
         ) : (
           <div className="request-list">{open.map((request) => <RequestRow key={request.id} request={request} />)}</div>
         )}

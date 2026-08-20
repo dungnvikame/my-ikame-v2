@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { ArrowSquareOut, CheckCircle, CircleNotch, LockKey } from '@phosphor-icons/react';
+import { useToast } from './toast';
 import { Button } from './UI';
 
 /**
@@ -16,7 +17,7 @@ const PLATFORM_META: Record<PlatformKey, { emoji: string; tagline: string }> = {
   iHRM: { emoji: '🧾', tagline: 'Nền tảng nhân sự, lương & phúc lợi' },
 };
 
-type Phase = 'closed' | 'sso' | 'working' | 'returned';
+type Phase = 'closed' | 'sso' | 'working';
 
 export function PlatformHandoffButton({
   platform,
@@ -34,22 +35,51 @@ export function PlatformHandoffButton({
 }) {
   const [phase, setPhase] = useState<Phase>('closed');
   const meta = PLATFORM_META[platform];
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const { showToast } = useToast();
 
-  // SSO giả lập ~1.4s rồi vào màn platform gốc; toast quay về tự ẩn sau 2.5s.
+  // SSO giả lập ~1.4s rồi vào màn platform gốc.
   useEffect(() => {
     if (phase === 'sso') {
       const timer = setTimeout(() => setPhase('working'), 1400);
       return () => clearTimeout(timer);
     }
-    if (phase === 'returned') {
-      const timer = setTimeout(() => setPhase('closed'), 2500);
-      return () => clearTimeout(timer);
+  }, [phase]);
+
+  // Overlay mở → focus vào trong; sang working → focus nút quay về.
+  useEffect(() => {
+    if (phase === 'sso' || phase === 'working') {
+      const target = overlayRef.current?.querySelector<HTMLElement>('button') ?? overlayRef.current;
+      target?.focus();
     }
   }, [phase]);
+
+  function closeAndRestoreFocus(next: Phase) {
+    setPhase(next);
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  }
+
+  // Esc đóng overlay (hủy handoff); Tab bị trap trong overlay (a11y modal chuẩn).
+  function onOverlayKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeAndRestoreFocus('closed');
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = overlayRef.current?.querySelectorAll<HTMLElement>('button:not([disabled])');
+    if (!focusable?.length) { event.preventDefault(); return; }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
 
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         className={variant === 'link' ? 'handoff-link' : 'handoff-button'}
         onClick={() => setPhase('sso')}
@@ -59,7 +89,15 @@ export function PlatformHandoffButton({
       </button>
 
       {(phase === 'sso' || phase === 'working') && (
-        <div className="handoff-layer" role="dialog" aria-modal="true" aria-label={`Chuyển sang ${platform}`}>
+        <div
+          ref={overlayRef}
+          className="handoff-layer"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Chuyển sang ${platform}`}
+          tabIndex={-1}
+          onKeyDown={onOverlayKeyDown}
+        >
           {phase === 'sso' ? (
             <div className="handoff-card handoff-card--sso">
               <span className="handoff-emoji" aria-hidden="true">{meta.emoji}</span>
@@ -81,7 +119,14 @@ export function PlatformHandoffButton({
                 <p className="handoff-note">Trong bản thật, đây là {platform} thực tế mở qua deep-link kèm SSO. Xong việc, mọi cập nhật tự đồng bộ về My iKame.</p>
               </div>
               <footer className="handoff-window-actions">
-                <Button variant="primary" icon={<CheckCircle size={16} />} onClick={() => setPhase('returned')}>
+                <Button
+                  variant="primary"
+                  icon={<CheckCircle size={16} />}
+                  onClick={() => {
+                    closeAndRestoreFocus('closed');
+                    showToast(`Đã quay về My iKame — cập nhật từ ${platform} sẽ đồng bộ về đây.`);
+                  }}
+                >
                   Xong việc — quay về My iKame
                 </Button>
               </footer>
@@ -90,12 +135,6 @@ export function PlatformHandoffButton({
         </div>
       )}
 
-      {phase === 'returned' && (
-        <div className="handoff-toast" role="status">
-          <CheckCircle size={16} weight="fill" />
-          Đã quay về My iKame — cập nhật từ {platform} sẽ đồng bộ về đây.
-        </div>
-      )}
     </>
   );
 }

@@ -129,7 +129,7 @@ export function TeamPage() {
 
       {visible.length === 0 ? (
         <div className="empty-state">
-          <EmptyState title="Không tìm thấy thành viên" body="Không có thành viên phù hợp với bộ lọc hiện tại." />
+          <EmptyState icon={<MagnifyingGlass size={44} weight="duotone" />} title="Không tìm thấy thành viên" body="Không có thành viên phù hợp với bộ lọc hiện tại." />
           <Button variant="dim" onClick={resetFilters}>Xóa bộ lọc</Button>
         </div>
       ) : view === 'cards' ? (

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
+import { TabPanel, Tabs } from '../../components/Tabs';
 
-/** Generic a11y pill sub-tabs row — shared by iKamer + Manager Mục tiêu views (DRY). */
 export type GoalsTabDef<T extends string> = { key: T; label: string };
 
 type GoalsTabsProps<T extends string> = {
@@ -10,32 +10,12 @@ type GoalsTabsProps<T extends string> = {
   ariaLabel: string;
 };
 
+/** Shared page-heading tabs — delegate sang Tabs dùng chung (roving tabindex + arrow keys). */
 export function GoalsTabs<T extends string>({ tabs, active, onChange, ariaLabel }: GoalsTabsProps<T>) {
-  return (
-    <div className="neutral-tabs" role="tablist" aria-label={ariaLabel}>
-      {tabs.map((tab) => (
-        <button
-          key={tab.key}
-          type="button"
-          role="tab"
-          id={`goals-tab-${tab.key}`}
-          aria-selected={active === tab.key}
-          aria-controls={`goals-panel-${tab.key}`}
-          className={active === tab.key ? 'is-active' : ''}
-          onClick={() => onChange(tab.key)}
-        >
-          {tab.label}
-        </button>
-      ))}
-    </div>
-  );
+  return <Tabs idPrefix="goals" tabs={tabs} active={active} onChange={onChange} ariaLabel={ariaLabel} />;
 }
 
 /** Wraps one tab panel with the id/aria wiring `GoalsTabs` expects (DRY across views). */
 export function GoalsTabPanel<T extends string>({ tabKey, children }: { tabKey: T; children: ReactNode }) {
-  return (
-    <div id={`goals-panel-${tabKey}`} role="tabpanel" aria-labelledby={`goals-tab-${tabKey}`}>
-      {children}
-    </div>
-  );
+  return <TabPanel idPrefix="goals" tabKey={tabKey}>{children}</TabPanel>;
 }

@@ -1,16 +1,13 @@
 import {
   ArrowRight,
-  CalendarCheck,
-  CalendarDots,
   CheckCircle,
   Clock,
-  MapPin,
   SealCheck,
   Users,
   WarningCircle,
 } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
-import type { AttentionItem, EventItem, NewsPost } from '../types';
+import type { AttentionItem, NewsPost } from '../types';
 import { Button, SourceLine, StatusPill } from './UI';
 
 /** Cover theo chủ đề — emoji + palette gradient dùng chung với Events (một hệ visual). */
@@ -48,29 +45,6 @@ export function NewsCard({ post, compact = false }: { post: NewsPost; compact?: 
   );
 }
 
-export function EventCard({ event, compact = false }: { event: EventItem; compact?: boolean }) {
-  const tone = event.myRegistration === 'going' ? 'success' : event.myRegistration === 'waitlisted' ? 'info' : event.status === 'full' ? 'warning' : event.status === 'cancelled' ? 'error' : 'neutral';
-  const label = event.myRegistration === 'going' ? 'Đã đăng ký' : event.myRegistration === 'waitlisted' ? 'Đang chờ' : event.status === 'full' ? 'Hết chỗ' : event.status === 'cancelled' ? 'Đã hủy' : event.remaining ? `Còn ${event.remaining} chỗ` : 'Mở đăng ký';
-
-  return (
-    <article className={`content-card event-card ${compact ? 'is-compact' : ''}`}>
-      <div className="event-date" aria-label={event.dateLabel}>
-        <span>{event.month}</span>
-        <strong>{event.day}</strong>
-      </div>
-      <div className="card-body">
-        <div className="card-badges"><StatusPill tone={tone}>{label}</StatusPill><StatusPill>{event.format}</StatusPill></div>
-        <h3><Link to={`/events/${event.id}`}>{event.title}</Link></h3>
-        {!compact && <p>{event.summary}</p>}
-        <div className="event-meta">
-          <span><Clock size={16} /> {event.time}</span>
-          <span><MapPin size={16} /> {event.location}</span>
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export function AttentionCard({ item, primary = false, onAction, onResolve }: {
   item: AttentionItem;
   primary?: boolean;
@@ -95,13 +69,3 @@ export function AttentionCard({ item, primary = false, onAction, onResolve }: {
   );
 }
 
-export function QuickAction({ icon, label, note }: { icon: 'event' | 'news' | 'team'; label: string; note: string }) {
-  const Icon = icon === 'event' ? CalendarCheck : icon === 'news' ? CalendarDots : Users;
-  return (
-    <button className="quick-action">
-      <span className="quick-action-icon"><Icon size={20} /></span>
-      <span><strong>{label}</strong><small>{note}</small></span>
-      <ArrowRight size={16} />
-    </button>
-  );
-}

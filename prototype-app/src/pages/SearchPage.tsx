@@ -1,28 +1,29 @@
-import { CalendarDots, MagnifyingGlass, Newspaper } from '@phosphor-icons/react';
+import { BookBookmark, CalendarDots, MagnifyingGlass, Newspaper, Target, UserCircle } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
-import { isEligible } from '../lib/audience';
 import { AiBadge } from '../components/AiBadge';
-import { SectionHeader, StatusPill } from '../components/UI';
+import { useSearchResults, type SearchResultGroupKey } from '../components/search/use-search-results';
+import { Tabs } from '../components/Tabs';
+import { SectionHeader } from '../components/UI';
 import { findSeedAnswer } from '../data/search-answers';
-import type { EventItem, NewsPost } from '../types';
 
-type TypeFilter = 'all' | 'news' | 'events';
+type TypeFilter = 'all' | SearchResultGroupKey;
 
 const SUGGESTIONS = ['iConnect', 'bảo mật', 'workshop'];
+const RECENT_STORAGE_KEY = 'my-ikame-recent-searches';
+
+const GROUP_ICON: Record<SearchResultGroupKey, typeof Newspaper> = {
+  news: Newspaper,
+  events: CalendarDots,
+  docs: BookBookmark,
+  goals: Target,
+  people: UserCircle,
+};
 
 function normalize(text: string) {
   return text.toLocaleLowerCase('vi');
-}
-
-function matchesNews(item: NewsPost, term: string) {
-  return normalize(`${item.title} ${item.summary} ${item.topic}`).includes(term);
-}
-
-function matchesEvent(item: EventItem, term: string) {
-  return normalize(`${item.title} ${item.summary} ${item.location} ${item.organizer}`).includes(term);
 }
 
 /** Wraps the first case-insensitive match of `term` in <mark>. Never re-cases or drops title text. */
@@ -39,8 +40,20 @@ function highlight(text: string, term: string): ReactNode {
   );
 }
 
+function loadRecent(): string[] {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY) ?? '[]');
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string').slice(0, 5) : [];
+  } catch { return []; }
+}
+
+/**
+ * Trang tìm kiếm toàn cục — CÙNG nguồn dữ liệu với palette ⌘K (useSearchResults):
+ * tin tức, sự kiện, tri thức, mục tiêu, con người. "Tìm gần đây" bền qua
+ * localStorage, xóa khi resetDemo.
+ */
 export function SearchPage() {
-  const { user, news, events } = useAppState();
+  const { demoResetCount } = useAppState();
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') ?? '';
   const [query, setQuery] = useState(initialQuery);
@@ -48,7 +61,7 @@ export function SearchPage() {
   // results render immediately instead of waiting out the 250ms debounce.
   const [applied, setApplied] = useState(initialQuery.trim());
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
-  const [recent, setRecent] = useState<string[]>([]);
+  const [recent, setRecent] = useState<string[]>(loadRecent);
 
   const trimmedQuery = query.trim();
 
@@ -59,38 +72,50 @@ export function SearchPage() {
 
   useEffect(() => {
     if (applied.length < 2) return;
-    setRecent((prev) => [applied, ...prev.filter((entry) => entry !== applied)].slice(0, 5));
+    setRecent((prev) => {
+      const next = [applied, ...prev.filter((entry) => entry !== applied)].slice(0, 5);
+      try { localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(next)); } catch { /* private mode */ }
+      return next;
+    });
   }, [applied]);
 
-  const term = applied.length >= 2 ? normalize(applied) : '';
+  // resetDemo xóa lịch sử tìm kiếm (guard ref-style qua demoResetCount > 0 check đơn giản).
+  useEffect(() => {
+    if (demoResetCount === 0) return;
+    setRecent([]);
+    try { localStorage.removeItem(RECENT_STORAGE_KEY); } catch { /* ignore */ }
+  }, [demoResetCount]);
+
   const pending = trimmedQuery.length >= 2 && trimmedQuery !== applied;
-  const answer = term ? findSeedAnswer(applied) : undefined;
+  const results = useSearchResults(applied.length >= 2 ? applied : '');
+  const answer = applied.length >= 2 ? findSeedAnswer(applied) : undefined;
 
-  const results = useMemo(() => ({
-    news: term
-      ? news.filter((item) => isEligible(user, item.audienceTeamIds) && !item.expired).filter((item) => matchesNews(item, term))
-      : [],
-    events: term
-      ? events.filter((item) => isEligible(user, item.audienceTeamIds) && item.status !== 'past' && item.status !== 'cancelled').filter((item) => matchesEvent(item, term))
-      : [],
-  }), [events, news, term, user]);
-
-  const showNews = typeFilter !== 'events';
-  const showEvents = typeFilter !== 'news';
-  const count = (showNews ? results.news.length : 0) + (showEvents ? results.events.length : 0);
+  const visibleGroups = useMemo(
+    () => results.groups.filter((group) => group.items.length > 0 && (typeFilter === 'all' || group.key === typeFilter)),
+    [results.groups, typeFilter],
+  );
+  const count = visibleGroups.reduce((sum, group) => sum + group.items.length, 0);
 
   return (
     <div className="page search-page">
-      <header className="page-heading"><div><p className="eyebrow">CẦN TÌM</p><h1>Tìm kiếm</h1><p>Tìm trong nội dung bạn có quyền truy cập.</p></div></header>
+      <header className="page-heading"><div><p className="eyebrow">CẦN TÌM</p><h1>Tìm kiếm</h1><p>Tìm trong nội dung bạn có quyền truy cập — tin tức, sự kiện, tri thức, mục tiêu và con người.</p></div></header>
       <label className="search-field"><MagnifyingGlass size={22} /><input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Thử “iConnect”, “bảo mật” hoặc “workshop”" aria-label="Tìm kiếm toàn cục" /></label>
 
-      <div className="neutral-tabs" role="group" aria-label="Loại kết quả">
-        <button className={typeFilter === 'all' ? 'is-active' : ''} onClick={() => setTypeFilter('all')}>Tất cả</button>
-        <button className={typeFilter === 'news' ? 'is-active' : ''} onClick={() => setTypeFilter('news')}>Tin tức</button>
-        <button className={typeFilter === 'events' ? 'is-active' : ''} onClick={() => setTypeFilter('events')}>Sự kiện</button>
-      </div>
+      <Tabs
+        tabs={[
+          { key: 'all' as TypeFilter, label: 'Tất cả' },
+          { key: 'news' as TypeFilter, label: 'Tin tức' },
+          { key: 'events' as TypeFilter, label: 'Sự kiện' },
+          { key: 'docs' as TypeFilter, label: 'Tri thức' },
+          { key: 'goals' as TypeFilter, label: 'Mục tiêu' },
+          { key: 'people' as TypeFilter, label: 'Con người' },
+        ]}
+        active={typeFilter}
+        onChange={setTypeFilter}
+        ariaLabel="Loại kết quả"
+      />
 
-      {term && !pending && (
+      {applied.length >= 2 && !pending && (
         answer ? (
           <div className="search-palette-answer search-page-answer">
             <AiBadge level={answer.level} />
@@ -122,36 +147,23 @@ export function SearchPage() {
       ) : count ? (
         <div className="search-results">
           <p className="result-count">{count} kết quả cho “{applied}”</p>
-          {showNews && results.news.length > 0 && (
-            <section>
-              <SectionHeader title="Tin tức" meta={`${results.news.length} kết quả`} />
-              {results.news.map((item) => (
-                <Link className="search-result" key={item.id} to={`/news/${item.id}`}>
-                  <span className="result-icon"><Newspaper size={20} /></span>
-                  <span>
-                    <span className="card-badges">{item.official && <StatusPill tone="info">Chính thức</StatusPill>}<StatusPill>{item.topic}</StatusPill></span>
-                    <strong>{highlight(item.title, applied)}</strong>
-                    <small>{item.summary}</small>
-                  </span>
-                </Link>
-              ))}
-            </section>
-          )}
-          {showEvents && results.events.length > 0 && (
-            <section>
-              <SectionHeader title="Sự kiện" meta={`${results.events.length} kết quả`} />
-              {results.events.map((item) => (
-                <Link className="search-result" key={item.id} to={`/events/${item.id}`}>
-                  <span className="result-icon"><CalendarDots size={20} /></span>
-                  <span>
-                    <span className="card-badges"><StatusPill>{item.format}</StatusPill></span>
-                    <strong>{highlight(item.title, applied)}</strong>
-                    <small>{item.dateLabel} · {item.location}</small>
-                  </span>
-                </Link>
-              ))}
-            </section>
-          )}
+          {visibleGroups.map((group) => {
+            const Icon = GROUP_ICON[group.key];
+            return (
+              <section key={group.key}>
+                <SectionHeader title={group.label} meta={`${group.items.length} kết quả`} />
+                {group.items.map((item) => (
+                  <Link className="search-result" key={item.id} to={item.href}>
+                    <span className="result-icon"><Icon size={20} /></span>
+                    <span>
+                      <strong>{highlight(item.title, applied)}</strong>
+                      {item.meta && <small>{item.meta}</small>}
+                    </span>
+                  </Link>
+                ))}
+              </section>
+            );
+          })}
         </div>
       ) : (
         <div className="empty-state">

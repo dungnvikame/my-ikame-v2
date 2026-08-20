@@ -17,6 +17,18 @@ body {
   background: var(--bg-secondary);
 }
 
+/* Focus ring baseline toàn cục (a11y) — rule cụ thể hơn ở từng component vẫn override. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--bg-accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-4);
+}
+
 button,
 input {
   font: inherit;
@@ -34,13 +46,6 @@ button {
 a {
   color: inherit;
   text-decoration: none;
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible {
-  outline: 2px solid var(--border-accent-secondary-contrast);
-  outline-offset: 2px;
 }
 
 h1,
@@ -488,6 +493,12 @@ p {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* min-width:0 — cột 1fr mặc định min=auto, h2 nowrap của biến thể compact
+   từng kéo giãn layout viewport mobile lên 414px (đo trên viewport 375). */
+.priority-copy {
+  min-width: 0;
 }
 
 .priority-icon {
@@ -1289,7 +1300,8 @@ p {
   padding: 0 20px 20px;
 }
 
-.handoff-toast {
+/* Toast toàn cục duy nhất (ToastProvider) — mọi xác nhận ngắn đi qua đây. */
+.app-toast {
   position: fixed;
   bottom: 24px;
   left: 50%;
@@ -1297,20 +1309,30 @@ p {
   z-index: 80;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  max-width: min(480px, calc(100vw - 32px));
   padding: 10px 16px;
-  border: 1px solid var(--border-success);
-  border-radius: var(--radius-round);
-  background: var(--bg-success);
-  color: var(--fg-success);
-  box-shadow: var(--shadow-m);
+  border-radius: var(--radius-8);
+  background: var(--bg-inverse);
+  color: var(--bg-primary);
   font-size: var(--body-s-size);
+  box-shadow: var(--shadow-m);
+}
+
+.app-toast button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--font-semibold);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* ---------- iRequest ---------- */
 .request-type-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1411,7 +1433,13 @@ p {
 
 @media (max-width: 960px) {
   .request-type-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .request-type-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -2224,6 +2252,23 @@ p {
     padding-left: 16px;
   }
 
+  /* iOS auto-zoom khi focus input <16px — ép 16px cho mọi ô nhập trên mobile.
+     !important có chủ đích: thắng các rule component (workspace-input, composer...). */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Touch target ≥44px cho các control nhỏ (chip lọc, action bài viết, gợi ý AI). */
+  .topic-chip,
+  .ai-suggestion-chip,
+  .ai-chip,
+  .community-post-card .community-post-actions button,
+  .community-post-card button {
+    min-height: 44px;
+  }
+
   .search-trigger span {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2438,4 +2483,81 @@ p {
   flex-direction: column;
   gap: 12px;
   overflow: hidden;
+}
+
+/* ---------- Notification icon theo mức ưu tiên ---------- */
+.notification-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-round);
+  background: var(--bg-secondary);
+}
+
+.notification-icon--critical { color: var(--fg-error); background: var(--bg-error); }
+.notification-icon--required { color: var(--fg-accent-primary); background: var(--bg-accent-primary-subtle); }
+.notification-icon--transactional { color: var(--fg-success); background: var(--bg-success); }
+.notification-icon--informational { color: var(--fg-blue-strong); background: var(--bg-blue-subtle); }
+
+/* ---------- Motion system (Phase 4 — delight) ----------
+   Toàn bộ nằm sau prefers-reduced-motion: no-preference; chỉ transform/opacity
+   (không gây reflow/CLS); enter 150-300ms ease-out theo chuẩn MD/HIG. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes page-enter {
+    from { opacity: 0; transform: translateY(4px); }
+  }
+
+  .main-content > .page {
+    animation: page-enter 160ms ease-out;
+  }
+
+  @keyframes item-enter {
+    from { opacity: 0; transform: translateY(6px); }
+  }
+
+  /* Stagger entrance cho các list/grid chính — 40ms/item, tối đa 8 item đầu. */
+  :is(.member-grid, .request-list, .collection-grid, .news-grid, .attention-list, .approval-list, .event-collection, .active-items) > *,
+  .community-feed > .community-post-card {
+    animation: item-enter 240ms ease-out backwards;
+  }
+
+  :is(.member-grid, .request-list, .collection-grid, .news-grid, .attention-list, .approval-list, .event-collection, .active-items) > *:nth-child(2),
+  .community-feed > .community-post-card:nth-child(3) { animation-delay: 40ms; }
+  :is(.member-grid, .request-list, .collection-grid, .news-grid, .attention-list, .approval-list, .event-collection, .active-items) > *:nth-child(3),
+  .community-feed > .community-post-card:nth-child(4) { animation-delay: 80ms; }
+  :is(.member-grid, .request-list, .collection-grid, .news-grid, .attention-list, .approval-list, .event-collection, .active-items) > *:nth-child(4),
+  .community-feed > .community-post-card:nth-child(5) { animation-delay: 120ms; }
+  :is(.member-grid, .request-list, .collection-grid, .news-grid, .attention-list, .approval-list, .event-collection, .active-items) > *:nth-child(5),
+  .community-feed > .community-post-card:nth-child(6) { animation-delay: 160ms; }
+  :is(.member-grid, .request-list, .collection-grid, .news-grid, .attention-list, .approval-list, .event-collection, .active-items) > *:nth-child(6),
+  .community-feed > .community-post-card:nth-child(7) { animation-delay: 200ms; }
+  :is(.member-grid, .request-list, .collection-grid, .news-grid, .attention-list, .approval-list, .event-collection, .active-items) > *:nth-child(7),
+  .community-feed > .community-post-card:nth-child(8) { animation-delay: 240ms; }
+  :is(.member-grid, .request-list, .collection-grid, .news-grid, .attention-list, .approval-list, .event-collection, .active-items) > *:nth-child(n + 8),
+  .community-feed > .community-post-card:nth-child(n + 9) { animation-delay: 280ms; }
+
+  /* Press feedback — scale nhẹ khi nhấn (HIG scale-feedback), phục hồi khi thả. */
+  .button,
+  .quick-action,
+  .assistant-capability,
+  .request-type-card,
+  .ai-suggestion-chip,
+  .ai-chip,
+  .topic-chip,
+  .icon-button {
+    transition: transform 100ms ease-out;
+  }
+
+  .button:active:not(:disabled),
+  .quick-action:active,
+  .assistant-capability:active,
+  .request-type-card:active,
+  .ai-suggestion-chip:active,
+  .ai-chip:active,
+  .topic-chip:active,
+  .icon-button:active {
+    transform: scale(0.97);
+  }
 }

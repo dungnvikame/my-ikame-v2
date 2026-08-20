@@ -134,10 +134,10 @@ function buildManagerReply(q: string, ctx: AgentCtx): AgentMessage | null {
         badge: `${scoped.length + openApprovals} mục`,
         fields: [
           ...scoped.map((item) => ({
-            label: `${item.severity === 'critical' ? '🔴 Nghiêm trọng' : '🟡 Cần xử lý'} · ${item.source} · ${item.freshness}`,
+            label: `${item.severity === 'critical' ? 'Nghiêm trọng' : 'Cần xử lý'} · ${item.source} · ${item.freshness}`,
             value: `${item.title} — ${item.people}`,
           })),
-          ...(openApprovals > 0 ? [{ label: '📋 Hàng đợi duyệt', value: `${openApprovals} đơn từ thành viên đang chờ quyết định của bạn` }] : []),
+          ...(openApprovals > 0 ? [{ label: 'Hàng đợi duyệt', value: `${openApprovals} đơn từ thành viên đang chờ quyết định của bạn` }] : []),
         ],
         steps: [
           'Đã quét iGoal · Event · HRIS trong scope team',

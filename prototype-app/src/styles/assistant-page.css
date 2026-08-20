@@ -142,6 +142,9 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  /* width:100% — thiếu nó container shrink-to-fit theo max-content của title
+     nowrap trong "Gần đây", giãn viewport mobile lên 388px. */
+  width: 100%;
   max-width: 720px;
   margin: 0 auto;
   text-align: center;
@@ -355,6 +358,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  /* min-width:0 — title nowrap bên trong từng đẩy min-content làm giãn viewport mobile. */
+  min-width: 0;
 }
 
 .assistant-history-list li + li {

@@ -1,7 +1,8 @@
-import { ArrowLeft, ArrowSquareOut } from '@phosphor-icons/react';
+import { ArrowLeft } from '@phosphor-icons/react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
-import { Button, SectionHeader, StatusPill } from '../components/UI';
+import { PlatformHandoffButton } from '../components/PlatformHandoff';
+import { SectionHeader, StatusPill } from '../components/UI';
 import { STATUS_META } from './goals/build-okr-tree';
 import { IkamerGoalsView } from './goals/IkamerGoalsView';
 import { ManagerGoalsView } from './goals/ManagerGoalsView';
@@ -31,12 +32,22 @@ export function GoalDetailPage() {
       <Link className="back-link" to="/goals"><ArrowLeft size={17} />Quay lại Mục tiêu</Link>
       <article className="content-card goal-detail-card">
         <div className="card-body">
-          <div className="card-badges"><StatusPill tone={meta.tone}>{meta.label}</StatusPill><StatusPill>{goal.cycle}</StatusPill></div>
+          <div className="goal-detail-head">
+            <div className="card-badges"><StatusPill tone={meta.tone}>{meta.label}</StatusPill><StatusPill>{goal.cycle}</StatusPill></div>
+            <PlatformHandoffButton platform="iGoal" action="thiết lập chi tiết mục tiêu này" label="Cấu hình trên iGoal" />
+          </div>
           <h1>{goal.title}</h1>
-          <p>Chủ sở hữu: {goal.owner}</p>
-          <p>Tiến độ: {goal.progress}% · {goal.nextDue}</p>
-          <p>Check-in gần nhất: {goal.lastCheckIn}</p>
-          <Button variant="borderless" icon={<ArrowSquareOut size={17} />} title="Demo — sẽ deep-link sang hệ thống nguồn">Cấu hình trong iGoal</Button>
+          <div className="goal-detail-progress">
+            <div className="okr-progress-bar" role="progressbar" aria-valuenow={goal.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Tiến độ ${goal.title}`}>
+              <div className="okr-progress-fill" style={{ width: `${goal.progress}%` }} />
+            </div>
+            <strong>{goal.progress}%</strong>
+          </div>
+          <dl className="goal-detail-facts">
+            <div><dt>Chủ sở hữu</dt><dd>{goal.owner}</dd></div>
+            <div><dt>Hạn check-in</dt><dd>{goal.nextDue}</dd></div>
+            <div><dt>Check-in gần nhất</dt><dd>{goal.lastCheckIn}</dd></div>
+          </dl>
         </div>
       </article>
 

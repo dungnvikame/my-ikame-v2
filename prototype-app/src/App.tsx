@@ -1,22 +1,41 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType } from 'react-router-dom';
 import { AppStateProvider, useAppState } from './AppState';
 import { AppShell } from './components/AppShell';
-import { AssistantPage } from './pages/AssistantPage';
-import { CommunityPage } from './pages/CommunityPage';
-import { EventDetailPage, EventsPage } from './pages/EventPages';
-import { ForbiddenPage } from './pages/ForbiddenPage';
-import { GoalDetailPage, GoalsPage } from './pages/GoalPages';
-import { HomePage } from './pages/HomePage';
-import { KnowledgeDetailPage, KnowledgePage } from './pages/KnowledgePages';
-import { ManagerPage } from './pages/ManagerPage';
-import { MemberDetailPage } from './pages/MemberDetailPage';
-import { ArticlePage, NewsPage } from './pages/NewsPages';
-import { NotFoundPage } from './pages/NotFoundPage';
-import { NotificationsPage } from './pages/NotificationsPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { RequestsPage } from './pages/RequestsPage';
-import { SearchPage } from './pages/SearchPage';
-import { TeamPage } from './pages/TeamPage';
+import { ToastProvider } from './components/toast';
+
+// Route-level code splitting — mỗi trang một chunk, initial bundle chỉ còn shell.
+// Data đều là mock cục bộ nên fallback trống là đủ (không cần skeleton).
+const AssistantPage = lazy(() => import('./pages/AssistantPage').then((m) => ({ default: m.AssistantPage })));
+const CommunityPage = lazy(() => import('./pages/CommunityPage').then((m) => ({ default: m.CommunityPage })));
+const EventsPage = lazy(() => import('./pages/EventPages').then((m) => ({ default: m.EventsPage })));
+const EventDetailPage = lazy(() => import('./pages/EventPages').then((m) => ({ default: m.EventDetailPage })));
+const ForbiddenPage = lazy(() => import('./pages/ForbiddenPage').then((m) => ({ default: m.ForbiddenPage })));
+const GoalsPage = lazy(() => import('./pages/GoalPages').then((m) => ({ default: m.GoalsPage })));
+const GoalDetailPage = lazy(() => import('./pages/GoalPages').then((m) => ({ default: m.GoalDetailPage })));
+const HomePage = lazy(() => import('./pages/HomePage').then((m) => ({ default: m.HomePage })));
+const KnowledgePage = lazy(() => import('./pages/KnowledgePages').then((m) => ({ default: m.KnowledgePage })));
+const KnowledgeDetailPage = lazy(() => import('./pages/KnowledgePages').then((m) => ({ default: m.KnowledgeDetailPage })));
+const ManagerPage = lazy(() => import('./pages/ManagerPage').then((m) => ({ default: m.ManagerPage })));
+const MemberDetailPage = lazy(() => import('./pages/MemberDetailPage').then((m) => ({ default: m.MemberDetailPage })));
+const NewsPage = lazy(() => import('./pages/NewsPages').then((m) => ({ default: m.NewsPage })));
+const ArticlePage = lazy(() => import('./pages/NewsPages').then((m) => ({ default: m.ArticlePage })));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage').then((m) => ({ default: m.NotificationsPage })));
+const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ default: m.ProfilePage })));
+const RequestsPage = lazy(() => import('./pages/RequestsPage').then((m) => ({ default: m.RequestsPage })));
+const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })));
+const TeamPage = lazy(() => import('./pages/TeamPage').then((m) => ({ default: m.TeamPage })));
+
+/** Điều hướng tiến (PUSH) cuộn về đầu trang; Back/Forward (POP) giữ nguyên vị trí (state preservation). */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+  useEffect(() => {
+    if (navigationType !== 'POP') window.scrollTo(0, 0);
+  }, [pathname, navigationType]);
+  return null;
+}
 
 function PerspectiveGuard({ children, expected }: { children: React.ReactNode; expected: 'ikamer' | 'manager' }) {
   const { perspective } = useAppState();
@@ -27,6 +46,8 @@ function PerspectiveGuard({ children, expected }: { children: React.ReactNode; e
 function AppRoutes() {
   return (
     <AppShell>
+      <ScrollToTop />
+      <Suspense fallback={<div className="page" aria-busy="true" />}>
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<PerspectiveGuard expected="ikamer"><HomePage /></PerspectiveGuard>} />
@@ -53,6 +74,7 @@ function AppRoutes() {
         <Route path="/not-found" element={<NotFoundPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      </Suspense>
     </AppShell>
   );
 }
@@ -60,7 +82,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppStateProvider><AppRoutes /></AppStateProvider>
+      <AppStateProvider><ToastProvider><AppRoutes /></ToastProvider></AppStateProvider>
     </BrowserRouter>
   );
 }

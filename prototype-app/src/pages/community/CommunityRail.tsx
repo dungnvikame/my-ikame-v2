@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Cake, CalendarDots, Medal, Trophy } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/UI';
 import { isEligible } from '../../lib/audience';
@@ -35,7 +36,7 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
       {birthdays.length > 0 && (
         <section className="community-widget community-widget--birthday">
           <header className="community-widget-head">
-            <span className="community-widget-emoji" aria-hidden="true">🎂</span>
+            <span className="community-widget-icon" aria-hidden="true"><Cake size={16} weight="duotone" /></span>
             <h2>Sinh nhật hôm nay</h2>
           </header>
           <ul className="community-rail-list">
@@ -61,7 +62,7 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
 
       <section className="community-widget">
         <header className="community-widget-head">
-          <span className="community-widget-emoji" aria-hidden="true">📅</span>
+          <span className="community-widget-icon" aria-hidden="true"><CalendarDots size={16} weight="duotone" /></span>
           <h2>Sự kiện sắp tới</h2>
           <Link className="community-widget-link" to="/events">Tất cả</Link>
         </header>
@@ -87,7 +88,7 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
 
       <section className="community-widget">
         <header className="community-widget-head">
-          <span className="community-widget-emoji" aria-hidden="true">🏆</span>
+          <span className="community-widget-icon" aria-hidden="true"><Trophy size={16} weight="duotone" /></span>
           <h2>Fan iKame tuần</h2>
         </header>
         <ul className="community-rail-list">
@@ -107,7 +108,7 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
 
       <section className="community-widget">
         <header className="community-widget-head">
-          <span className="community-widget-emoji" aria-hidden="true">🎖️</span>
+          <span className="community-widget-icon" aria-hidden="true"><Medal size={16} weight="duotone" /></span>
           <h2>Cột mốc thâm niên</h2>
         </header>
         <ul className="community-rail-list">

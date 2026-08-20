@@ -1,6 +1,6 @@
-/* Ask iKame panel styles — owned by Phase 2 (ask-ikame-scripted-engine).
-   Base drawer geometry (.drawer-layer, .ask-panel) lives in app.css (Phase 1, frozen);
-   this file owns everything visual inside the panel. */
+/* Panel hỏi nhanh Trợ lý AI (QuickAskPanel) — dùng chung engine + bubble styles
+   với trang /assistant (assistant-page.css). Khung drawer (.drawer-layer, .ask-panel)
+   nằm ở app.css; file này chỉ style phần bên trong panel. */
 
 .ask-panel-header {
   display: flex;
@@ -19,6 +19,16 @@
   line-height: var(--body-l-line);
 }
 
+.ask-panel-header h2 svg {
+  color: var(--fg-accent-primary);
+}
+
+.ask-panel-header-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
 .ask-panel-disclosure {
   margin-top: 4px;
   color: var(--text-tertiary);
@@ -29,7 +39,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
+  padding-top: 14px;
   /* min-height:0 (not auto) is required so this flex item can actually shrink below its
      content height and let overflow-y:auto scroll internally, instead of the panel's flex
      column reserving only the flex-grow share and letting turns spill past chips/input. */
@@ -51,151 +62,9 @@
   text-align: center;
 }
 
-.ai-turn {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ai-turn-question {
-  align-self: flex-end;
-  max-width: 85%;
-  padding: 8px 14px;
-  border-radius: var(--radius-16);
-  background: var(--bg-accent-primary);
-  color: var(--fg-on-accent);
-  font-size: var(--body-s-size);
-}
-
-.ai-message {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 14px;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-12);
-  background: var(--bg-canvas-secondary);
-  cursor: pointer;
-}
-
-.ai-message-paragraphs {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ai-message-line {
-  color: var(--text-primary);
-  font-size: var(--body-s-size);
-  line-height: var(--body-s-line);
-  animation: ai-line-fade-in 320ms ease-out;
-}
-
-@keyframes ai-line-fade-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.ai-citation-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
-
-.ai-citation-card {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--border-secondary);
-  border-radius: var(--radius-8);
-  background: var(--bg-primary);
-  text-align: left;
-  cursor: pointer;
-}
-
-.ai-citation-source {
-  color: var(--text-tertiary);
-  font-size: var(--body-xxs-size);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.ai-citation-title {
-  color: var(--fg-link);
-  font-size: var(--body-xs-size);
-  font-weight: var(--font-semibold);
-}
-
-.ai-reason-toggle {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--text-tertiary);
-  font-size: var(--body-xxs-size);
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.ai-reason-body {
-  color: var(--text-secondary);
-  font-size: var(--body-xs-size);
-}
-
-.ai-action {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ai-action--denied {
-  flex-direction: row;
-  align-items: center;
-  gap: 7px;
-  color: var(--fg-error);
-  font-size: var(--body-xs-size);
-}
-
-.ai-draft-textarea {
-  width: 100%;
-  min-height: 88px;
-  padding: 10px 12px;
-  border: 1px solid var(--border-input);
-  border-radius: var(--radius-8);
-  background: var(--bg-input-fill);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: var(--body-s-size);
-  resize: vertical;
-}
-
-.ai-action-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.ai-action-note {
-  color: var(--text-tertiary);
-  font-size: var(--body-xs-size);
-}
-
-.ai-receipt {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.ask-panel-guard-note {
-  padding: 8px 12px;
-  border-radius: var(--radius-8);
-  background: var(--bg-amber-subtle);
-  color: var(--fg-amber-strong);
-  font-size: var(--body-xs-size);
-  line-height: var(--body-xs-line);
+/* Bubble trong panel hẹp hơn trang — nới trần rộng cho dễ đọc. */
+.ask-panel .assistant-bubble {
+  max-width: 94%;
 }
 
 .ask-panel-chips {
@@ -207,36 +76,47 @@
 }
 
 .ai-chip {
-  padding: 7px 14px;
-  border: 1px solid var(--border-accent-secondary);
+  padding: 7px 12px;
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-round);
-  background: var(--bg-accent-secondary-subtle);
-  color: var(--fg-accent-secondary);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-size: var(--body-xs-size);
   font-weight: var(--font-semibold);
   cursor: pointer;
 }
 
 .ai-chip:hover {
-  background: var(--bg-blue-medium);
+  border-color: var(--bg-accent-primary);
+  color: var(--fg-accent-primary);
+  background: var(--bg-accent-primary-subtle);
+}
+
+.ask-panel-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .ask-panel-input input {
-  width: 100%;
-  height: var(--input-height-m);
-  padding: 0 14px;
-  border: 1px solid var(--border-input);
-  border-radius: var(--radius-8);
-  background: var(--bg-input-fill-dim);
-  color: var(--text-tertiary);
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-round);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--body-s-size);
 }
 
-.ask-panel-input input::placeholder {
-  color: var(--text-tertiary);
+.ask-panel-input input:focus-visible {
+  outline: none;
+  border-color: var(--bg-accent-primary);
+  box-shadow: 0 0 0 3px var(--bg-accent-primary-subtle);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ai-message-line {
-    animation: none;
-  }
+.ask-panel-input .assistant-send:disabled {
+  opacity: 0.5;
+  cursor: default;
 }

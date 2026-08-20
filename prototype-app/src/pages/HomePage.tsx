@@ -2,7 +2,8 @@ import { ArrowRight, BookBookmark, ChatsCircle, CheckCircle, Clock, Newspaper, S
 import { Link } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { AIAssistant } from '../components/AIAssistant';
-import { EventCard, NewsCard } from '../components/ContentCards';
+import { NewsCard } from '../components/ContentCards';
+import { EventCardV2 } from './events/EventCardV2';
 import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
 import { isEligible } from '../lib/audience';
 import { rankCards, type RankableCard } from '../lib/ranking';
@@ -191,7 +192,7 @@ export function HomePage() {
             <SectionHeader title="Sự kiện sắp tới" href="/events" />
             {upcomingEvents.length > 0 ? (
               <div className="rail-stack">
-                {upcomingEvents.map((event) => <EventCard key={event.id} event={event} compact />)}
+                {upcomingEvents.map((event) => <EventCardV2 key={event.id} event={event} compact />)}
               </div>
             ) : (
               <EmptyState title="Chưa có sự kiện" body="Sự kiện sắp diễn ra sẽ xuất hiện ở đây." />

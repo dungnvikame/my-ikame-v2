@@ -21,7 +21,7 @@ import { useAppState } from '../AppState';
 import { BrandLogo } from './BrandLogo';
 import { IconButton, StatusPill } from './UI';
 import { NotificationList } from '../pages/NotificationsPage';
-import { AskIKamePanel } from './assistant/AskIKamePanel';
+import { QuickAskPanel } from './assistant/QuickAskPanel';
 import { SearchPalette } from './search/SearchPalette';
 
 type NavEntry = { label: string; to: string; icon: typeof House };
@@ -265,7 +265,7 @@ export function AppShell({ children }: PropsWithChildren) {
       </div>
       <NotificationsDrawer triggerRef={notificationTriggerRef} />
       <SearchPalette />
-      <AskIKamePanel />
+      <QuickAskPanel />
     </div>
   );
 }

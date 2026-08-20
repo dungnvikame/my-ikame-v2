@@ -44,10 +44,11 @@ export function SourceLine({ source, time }: { source: string; time: string }) {
   return <div className="source-line"><span>{source}</span><span aria-hidden="true">·</span><span>{time}</span></div>;
 }
 
-export function EmptyState({ title, body }: { title: string; body: string }) {
+/** Icon theo ngữ cảnh (mặc định CheckCircle cho trạng thái "đã xử lý hết"). */
+export function EmptyState({ title, body, icon }: { title: string; body: string; icon?: ReactNode }) {
   return (
     <div className="empty-state">
-      <CheckCircle size={44} weight="duotone" />
+      {icon ?? <CheckCircle size={44} weight="duotone" />}
       <h3>{title}</h3>
       <p>{body}</p>
     </div>

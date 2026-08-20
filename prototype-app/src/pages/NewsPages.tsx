@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { NewsCard, newsTopicVisual } from '../components/ContentCards';
+import { Tabs } from '../components/Tabs';
 import { Button, EmptyState, SectionHeader, SourceLine, StatusPill } from '../components/UI';
 import { isEligible } from '../lib/audience';
 import { rankCards } from '../lib/ranking';
@@ -51,11 +52,16 @@ export function NewsPage() {
         <div><p className="eyebrow">CẦN BIẾT</p><h1>Tin tức</h1><p>Thông tin chính thức và nội dung phù hợp với bạn.</p></div>
       </header>
       <div className="collection-toolbar">
-        <div className="neutral-tabs" role="tablist" aria-label="Lọc tin tức">
-          <button role="tab" aria-selected={filter === 'all'} className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}>Dành cho tôi</button>
-          <button role="tab" aria-selected={filter === 'official'} className={filter === 'official' ? 'is-active' : ''} onClick={() => setFilter('official')}>Chính thức</button>
-          <button role="tab" aria-selected={filter === 'mandatory'} className={filter === 'mandatory' ? 'is-active' : ''} onClick={() => setFilter('mandatory')}>Bắt buộc</button>
-        </div>
+        <Tabs
+          tabs={[
+            { key: 'all' as Filter, label: 'Dành cho tôi' },
+            { key: 'official' as Filter, label: 'Chính thức' },
+            { key: 'mandatory' as Filter, label: 'Bắt buộc' },
+          ]}
+          active={filter}
+          onChange={setFilter}
+          ariaLabel="Lọc tin tức"
+        />
         <label className="filter-input"><MagnifyingGlass size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Tìm trong tin tức" placeholder="Tìm trong tin tức" /></label>
       </div>
       {allTopics.length > 1 && (

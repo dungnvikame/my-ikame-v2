@@ -1,7 +1,8 @@
-import { ArrowLeft, CheckCircle, Clock, MapPin, Users } from '@phosphor-icons/react';
+import { ArrowLeft, CalendarDots, CheckCircle, Clock, MapPin, Users } from '@phosphor-icons/react';
 import { useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
+import { Tabs } from '../components/Tabs';
 import { EmptyState, SectionHeader } from '../components/UI';
 import { isEligible } from '../lib/audience';
 import { buildIcs, downloadIcs } from '../lib/ics';
@@ -50,21 +51,22 @@ export function EventsPage() {
       <EventStats events={eligible} now={now} />
       <EventTimeline events={eligible} now={now} onSelectEvent={handleSelectEvent} />
       <div className="collection-toolbar">
-        <div className="events-v2-tabs" role="tablist" aria-label="Lọc sự kiện">
-          {(Object.keys(TAB_LABELS) as EventTab[]).map((key) => (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={tab === key}
-              className={`events-v2-tab ${tab === key ? 'is-active' : ''}`}
-              onClick={() => setTab(key)}
-            >
-              {key === 'live' && <span className="events-v2-tab-dot" aria-hidden="true" />}
-              {TAB_LABELS[key]}
-            </button>
-          ))}
-        </div>
+        <Tabs
+          className="events-v2-tabs"
+          buttonClassName="events-v2-tab"
+          tabs={(Object.keys(TAB_LABELS) as EventTab[]).map((key) => ({
+            key,
+            label: (
+              <>
+                {key === 'live' && <span className="events-v2-tab-dot" aria-hidden="true" />}
+                {TAB_LABELS[key]}
+              </>
+            ),
+          }))}
+          active={tab}
+          onChange={setTab}
+          ariaLabel="Lọc sự kiện"
+        />
         <span className="timezone-note"><Clock size={16} />Múi giờ hiển thị: {user.timezone}</span>
       </div>
       {filtered.length ? (
@@ -86,7 +88,7 @@ export function EventsPage() {
           </section>
         )
       ) : (
-        <EmptyState title="Chưa có sự kiện trong mục này" body="Sự kiện mới sẽ xuất hiện khi phù hợp với audience của bạn." />
+        <EmptyState icon={<CalendarDots size={44} weight="duotone" />} title="Chưa có sự kiện trong mục này" body="Sự kiện mới sẽ xuất hiện khi phù hợp với audience của bạn." />
       )}
     </div>
   );

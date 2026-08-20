@@ -1,7 +1,7 @@
-/* Generated from Design token.json — Core DS 1.1 / ikame-system-design. */
+﻿/* Generated from Design token.json â€” Core DS 1.1 / ikame-system-design. */
 /* Use these semantic tokens in design-agent HTML output. Do not hardcode hex values manually. */
 :root, [data-theme="light"] {
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --bg-accent-primary: #F76226;
   --bg-accent-primary-subtle: #FEF4F0;
   --bg-accent-secondary: #0D87F2;
@@ -784,7 +784,7 @@
 
 /* Core DS 1.1 non-color tokens from designer rules. Use these variables in all generated HTML. */
 :root, [data-theme="light"], [data-theme="dark"] {
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   --headline-xl-size: 48px; --headline-xl-line: 56px; --headline-xl-weight: 600;
   --headline-l-size: 40px; --headline-l-line: 50px; --headline-l-weight: 600;

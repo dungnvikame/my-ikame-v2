@@ -5,6 +5,7 @@ import {
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { memberProfile, teamMembers } from '../data/mockData';
 import { PlatformHandoffButton } from '../components/PlatformHandoff';
+import { Tabs } from '../components/Tabs';
 import { Button, StatusPill } from '../components/UI';
 import { useAppState } from '../AppState';
 import { CheckinPanel, GoalsPanel, GrowthPanel, HrPanel, OverviewPanel } from './team/member-tabs';
@@ -79,20 +80,13 @@ export function MemberDetailPage() {
         </div>
       </header>
 
-      <div className="neutral-tabs member-tabs" role="tablist" aria-label="Nội dung hồ sơ">
-        {TABS.map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            role="tab"
-            aria-selected={tab === item.key}
-            className={tab === item.key ? 'is-active' : ''}
-            onClick={() => setTab(item.key)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        className="neutral-tabs member-tabs"
+        tabs={TABS}
+        active={tab}
+        onChange={setTab}
+        ariaLabel="Nội dung hồ sơ"
+      />
 
       <div className="member-tab-panel" role="tabpanel">
         {tab === 'overview' && <OverviewPanel profile={profile} />}

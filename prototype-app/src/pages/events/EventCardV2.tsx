@@ -77,17 +77,19 @@ function registrationLabel(event: EventItem): string {
 type EventCardV2Props = {
   event: EventItem;
   highlighted?: boolean;
+  /** Biến thể rail/sidebar: cover mỏng, ẩn avatars + capacity — một ngôn ngữ card duy nhất toàn app. */
+  compact?: boolean;
   cardRef?: (element: HTMLElement | null) => void;
 };
 
 /** Upgraded event card — gradient emoji cover tile, avatars + social-proof line, capacity bar. */
-export function EventCardV2({ event, highlighted = false, cardRef }: EventCardV2Props) {
+export function EventCardV2({ event, highlighted = false, compact = false, cardRef }: EventCardV2Props) {
   const capacity = capacityInfo(event);
   const isDimmed = event.status === 'past' || event.status === 'cancelled';
   return (
     <article
       ref={cardRef}
-      className={`content-card event-card events-v2-card ${isDimmed ? 'is-past' : ''} ${highlighted ? 'is-highlighted' : ''}`}
+      className={`content-card event-card events-v2-card ${compact ? 'events-v2-card--compact' : ''} ${isDimmed ? 'is-past' : ''} ${highlighted ? 'is-highlighted' : ''}`}
     >
       <EventCoverTile event={event} className="events-v2-card-cover" />
       <div className="card-body">
@@ -102,6 +104,7 @@ export function EventCardV2({ event, highlighted = false, cardRef }: EventCardV2
           <span><Clock size={16} /> {event.time}</span>
           <span><MapPin size={16} /> {event.location}</span>
         </div>
+        {!compact && (
         <div className="events-v2-card-footer">
           <div className="events-v2-card-footer-left">
             <ParticipantAvatars names={event.participantNames} />
@@ -116,6 +119,7 @@ export function EventCardV2({ event, highlighted = false, cardRef }: EventCardV2
             )}
           </div>
         </div>
+        )}
       </div>
     </article>
   );
