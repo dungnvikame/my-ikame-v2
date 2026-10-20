@@ -1,23 +1,20 @@
 import {
   Bell,
-  BookBookmark,
   CalendarDots,
   ChatsCircle,
   House,
   MagnifyingGlass,
   Moon,
-  Newspaper,
   SidebarSimple,
   Sparkle,
-  Target,
-  Ticket,
+  SquaresFour,
   Sun,
-  UsersThree,
   X,
 } from '@phosphor-icons/react';
 import { useEffect, useRef, useState, type KeyboardEvent, type PropsWithChildren } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useAppState } from '../AppState';
+import { AppLauncher } from './AppLauncher';
 import { BrandLogo } from './BrandLogo';
 import { IconButton, StatusPill } from './UI';
 import { NotificationList } from '../pages/NotificationsPage';
@@ -27,54 +24,26 @@ import { SearchPalette } from './search/SearchPalette';
 type NavEntry = { label: string; to: string; icon: typeof House };
 type NavGroup = { label: string; items: NavEntry[] };
 
+// MVP: nav tinh gọn còn 5 mục (Newsfeed + Sự kiện là trọng tâm; Ứng dụng là một cửa
+// vào các platform khác). Module ngoài MVP (Tri thức, Mục tiêu, iRequest, Manager)
+// vẫn giữ route — chỉ ẩn khỏi điều hướng.
 const iKamerNavGroups: NavGroup[] = [
   { label: 'KHÔNG GIAN CỦA BẠN', items: [
     { label: 'Trang chủ', to: '/home', icon: House },
-    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
-    { label: 'iKame Feed', to: '/community', icon: ChatsCircle },
-    { label: 'Tin tức', to: '/news', icon: Newspaper },
+    { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-    { label: 'iRequest', to: '/requests', icon: Ticket },
-  ] },
-  { label: 'PHÁT TRIỂN', items: [
-    { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
-    { label: 'Mục tiêu', to: '/goals', icon: Target },
+    { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
+    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
   ] },
 ];
 
-// Manager's home is "Tổng quan" — the QUẢN LÝ group leads the sidebar so the
-// management workspace (overview, team, team OKR) is always first in view.
-const managerNavGroups: NavGroup[] = [
-  { label: 'QUẢN LÝ', items: [
-    { label: 'Tổng quan', to: '/manager/overview', icon: House },
-    { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
-    { label: 'Mục tiêu team', to: '/goals', icon: Target },
-  ] },
-  { label: 'KHÔNG GIAN CỦA BẠN', items: [
-    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
-    { label: 'iKame Feed', to: '/community', icon: ChatsCircle },
-    { label: 'Tin tức', to: '/news', icon: Newspaper },
-    { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-    { label: 'Tri thức', to: '/knowledge', icon: BookBookmark },
-    { label: 'iRequest', to: '/requests', icon: Ticket },
-  ] },
-];
-
-// Fixed 5 — NOT navGroups.flat().slice(0,5); mobile bottom-nav has its own curated set.
+// Fixed 5 — mobile bottom-nav mirrors the MVP sidebar.
 const iKamerBottomNav: NavEntry[] = [
   { label: 'Trang chủ', to: '/home', icon: House },
-  { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
-  { label: 'Feed', to: '/community', icon: ChatsCircle },
+  { label: 'Feed', to: '/feed', icon: ChatsCircle },
   { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-  { label: 'Mục tiêu', to: '/goals', icon: Target },
-];
-
-const managerBottomNav: NavEntry[] = [
-  { label: 'Tổng quan', to: '/manager/overview', icon: House },
+  { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
   { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
-  { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
-  { label: 'Mục tiêu', to: '/goals', icon: Target },
-  { label: 'Feed', to: '/community', icon: ChatsCircle },
 ];
 
 function Logo() {
@@ -86,22 +55,8 @@ function Logo() {
   );
 }
 
-function PerspectiveSwitch() {
-  const { perspective, setPerspective } = useAppState();
-  const navigate = useNavigate();
-
-  const select = (next: 'ikamer' | 'manager') => {
-    setPerspective(next);
-    navigate(next === 'manager' ? '/manager/overview' : '/home');
-  };
-
-  return (
-    <div className="perspective-switch" aria-label="Chọn góc nhìn">
-      <button className={perspective === 'ikamer' ? 'is-active' : ''} onClick={() => select('ikamer')}>iKamer</button>
-      <button className={perspective === 'manager' ? 'is-active' : ''} onClick={() => select('manager')}>Manager</button>
-    </div>
-  );
-}
+// MVP: PerspectiveSwitch (iKamer/Manager) tạm gỡ khỏi sidebar — module Manager parked.
+// Khôi phục: render lại <PerspectiveSwitch /> trong sidebar-account (xem git history).
 
 function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement | null> }) {
   const {
@@ -166,9 +121,9 @@ function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLB
 }
 
 export function AppShell({ children }: PropsWithChildren) {
-  const { perspective, user, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
-  const navGroups = perspective === 'manager' ? managerNavGroups : iKamerNavGroups;
-  const bottomNav = perspective === 'manager' ? managerBottomNav : iKamerBottomNav;
+  const { user, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
+  const navGroups = iKamerNavGroups;
+  const bottomNav = iKamerBottomNav;
   const unreadCount = notifications.filter((item) => !item.read).length;
   const notificationTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -214,7 +169,6 @@ export function AppShell({ children }: PropsWithChildren) {
           </nav>
         </div>
         <div className="sidebar-account">
-          <PerspectiveSwitch />
           <NavLink to="/profile" className="account-row">
             <span className="avatar" aria-hidden="true">{user.shortName.slice(0, 1)}</span>
             <span className="account-copy"><strong>{user.name}</strong><small>{user.role}</small></span>
@@ -240,6 +194,7 @@ export function AppShell({ children }: PropsWithChildren) {
             <kbd>⌘ K</kbd>
           </button>
           <div className="topbar-actions">
+            <AppLauncher />
             <IconButton label="Hỏi iKame" onClick={() => setAskOpen(true)}>
               <Sparkle size={20} />
             </IconButton>

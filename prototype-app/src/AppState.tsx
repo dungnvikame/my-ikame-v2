@@ -151,8 +151,10 @@ type AppStateValue = {
 const AppStateContext = createContext<AppStateValue | null>(null);
 
 export function AppStateProvider({ children }: PropsWithChildren) {
-  const [perspective, setPerspective] = useState<Perspective>(() =>
-    readStored(PERSPECTIVE_STORAGE_KEY, ['ikamer', 'manager'] as const, 'ikamer'));
+  // MVP: module Manager tạm parked — luôn khởi động ở góc nhìn iKamer, bỏ qua (nhưng
+  // không ghi đè) giá trị đã lưu, để người từng bật manager không kẹt trong nav đã ẩn.
+  // Khôi phục: đọc lại readStored(PERSPECTIVE_STORAGE_KEY, ...) + bật lại effect ghi.
+  const [perspective, setPerspective] = useState<Perspective>('ikamer');
   const [news, setNews] = useState(initialNews);
   const [events, setEvents] = useState(initialEvents);
   const [notifications, setNotifications] = useState(initialNotifications);
@@ -172,7 +174,8 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const [approvals, setApprovals] = useState(initialApprovals);
 
   useEffect(() => { writeStored(THEME_STORAGE_KEY, theme); }, [theme]);
-  useEffect(() => { writeStored(PERSPECTIVE_STORAGE_KEY, perspective); }, [perspective]);
+  // MVP: tạm không persist perspective để không ghi đè 'manager' đã lưu (xem comment ở khởi tạo).
+  // useEffect(() => { writeStored(PERSPECTIVE_STORAGE_KEY, perspective); }, [perspective]);
 
   const user = perspective === 'manager' ? users.mai : users.an;
 

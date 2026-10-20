@@ -1,68 +1,58 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, ChatsCircle, X } from '@phosphor-icons/react';
+import { ArrowRight, ChatsCircle, ShieldWarning, X } from '@phosphor-icons/react';
+import { Link } from 'react-router-dom';
 import { useAppState } from '../AppState';
+import { NewsCard } from '../components/ContentCards';
 import { Tabs } from '../components/Tabs';
-import { Button, EmptyState, IconButton } from '../components/UI';
-import { isEligible } from '../lib/audience';
-import type { Post } from '../types';
+import { Button, EmptyState, IconButton, StatusPill } from '../components/UI';
+import { useToast } from '../components/toast';
 import { CommunityRail } from './community/CommunityRail';
 import { PinnedCarousel } from './community/PinnedCarousel';
 import { PostCard } from './community/PostCard';
 import { PostComposer } from './community/PostComposer';
-import { useToast } from '../components/toast';
+import { buildFeed, FEED_TAB_LABELS, feedItemKey, matchesFeedTab, pendingMandatoryNews, type FeedTab } from './feed/feed-items';
+import { isEligible } from '../lib/audience';
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-type FeedFilter = 'company' | 'team' | 'official' | 'saved';
+const FEED_TABS = (Object.keys(FEED_TAB_LABELS) as FeedTab[]).map((key) => ({ key, label: FEED_TAB_LABELS[key] }));
 
-const FEED_FILTERS: { key: FeedFilter; label: string }[] = [
-  { key: 'company', label: 'Toàn công ty' },
-  { key: 'team', label: 'Team của mình' },
-  { key: 'official', label: 'Thông báo' },
-  { key: 'saved', label: 'Đã lưu' },
-];
-
-const FILTER_EMPTY_COPY: Record<FeedFilter, { title: string; body: string }> = {
+const FILTER_EMPTY_COPY: Record<FeedTab, { title: string; body: string }> = {
   company: { title: 'Chưa có bài viết', body: 'Hãy là người đầu tiên chia sẻ với iKame Feed.' },
-  team: { title: 'Team chưa có bài viết riêng', body: 'Bài viết dành riêng cho team của bạn sẽ xuất hiện ở đây.' },
+  team: { title: 'Team chưa có bài viết riêng', body: 'Bài viết và thông báo dành riêng cho team của bạn sẽ xuất hiện ở đây.' },
   official: { title: 'Chưa có thông báo', body: 'Thông báo chính thức từ công ty sẽ xuất hiện ở đây.' },
   saved: { title: 'Chưa lưu bài viết nào', body: 'Bấm biểu tượng lưu trên bài viết để xem lại tại đây.' },
 };
 
-function matchesFilter(post: Post, filter: FeedFilter): boolean {
-  if (filter === 'team') return !!post.audienceTeamIds?.length;
-  if (filter === 'official') return !!post.official;
-  if (filter === 'saved') return !!post.saved;
-  return !post.audienceTeamIds?.length;
-}
-
-export function CommunityPage() {
+/** iKame Feed hợp nhất (MVP) — kênh truyền thông chính thức: thông báo công ty + bài social + bài theo team. */
+export function FeedPage() {
   const {
-    posts, birthdays, milestones, topFans, events, user, demoResetCount,
+    posts, news, birthdays, milestones, topFans, events, user, demoResetCount,
     addPost, toggleReaction, addComment, toggleSavePost, congratulate,
   } = useAppState();
 
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [bannerDismissed, setBannerDismissed] = useState(false);
-  const [feedFilter, setFeedFilter] = useState<FeedFilter>('company');
+  const [feedFilter, setFeedFilter] = useState<FeedTab>('company');
   const { showToast: show } = useToast();
   const postRefs = useRef(new Map<string, HTMLElement>());
 
   // Component-local UI state clears on resetDemo() (F4) — feed data itself lives in AppState.
   useEffect(() => { setExpanded(new Set()); setBannerDismissed(false); setFeedFilter('company'); }, [demoResetCount]);
 
+  const feed = useMemo(() => buildFeed(posts, news, user, feedFilter), [posts, news, user, feedFilter]);
+  // Audience check áp dụng cho MỌI lối vào feed — carousel ghim và banner mention cũng vậy.
   const visiblePosts = useMemo(() => posts.filter((post) => isEligible(user, post.audienceTeamIds)), [posts, user]);
   const pinned = useMemo(() => visiblePosts.filter((post) => post.pinned), [visiblePosts]);
-  const feed = useMemo(() => visiblePosts.filter((post) => !post.pinned), [visiblePosts]);
-  const filteredFeed = useMemo(() => feed.filter((post) => matchesFilter(post, feedFilter)), [feed, feedFilter]);
-  const mentioned = feed.find((post) => post.mentionsMe);
+  const mandatory = useMemo(() => pendingMandatoryNews(news, user), [news, user]);
+  const mentioned = visiblePosts.find((post) => post.mentionsMe);
 
   const scrollToPost = (id: string) => {
     // Bài đích có thể đang bị tab lọc ẩn — chuyển đúng tab trước khi cuộn tới.
-    const target = feed.find((post) => post.id === id);
-    if (target && !matchesFilter(target, feedFilter)) {
+    const target = visiblePosts.find((post) => post.id === id);
+    if (target && !matchesFeedTab({ kind: 'post', post: target }, feedFilter)) {
       setFeedFilter(target.audienceTeamIds?.length ? 'team' : 'company');
     }
     setExpanded((prev) => new Set(prev).add(id));
@@ -97,13 +87,26 @@ export function CommunityPage() {
     <div className="page community-page">
       <header className="page-heading">
         <div>
-          <p className="eyebrow">IKAME FEED</p>
+          <p className="eyebrow">KÊNH CHÍNH THỨC</p>
           <h1>iKame Feed</h1>
-          <p>Không gian chia sẻ và kết nối nội bộ của iKamer.</p>
+          <p>Kênh truyền thông chính thức và không gian kết nối của iKame.</p>
         </div>
       </header>
 
       <PinnedCarousel posts={pinned} />
+
+      {mandatory && (
+        <div className="community-mention-banner" role="status">
+          <span className="feed-mandatory-copy">
+            <ShieldWarning size={18} weight="duotone" aria-hidden="true" />
+            <StatusPill tone="error">Cần xác nhận</StatusPill>
+            <span>{mandatory.title}</span>
+          </span>
+          <div className="community-mention-actions">
+            <Link className="button button--dim" to={`/feed/article/${mandatory.id}`}>Đọc & xác nhận<ArrowRight size={16} /></Link>
+          </div>
+        </div>
+      )}
 
       {mentioned && !bannerDismissed && (
         <div className="community-mention-banner" role="status">
@@ -120,26 +123,28 @@ export function CommunityPage() {
           <PostComposer userShort={user.shortName} demoResetCount={demoResetCount} onSubmit={handleSubmitPost} />
           <Tabs
             className="neutral-tabs community-feed-tabs"
-            tabs={FEED_FILTERS}
+            tabs={FEED_TABS}
             active={feedFilter}
             onChange={setFeedFilter}
             ariaLabel="Lọc bảng tin"
           />
-          {filteredFeed.length === 0 ? (
+          {feed.length === 0 ? (
             <EmptyState icon={<ChatsCircle size={44} weight="duotone" />} title={FILTER_EMPTY_COPY[feedFilter].title} body={FILTER_EMPTY_COPY[feedFilter].body} />
-          ) : filteredFeed.map((post) => (
+          ) : feed.map((item) => item.kind === 'post' ? (
             <PostCard
-              key={post.id}
-              post={post}
-              expanded={expanded.has(post.id)}
+              key={feedItemKey(item)}
+              post={item.post}
+              expanded={expanded.has(item.post.id)}
               demoResetCount={demoResetCount}
               onToggleExpanded={toggleExpanded}
               onToggleReaction={toggleReaction}
               onAddComment={addComment}
               onToggleSave={handleToggleSave}
               onShare={() => show('Đã sao chép liên kết bài viết')}
-              registerRef={(el) => { if (el) postRefs.current.set(post.id, el); else postRefs.current.delete(post.id); }}
+              registerRef={(el) => { if (el) postRefs.current.set(item.post.id, el); else postRefs.current.delete(item.post.id); }}
             />
+          ) : (
+            <NewsCard key={feedItemKey(item)} post={item.news} />
           ))}
         </div>
 

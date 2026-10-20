@@ -1,113 +1,13 @@
-import { ArrowLeft, ChatCircleText, CheckCircle, MagnifyingGlass, PaperPlaneTilt, SealCheck, ShareNetwork, WarningCircle } from '@phosphor-icons/react';
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { ArrowLeft, ChatCircleText, CheckCircle, PaperPlaneTilt, SealCheck, ShareNetwork, WarningCircle } from '@phosphor-icons/react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
-import { NewsCard, newsTopicVisual } from '../components/ContentCards';
-import { Tabs } from '../components/Tabs';
-import { Button, EmptyState, SectionHeader, SourceLine, StatusPill } from '../components/UI';
+import { newsTopicVisual } from '../components/ContentCards';
+import { Button, SourceLine, StatusPill } from '../components/UI';
 import { isEligible } from '../lib/audience';
-import { rankCards } from '../lib/ranking';
-import type { NewsPost, PriorityBand } from '../types';
+import type { NewsPost } from '../types';
 
-type Filter = 'all' | 'official' | 'mandatory';
-
-function toRankable(post: NewsPost) {
-  const priorityBand: PriorityBand = post.mandatory ? 'P0' : post.official ? 'P4' : 'P5';
-  return { ...post, priorityBand, updatedAt: post.publishedAt };
-}
-
-export function NewsPage() {
-  const { news, user } = useAppState();
-  const [filter, setFilter] = useState<Filter>('all');
-  const [topics, setTopics] = useState<Set<string>>(new Set());
-  const [query, setQuery] = useState('');
-
-  const visible = useMemo(
-    () => news.filter((post) => isEligible(user, post.audienceTeamIds) && !post.expired),
-    [news, user],
-  );
-  const allTopics = useMemo(() => Array.from(new Set(visible.map((post) => post.topic))), [visible]);
-
-  const toggleTopic = (topic: string) => setTopics((prev) => {
-    const next = new Set(prev);
-    if (next.has(topic)) next.delete(topic); else next.add(topic);
-    return next;
-  });
-  const resetFilters = () => { setFilter('all'); setTopics(new Set()); setQuery(''); };
-
-  const filtered = useMemo(() => visible.filter((post) => {
-    if (filter === 'official' && !post.official) return false;
-    if (filter === 'mandatory' && !post.mandatory) return false;
-    if (topics.size > 0 && !topics.has(post.topic)) return false;
-    return `${post.title} ${post.summary}`.toLocaleLowerCase('vi').includes(query.toLocaleLowerCase('vi'));
-  }), [filter, topics, visible, query]);
-
-  const ranked = useMemo(() => rankCards(filtered.map(toRankable)), [filtered]);
-  const highlighted = ranked.find((post) => post.highlighted) ?? ranked[0];
-  const rest = ranked.filter((post) => post.id !== highlighted?.id);
-
-  return (
-    <div className="page collection-page">
-      <header className="page-heading">
-        <div><p className="eyebrow">CẦN BIẾT</p><h1>Tin tức</h1><p>Thông tin chính thức và nội dung phù hợp với bạn.</p></div>
-      </header>
-      <div className="collection-toolbar">
-        <Tabs
-          tabs={[
-            { key: 'all' as Filter, label: 'Dành cho tôi' },
-            { key: 'official' as Filter, label: 'Chính thức' },
-            { key: 'mandatory' as Filter, label: 'Bắt buộc' },
-          ]}
-          active={filter}
-          onChange={setFilter}
-          ariaLabel="Lọc tin tức"
-        />
-        <label className="filter-input"><MagnifyingGlass size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Tìm trong tin tức" placeholder="Tìm trong tin tức" /></label>
-      </div>
-      {allTopics.length > 1 && (
-        <div className="topic-chips" role="group" aria-label="Lọc theo chủ đề">
-          <button type="button" aria-pressed={topics.size === 0} className={`topic-chip ${topics.size === 0 ? 'is-active' : ''}`} onClick={() => setTopics(new Set())}>Tất cả chủ đề</button>
-          {allTopics.map((topic) => (
-            <button key={topic} type="button" aria-pressed={topics.has(topic)} className={`topic-chip ${topics.has(topic) ? 'is-active' : ''}`} onClick={() => toggleTopic(topic)}>
-              {newsTopicVisual(topic).emoji} {topic}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {highlighted ? (
-        <>
-          <section className="news-feature" aria-label="Tin nổi bật">
-            <div className={`news-feature-visual events-v2-cover events-v2-cover--${newsTopicVisual(highlighted.topic).palette}`} aria-hidden="true">
-              <span className="news-feature-emoji">{newsTopicVisual(highlighted.topic).emoji}</span>
-              <span className="news-feature-kicker">TIN NỔI BẬT</span>
-              <strong>{highlighted.topic}</strong>
-            </div>
-            <div className="news-feature-copy">
-              <div className="card-badges">{highlighted.official && <StatusPill tone="info"><SealCheck size={14} />Chính thức</StatusPill>}<StatusPill>{highlighted.topic}</StatusPill></div>
-              <h2>{highlighted.title}</h2>
-              <p>{highlighted.summary}</p>
-              <SourceLine source={highlighted.publisher} time={highlighted.publishedAt} />
-              <Link className="button button--primary" to={`/news/${highlighted.id}`}>Đọc bài viết</Link>
-            </div>
-          </section>
-          <section className="section-block">
-            <SectionHeader title="Mới nhất dành cho bạn" meta={`${ranked.length} nội dung phù hợp`} />
-            <div className="collection-grid">{rest.map((post) => <NewsCard key={post.id} post={post} />)}</div>
-          </section>
-        </>
-      ) : (
-        <div className="empty-state">
-          <EmptyState
-            title={visible.length === 0 ? 'Chưa có tin tức nào' : 'Không tìm thấy nội dung'}
-            body={visible.length === 0 ? 'Nội dung sẽ xuất hiện khi có bản tin mới dành cho bạn.' : 'Thử từ khóa khác hoặc xóa bộ lọc hiện tại.'}
-          />
-          {visible.length > 0 && <Button onClick={resetFilters}>Xóa bộ lọc</Button>}
-        </div>
-      )}
-    </div>
-  );
-}
+// MVP: danh sách Tin tức đã gộp vào iKame Feed (/feed) — file này chỉ còn trang đọc bài viết.
 
 export function ArticlePage() {
   const { postId } = useParams();
@@ -184,7 +84,7 @@ function ArticleDetail({ post }: { post: NewsPost }) {
 
   return (
     <div className="page detail-page">
-      <Link className="back-link" to="/news"><ArrowLeft size={17} />Quay lại Tin tức</Link>
+      <Link className="back-link" to="/feed"><ArrowLeft size={17} />Quay lại iKame Feed</Link>
       <div className="detail-layout">
         <article className="article-card">
           <div className="article-header">

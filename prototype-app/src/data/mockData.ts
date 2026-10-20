@@ -489,7 +489,7 @@ export const initialNotifications: NotificationItem[] = [
     time: '8 phút trước',
     priority: 'critical',
     read: false,
-    href: '/news/security-update',
+    href: '/feed/article/security-update',
   },
   {
     id: 'n2',
@@ -507,7 +507,7 @@ export const initialNotifications: NotificationItem[] = [
     time: '2 ngày trước',
     priority: 'informational',
     read: true,
-    href: '/news/product-sharing',
+    href: '/feed/article/product-sharing',
     groupKey: 'news-digest',
   },
   {
@@ -526,7 +526,7 @@ export const initialNotifications: NotificationItem[] = [
     time: '3 ngày trước',
     priority: 'informational',
     read: true,
-    href: '/news/office-update',
+    href: '/feed/article/office-update',
     groupKey: 'news-digest',
   },
 ];

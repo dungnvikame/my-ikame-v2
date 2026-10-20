@@ -30,7 +30,7 @@ export function useSearchResults(query: string): SearchResults {
     const newsItems: SearchResultItem[] = news
       .filter((item) => isEligible(user, item.audienceTeamIds) && !item.expired)
       .filter((item) => matches(term, item.title, item.summary, item.topic))
-      .map((item) => ({ id: `news-${item.id}`, title: item.title, meta: `${item.topic} · ${item.publishedAt}`, href: `/news/${item.id}` }));
+      .map((item) => ({ id: `news-${item.id}`, title: item.title, meta: `${item.topic} · ${item.publishedAt}`, href: `/feed/article/${item.id}` }));
 
     const eventItems: SearchResultItem[] = events
       .filter((item) => isEligible(user, item.audienceTeamIds) && item.status !== 'past' && item.status !== 'cancelled')
@@ -52,7 +52,7 @@ export function useSearchResults(query: string): SearchResults {
     const memberHref = (entry: { id: string; name: string; teamId?: string }) => {
       if (entry.name === user.name) return '/profile';
       if (perspective === 'manager' && entry.teamId === user.teamId) return `/manager/team/${entry.id}`;
-      return '/community';
+      return '/feed';
     };
     const peopleSource = [
       ...Object.values(users).map((entry) => ({ id: entry.id, name: entry.name, role: entry.role, teamId: entry.teamId })),

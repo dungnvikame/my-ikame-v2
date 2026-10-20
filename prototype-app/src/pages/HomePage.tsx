@@ -1,4 +1,4 @@
-import { ArrowRight, BookBookmark, ChatsCircle, CheckCircle, Clock, Newspaper, ShieldWarning, Target, Users } from '@phosphor-icons/react';
+import { ArrowRight, ChatsCircle, CheckCircle, Clock, Newspaper, ShieldWarning, SquaresFour, Users } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { AIAssistant } from '../components/AIAssistant';
@@ -75,11 +75,8 @@ function eventStatusLabel(event: EventItem): string {
 }
 
 export function HomePage() {
-  const { user, news, events, goals, knowledgeDocs, posts } = useAppState();
+  const { user, news, events, posts } = useAppState();
   const now = new Date();
-
-  const needsCheckInCount = goals.filter((goal) => goal.status === 'needs_update').length;
-  const eligibleDocsCount = knowledgeDocs.filter((doc) => isEligible(user, doc.audienceTeamIds)).length;
 
   const eligibleNews = news.filter((post) => !post.expired && isEligible(user, post.audienceTeamIds));
   const eligibleEvents = events.filter((event) => event.status !== 'past' && event.status !== 'cancelled' && isEligible(user, event.audienceTeamIds));
@@ -122,7 +119,7 @@ export function HomePage() {
             </div>
             <h2 id="priority-title">{hero.title}</h2>
           </div>
-          <Link className="button button--primary" to={`/news/${hero.id}`}>Đọc & xác nhận<ArrowRight size={16} /></Link>
+          <Link className="button button--primary" to={`/feed/article/${hero.id}`}>Đọc & xác nhận<ArrowRight size={16} /></Link>
         </section>
       )}
 
@@ -145,13 +142,13 @@ export function HomePage() {
               <article key={`news-${card.post.id}`} className="active-item">
                 <span className="active-item-icon"><Newspaper size={20} /></span>
                 <div><strong>{card.post.title}</strong><span>{card.post.publisher} · {card.post.readingTime}</span></div>
-                <Link className="text-link" to={`/news/${card.post.id}`}>Đọc bài<ArrowRight size={16} /></Link>
+                <Link className="text-link" to={`/feed/article/${card.post.id}`}>Đọc bài<ArrowRight size={16} /></Link>
               </article>
             ))}
           </div>
 
           <section className="section-block">
-            <SectionHeader title="Tin dành cho bạn" meta="Chính thức và phù hợp với vai trò của bạn" href="/news" />
+            <SectionHeader title="Tin dành cho bạn" meta="Chính thức và phù hợp với vai trò của bạn" href="/feed" />
             {newsPreview.length > 0 ? (
               <div className="news-grid">
                 {newsPreview.map((post, index) => <NewsCard key={post.id} post={post} compact={index > 0} />)}
@@ -166,19 +163,14 @@ export function HomePage() {
           <section>
             <SectionHeader title="Lối tắt của bạn" />
             <div className="quick-actions">
-              <Link className="quick-action" to="/goals">
-                <span className="quick-action-icon"><Target size={20} /></span>
-                <span><strong>Mục tiêu của tôi</strong><small>{needsCheckInCount > 0 ? `${needsCheckInCount} mục tiêu cần check-in` : 'Tất cả đã cập nhật'}</small></span>
-                <ArrowRight size={16} />
-              </Link>
-              <Link className="quick-action" to="/knowledge">
-                <span className="quick-action-icon"><BookBookmark size={20} /></span>
-                <span><strong>Tri thức</strong><small>{eligibleDocsCount} tài liệu dành cho bạn</small></span>
-                <ArrowRight size={16} />
-              </Link>
-              <Link className="quick-action" to="/community">
+              <Link className="quick-action" to="/feed">
                 <span className="quick-action-icon"><ChatsCircle size={20} /></span>
                 <span><strong>iKame Feed</strong><small>{posts.length} bài viết từ đồng nghiệp</small></span>
+                <ArrowRight size={16} />
+              </Link>
+              <Link className="quick-action" to="/apps">
+                <span className="quick-action-icon"><SquaresFour size={20} /></span>
+                <span><strong>Ứng dụng nội bộ</strong><small>Mở iGoal, iWiki, iHRM... với SSO chung</small></span>
                 <ArrowRight size={16} />
               </Link>
               <Link className="quick-action" to="/search">

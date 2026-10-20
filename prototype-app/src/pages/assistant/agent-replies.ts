@@ -515,7 +515,7 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     return {
       role: 'assistant',
       text: `Bạn có 1 thông báo bắt buộc: "${pending.title}". Nội dung tóm tắt ở khung bên phải — đọc xong bấm xác nhận là hoàn tất.`,
-      links: [{ label: 'Mở bài viết đầy đủ', to: `/news/${pending.id}` }],
+      links: [{ label: 'Mở bài viết đầy đủ', to: `/feed/article/${pending.id}` }],
       action: { kind: 'ack-news', targetId: pending.id, label: 'Xác nhận đã đọc', receipt: 'Đã ghi nhận xác nhận của bạn. Cảm ơn đã hoàn tất đúng hạn!' },
       workspace: {
         kind: 'info',
@@ -554,7 +554,7 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     return {
       role: 'assistant',
       text: `Bạn có ${unread.length} bài viết chưa đọc, ưu tiên các bài này:`,
-      links: unread.slice(0, 3).map((post) => ({ label: post.title, to: `/news/${post.id}` })),
+      links: unread.slice(0, 3).map((post) => ({ label: post.title, to: `/feed/article/${post.id}` })),
     };
   }
 

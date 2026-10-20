@@ -48,7 +48,7 @@ export const searchSeedAnswers: SearchSeedAnswer[] = [
       'Đăng ký ngay trên trang Sự kiện; nếu đã đăng ký, trạng thái "Đã đăng ký" sẽ hiện trên thẻ sự kiện.',
     ],
     citations: [
-      { title: 'iConnect tháng 8: Cùng xây trải nghiệm iKame tốt hơn', source: 'Tin tức', href: '/news/iconnect-august' },
+      { title: 'iConnect tháng 8: Cùng xây trải nghiệm iKame tốt hơn', source: 'Tin tức', href: '/feed/article/iconnect-august' },
       { title: 'iConnect tháng 8', source: 'Event', href: '/events/iconnect-2026-08' },
     ],
   },
@@ -75,7 +75,7 @@ export const searchSeedAnswers: SearchSeedAnswer[] = [
       'Mật khẩu tối thiểu 12 ký tự, bật xác thực hai lớp; phát hiện đăng nhập bất thường báo ngay IT qua #security-support.',
     ],
     citations: [
-      { title: 'Cập nhật chính sách bảo mật tài khoản nội bộ', source: 'Tin tức', href: '/news/security-update' },
+      { title: 'Cập nhật chính sách bảo mật tài khoản nội bộ', source: 'Tin tức', href: '/feed/article/security-update' },
       { title: 'Chính sách bảo mật tài khoản nội bộ (bản đầy đủ)', source: 'iWiki', href: '/knowledge/security-policy-guide' },
     ],
   },

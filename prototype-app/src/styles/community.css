@@ -290,6 +290,15 @@
   gap: 6px;
 }
 
+/* Banner "cần xác nhận" trên feed hợp nhất — icon + pill + tiêu đề trên một dòng. */
+.feed-mandatory-copy {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
 /* Right rail */
 .community-rail {
   display: flex;

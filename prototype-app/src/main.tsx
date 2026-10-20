@@ -13,6 +13,7 @@ import './styles/manager-vision.css';
 import './styles/manager-team.css';
 import './styles/search-palette.css';
 import './styles/community.css';
+import './styles/apps.css';
 import './styles/events-v2.css';
 import './styles/goals-v2.css';
 import './styles/profile-v2.css';

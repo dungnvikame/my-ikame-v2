@@ -1,13 +1,14 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType, useParams } from 'react-router-dom';
 import { AppStateProvider, useAppState } from './AppState';
 import { AppShell } from './components/AppShell';
 import { ToastProvider } from './components/toast';
 
 // Route-level code splitting — mỗi trang một chunk, initial bundle chỉ còn shell.
 // Data đều là mock cục bộ nên fallback trống là đủ (không cần skeleton).
+const AppsPage = lazy(() => import('./pages/AppsPage').then((m) => ({ default: m.AppsPage })));
 const AssistantPage = lazy(() => import('./pages/AssistantPage').then((m) => ({ default: m.AssistantPage })));
-const CommunityPage = lazy(() => import('./pages/CommunityPage').then((m) => ({ default: m.CommunityPage })));
+const FeedPage = lazy(() => import('./pages/FeedPage').then((m) => ({ default: m.FeedPage })));
 const EventsPage = lazy(() => import('./pages/EventPages').then((m) => ({ default: m.EventsPage })));
 const EventDetailPage = lazy(() => import('./pages/EventPages').then((m) => ({ default: m.EventDetailPage })));
 const ForbiddenPage = lazy(() => import('./pages/ForbiddenPage').then((m) => ({ default: m.ForbiddenPage })));
@@ -18,7 +19,6 @@ const KnowledgePage = lazy(() => import('./pages/KnowledgePages').then((m) => ({
 const KnowledgeDetailPage = lazy(() => import('./pages/KnowledgePages').then((m) => ({ default: m.KnowledgeDetailPage })));
 const ManagerPage = lazy(() => import('./pages/ManagerPage').then((m) => ({ default: m.ManagerPage })));
 const MemberDetailPage = lazy(() => import('./pages/MemberDetailPage').then((m) => ({ default: m.MemberDetailPage })));
-const NewsPage = lazy(() => import('./pages/NewsPages').then((m) => ({ default: m.NewsPage })));
 const ArticlePage = lazy(() => import('./pages/NewsPages').then((m) => ({ default: m.ArticlePage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage').then((m) => ({ default: m.NotificationsPage })));
@@ -37,6 +37,12 @@ function ScrollToTop() {
   return null;
 }
 
+/** /news/:postId → /feed/article/:postId — giữ nguyên id bài viết khi redirect. */
+function NewsArticleRedirect() {
+  const { postId } = useParams();
+  return <Navigate to={`/feed/article/${postId}`} replace />;
+}
+
 function PerspectiveGuard({ children, expected }: { children: React.ReactNode; expected: 'ikamer' | 'manager' }) {
   const { perspective } = useAppState();
   if (perspective !== expected) return <Navigate to={perspective === 'manager' ? '/manager/overview' : '/home'} replace />;
@@ -53,14 +59,18 @@ function AppRoutes() {
         <Route path="/home" element={<PerspectiveGuard expected="ikamer"><HomePage /></PerspectiveGuard>} />
         {/* Accessible in both perspectives — no PerspectiveGuard by design. */}
         <Route path="/assistant" element={<AssistantPage />} />
+        <Route path="/apps" element={<AppsPage />} />
         <Route path="/requests" element={<RequestsPage />} />
-        <Route path="/community" element={<CommunityPage />} />
+        <Route path="/feed" element={<FeedPage />} />
+        <Route path="/feed/article/:postId" element={<ArticlePage />} />
+        {/* Route cũ trước khi gộp feed (MVP) — redirect để link lưu/sẻ chia không chết. */}
+        <Route path="/community" element={<Navigate to="/feed" replace />} />
         <Route path="/manager" element={<Navigate to="/manager/overview" replace />} />
         <Route path="/manager/overview" element={<PerspectiveGuard expected="manager"><ManagerPage /></PerspectiveGuard>} />
         <Route path="/manager/team" element={<PerspectiveGuard expected="manager"><TeamPage /></PerspectiveGuard>} />
         <Route path="/manager/team/:memberId" element={<PerspectiveGuard expected="manager"><MemberDetailPage /></PerspectiveGuard>} />
-        <Route path="/news" element={<NewsPage />} />
-        <Route path="/news/:postId" element={<ArticlePage />} />
+        <Route path="/news" element={<Navigate to="/feed" replace />} />
+        <Route path="/news/:postId" element={<NewsArticleRedirect />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/events/:eventId" element={<EventDetailPage />} />
         <Route path="/knowledge" element={<KnowledgePage />} />

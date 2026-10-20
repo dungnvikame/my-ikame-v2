@@ -21,7 +21,7 @@ export function ProfileActivity({ user, news, events, checkInReports, posts }: P
   const rows: ActivityRow[] = [
     ...news.filter((item) => item.acknowledged).map((item): ActivityRow => ({
       id: `news-${item.id}`, icon: <CheckCircle size={18} weight="duotone" />,
-      label: `Đã xác nhận đã đọc: ${item.title}`, href: `/news/${item.id}`,
+      label: `Đã xác nhận đã đọc: ${item.title}`, href: `/feed/article/${item.id}`,
     })),
     ...events.filter((item) => item.myRegistration === 'going' || item.myRegistration === 'waitlisted').map((item): ActivityRow => ({
       id: `event-${item.id}`, icon: <CalendarCheck size={18} weight="duotone" />,
@@ -33,7 +33,7 @@ export function ProfileActivity({ user, news, events, checkInReports, posts }: P
     })),
     ...posts.filter((post) => post.authorName === user.name).map((post): ActivityRow => ({
       id: `post-${post.id}`, icon: <Newspaper size={18} weight="duotone" />,
-      label: `Đã đăng lên iKame Feed: ${post.body.slice(0, 60)}${post.body.length > 60 ? '…' : ''}`, href: '/community',
+      label: `Đã đăng lên iKame Feed: ${post.body.slice(0, 60)}${post.body.length > 60 ? '…' : ''}`, href: '/feed',
     })),
   ].slice(0, 6);
 

@@ -37,7 +37,7 @@ export function NewsCard({ post, compact = false }: { post: NewsPost; compact?: 
           {post.acknowledged && <StatusPill tone="success"><CheckCircle size={14} /> Đã xác nhận</StatusPill>}
           <StatusPill>{post.topic}</StatusPill>
         </div>
-        <h3><Link to={`/news/${post.id}`}>{post.title}</Link></h3>
+        <h3><Link to={`/feed/article/${post.id}`}>{post.title}</Link></h3>
         {!compact && <p>{post.summary}</p>}
         <SourceLine source={post.publisher} time={post.publishedAt} />
       </div>
