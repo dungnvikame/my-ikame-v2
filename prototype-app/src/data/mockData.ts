@@ -10,7 +10,20 @@ export * from './team-360';
 export const TEAM_PRODUCT = 'team_product';
 export const TEAM_FINANCE = 'team_finance';
 
-export const users: Record<'an' | 'mai' | 'binh', User> = {
+export const users: Record<'an' | 'mai' | 'binh' | 'ngoc', User> = {
+  // COM Admin — chủ kênh truyền thông chính thức (góc nhìn quản trị nội dung).
+  ngoc: {
+    id: 'person_ngoc',
+    personId: 'person_ngoc',
+    name: 'Lê Bảo Ngọc',
+    shortName: 'Ngọc',
+    role: 'Communication Lead',
+    team: 'People & Culture',
+    teamId: 'team_people',
+    perspective: 'admin',
+    availablePerspectives: ['admin', 'ikamer'],
+    timezone: 'Asia/Ho_Chi_Minh',
+  },
   an: {
     id: 'person_an',
     personId: 'person_an',
@@ -71,6 +84,10 @@ export const initialNews: NewsPost[] = [
     dueLabel: 'Hạn 17:00 hôm nay',
     read: false,
     acknowledged: false,
+    metrics: { reach: 184, read: 131, acknowledged: 96 },
+    pendingAckNames: ['Nguyễn Hoàng An', 'Minh Trần', 'Tuấn Lê', 'Phạm Gia Huy', 'Đỗ Quang Bình', 'Lê Minh Quân'],
+    pushedLabel: 'Hôm nay · 08:20',
+    remindersSent: 0,
   },
   {
     id: 'iconnect-august',
@@ -88,6 +105,8 @@ export const initialNews: NewsPost[] = [
     highlighted: true,
     read: true,
     acknowledged: false,
+    metrics: { reach: 184, read: 152, acknowledged: 0 },
+    pushedLabel: 'Hôm qua · 16:35',
     comments: [
       { id: 'nc-iconnect-1', authorName: 'Minh Trần', authorShort: 'Minh', role: 'Frontend Developer', text: 'Phần L&D tháng trước rất hay, mong chờ chủ đề lần này! 🙌', time: 'Hôm qua · 17:05' },
       { id: 'nc-iconnect-2', authorName: 'Hà Phạm', authorShort: 'Hà', role: 'QA Engineer', text: 'Team QA sẽ có một phần chia sẻ ngắn về quality mindset nhé mọi người.', time: 'Hôm nay · 08:30' },
@@ -124,6 +143,7 @@ export const initialNews: NewsPost[] = [
     official: true,
     read: false,
     acknowledged: false,
+    metrics: { reach: 184, read: 89, acknowledged: 0 },
   },
   {
     id: 'finance-quarter-close',
@@ -283,6 +303,18 @@ export const initialEvents: EventItem[] = [
     status: 'past',
     myRegistration: 'going',
     startsAt: '2026-07-10T16:00:00+07:00',
+    album: {
+      photos: [
+        { emoji: '🎤', palette: 'indigo', caption: 'Mở màn Town Hall' },
+        { emoji: '📊', palette: 'blue', caption: 'Kết quả kinh doanh Q2' },
+        { emoji: '🏆', palette: 'amber', caption: 'Vinh danh iKamer xuất sắc' },
+        { emoji: '🙌', palette: 'fuchsia', caption: 'Hỏi đáp cùng BOD' },
+        { emoji: '🍰', palette: 'emerald', caption: 'Tiệc nhẹ cuối buổi' },
+        { emoji: '📸', palette: 'indigo', caption: 'Ảnh tập thể' },
+      ],
+      driveUrl: 'https://drive.google.com/drive/folders/town-hall-q2-2026',
+    },
+    survey: { questions: 3, minutes: 1, dueLabel: 'Còn 2 ngày', done: false },
   },
   {
     id: 'global-webinar-us',

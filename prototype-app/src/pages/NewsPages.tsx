@@ -70,8 +70,9 @@ function ArticleComments({ post }: { post: NewsPost }) {
 }
 
 function ArticleDetail({ post }: { post: NewsPost }) {
-  const { acknowledgeNews, markNewsRead } = useAppState();
+  const { acknowledgeNews, markNewsRead, perspective } = useAppState();
   const [receipt, setReceipt] = useState(false);
+  const isAdmin = perspective === 'admin';
 
   useEffect(() => {
     if (!post.read) markNewsRead(post.id);
@@ -117,7 +118,14 @@ function ArticleDetail({ post }: { post: NewsPost }) {
         </article>
 
         <aside className="action-rail">
-          {post.mandatory ? (
+          {isAdmin && post.metrics ? (
+            // COM Admin xem bài ở vai quan sát: số liệu phân phối thay cho nút xác nhận.
+            <div className="side-info" role="status">
+              <h2>Phân phối (COM)</h2>
+              <p>{post.metrics.read}/{post.metrics.reach} đã đọc{post.mandatory ? ` · ${post.metrics.acknowledged} đã xác nhận · ${post.pendingAckNames?.length ?? 0} chưa` : ''}</p>
+              <Link className="text-link" to="/admin">Mở Tổng quan COM</Link>
+            </div>
+          ) : post.mandatory ? (
             <div className={`ack-panel ${post.acknowledged ? 'is-complete' : ''}`} role="status">
               {post.acknowledged ? <CheckCircle size={28} weight="duotone" /> : <WarningCircle size={28} weight="duotone" />}
               <h2>{post.acknowledged ? 'Đã xác nhận' : 'Xác nhận bắt buộc'}</h2>

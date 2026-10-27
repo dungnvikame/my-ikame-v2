@@ -10,7 +10,7 @@ import {
   clearSessions, loadSessions, questionCount, sanitizeForStorage, saveSessions,
   sessionTimeLabel, type StoredSession, type ThreadMessage,
 } from './assistant/assistant-history';
-import { AssistantSteps, capabilitiesFor, generateMessageId, generateReceiptId, stepsOf } from './assistant/assistant-shared';
+import { AssistantSteps, capabilitiesFor, CONNECTORS, generateMessageId, generateReceiptId, stepsOf } from './assistant/assistant-shared';
 import { AssistantWorkspace, type OkrReportPayload } from './assistant/AssistantWorkspace';
 
 /** Danh sách phiên cũ — dùng chung cho popover lịch sử và mục "Gần đây" ở màn chào. */
@@ -259,6 +259,10 @@ export function AssistantPage() {
           <span className="assistant-welcome-icon"><Sparkle size={26} weight="fill" /></span>
           <h1>Chào {user.shortName}, mình có thể giúp gì?</h1>
           <p>Hỏi đáp và nhờ Agent xử lý nghiệp vụ tại iKame — bạn duyệt, Agent thực thi.</p>
+          <div className="assistant-connectors" aria-label="Nguồn đang kết nối">
+            <span>Đang kết nối qua MCP:</span>
+            {CONNECTORS.map((name) => <span key={name} className="assistant-connector">{name}</span>)}
+          </div>
           <form className="assistant-input assistant-input--hero" onSubmit={handleSubmit}>
             <Sparkle size={20} weight="fill" className="assistant-input-spark" />
             <input
@@ -326,6 +330,12 @@ export function AssistantPage() {
                           {message.links.map((link) => (
                             <Link key={link.to + link.label} className="text-link" to={link.to}>{link.label}<ArrowRight size={14} /></Link>
                           ))}
+                        </div>
+                      )}
+                      {!!message.sources?.length && (
+                        <div className="assistant-sources" aria-label="Nguồn dữ liệu">
+                          <span className="assistant-sources-label">Nguồn</span>
+                          {message.sources.map((source) => <span key={source}>{source}</span>)}
                         </div>
                       )}
                       {/* Tác vụ có workspace: nút duyệt nằm ở khung bên phải, chat chỉ giữ hội thoại. */}

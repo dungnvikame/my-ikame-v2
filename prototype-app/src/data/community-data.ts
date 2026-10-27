@@ -158,6 +158,16 @@ export const initialMilestones: Milestone[] = [
   { id: 'milestone-tuan', name: 'Tuấn Lê', shortName: 'Tuấn', years: 5, dateLabel: 'Tháng này', note: 'Backend Developer · 5 năm đồng hành cùng iKame' },
 ];
 
+/** Đồng nghiệp có thể nhận Kudos — tái dùng các tên đã xuất hiện trong feed/rail. */
+export const colleagues: { name: string; shortName: string; role: string }[] = [
+  { name: 'Minh Trần', shortName: 'Minh', role: 'Frontend Developer' },
+  { name: 'Lan Nguyễn', shortName: 'Lan', role: 'Product Designer' },
+  { name: 'Hà Phạm', shortName: 'Hà', role: 'QA Engineer' },
+  { name: 'Tuấn Lê', shortName: 'Tuấn', role: 'Backend Developer' },
+  { name: 'Ngọc Anh', shortName: 'Ngọc Anh', role: 'Business Analyst' },
+  { name: 'Phạm Gia Huy', shortName: 'Huy', role: 'Product Designer' },
+];
+
 export const initialTopFans: TopFan[] = [
   { id: 'fan-lan', name: 'Lan Nguyễn', shortName: 'Lan', points: 120, note: '12 bài chia sẻ tuần này' },
   { id: 'fan-minh', name: 'Minh Trần', shortName: 'Minh', points: 98, note: '9 bình luận hữu ích' },

@@ -61,6 +61,8 @@ export type AgentMessage = {
   links?: { label: string; to: string }[];
   action?: AgentAction;
   workspace?: AgentWorkspace;
+  /** Hệ thống nguồn agent đã đọc (qua MCP) — hiển thị chip "Nguồn" dưới câu trả lời. */
+  sources?: string[];
 };
 
 export type AgentCtx = {
@@ -234,15 +236,50 @@ function buildManagerReply(q: string, ctx: AgentCtx): AgentMessage | null {
   return null;
 }
 
+/**
+ * "Hôm nay tôi cần làm gì?" — Daily Work Hub (KR3): gộp việc từ nhiều nguồn qua MCP
+ * (HRIS/COM, My iKame, iGoal, Asana, Calendar). Asana/Calendar là mock cố định —
+ * bản thật đọc qua connector tương ứng.
+ */
+function buildDailyDigestReply(q: string, ctx: AgentCtx): AgentMessage | null {
+  if (!/hôm nay.*(cần|làm|việc)|việc hôm nay|cần làm gì|to-?do/.test(q)) return null;
+
+  const pendingNews = ctx.news.filter((post) => !post.expired && post.mandatory && !post.acknowledged);
+  const registeredEvents = ctx.events.filter((event) => event.status !== 'past' && event.status !== 'cancelled'
+    && (event.myRegistration === 'going' || event.myRegistration === 'waitlisted')).slice(0, 2);
+  const staleGoals = ctx.goals.filter((goal) => goal.status === 'needs_update').slice(0, 2);
+
+  const links: AgentMessage['links'] = [
+    ...pendingNews.map((post) => ({ label: `Xác nhận: ${post.title} · ${post.dueLabel ?? 'hôm nay'}`, to: `/feed/article/${post.id}` })),
+    ...staleGoals.map((goal) => ({ label: `Check-in OKR: ${goal.title}`, to: `/goals/${goal.id}` })),
+    { label: 'Asana: Review flow onboarding (hạn hôm nay)', to: '/apps' },
+    { label: 'Asana: Cập nhật spec màn Sự kiện', to: '/apps' },
+    { label: 'Lịch: Họp nhóm Product 14:00 · Mercury', to: '/assistant?q=Đặt phòng họp 14:00 hôm nay cho 6 người' },
+    ...registeredEvents.map((event) => ({ label: `Sự kiện: ${event.title} · ${event.dateLabel}`, to: `/events/${event.id}` })),
+  ];
+  const total = links.length;
+
+  return {
+    role: 'assistant',
+    text: `Hôm nay bạn có ${total} việc, mình xếp theo mức khẩn: ${pendingNews.length ? `${pendingNews.length} thông báo bắt buộc cần xác nhận trước hạn, ` : ''}${staleGoals.length ? `${staleGoals.length} mục tiêu trễ check-in, ` : ''}2 task Asana và 1 cuộc họp lúc 14:00. Bấm vào từng mục để xử lý ngay.`,
+    links,
+    sources: ['HRIS', 'My iKame', 'iGoal', 'Asana', 'Google Calendar'],
+  };
+}
+
 export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
   const q = question.toLowerCase();
 
   const managerReply = buildManagerReply(q, ctx);
   if (managerReply) return managerReply;
 
+  const digest = buildDailyDigestReply(q, ctx);
+  if (digest) return digest;
+
   if (/đặt phòng|phòng họp|booking/.test(q)) {
     return {
       role: 'assistant',
+      sources: ['Google Calendar', 'Phòng họp'],
       text: 'Mình đã kiểm tra lịch phòng và điền sẵn form đặt phòng theo yêu cầu của bạn — phòng Mercury tầng 6 đang trống khung 14:00. Bạn chỉnh lại nếu cần rồi xác nhận nhé.',
       action: { kind: 'confirm', label: 'Đặt phòng & gửi lời mời', receipt: 'Đã đặt phòng và gửi lời mời lịch tới người tham dự. Phòng sẽ tự hủy nếu không check-in sau 15 phút.' },
       workspace: {
@@ -461,6 +498,7 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     const goal = needsUpdate[0];
     return {
       role: 'assistant',
+      sources: ['iGoal'],
       text: `Mục tiêu "${goal.title}" đã quá hạn check-in (${goal.nextDue}). Mình đã soạn sẵn báo cáo check-in với tiến độ đề xuất — bạn chỉnh số liệu và nội dung rồi gửi, hệ thống iGoal sẽ cập nhật ngay.`,
       links: [{ label: 'Mở mục tiêu trên iGoal', to: `/goals/${goal.id}` }],
       action: { kind: 'confirm', label: 'Gửi báo cáo check-in', receipt: 'Đã gửi báo cáo check-in lên iGoal — tiến độ và trạng thái mục tiêu đã được cập nhật.', commit: 'report' },
@@ -489,6 +527,7 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     const { annualRemaining, annualTotal, annualUsed, carriedOver, insuranceLabel, healthCheckLabel } = ctx.leaveBalance;
     return {
       role: 'assistant',
+      sources: ['HRIS'],
       text: `Bạn còn ${annualRemaining}/${annualTotal} ngày phép năm. Chi tiết số dư ở khung bên phải — cần soạn đơn nghỉ phép thì nói ngày cụ thể nhé.`,
       links: [{ label: 'Xem chi tiết trong Hồ sơ', to: '/profile' }],
       workspace: {
@@ -514,6 +553,7 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     if (!pending) return { role: 'assistant', text: 'Bạn không còn thông báo bắt buộc nào cần xác nhận. Mọi thứ đã ổn!' };
     return {
       role: 'assistant',
+      sources: ['HRIS', 'COM'],
       text: `Bạn có 1 thông báo bắt buộc: "${pending.title}". Nội dung tóm tắt ở khung bên phải — đọc xong bấm xác nhận là hoàn tất.`,
       links: [{ label: 'Mở bài viết đầy đủ', to: `/feed/article/${pending.id}` }],
       action: { kind: 'ack-news', targetId: pending.id, label: 'Xác nhận đã đọc', receipt: 'Đã ghi nhận xác nhận của bạn. Cảm ơn đã hoàn tất đúng hạn!' },
@@ -543,6 +583,7 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     if (list.length === 0) return { role: 'assistant', text: 'Hiện chưa có sự kiện nào phù hợp với bạn.' };
     return {
       role: 'assistant',
+      sources: ['My iKame'],
       text: registered.length > 0 ? `Bạn đã đăng ký ${registered.length} sự kiện sắp tới:` : `Có ${list.length} sự kiện sắp diễn ra:`,
       links: list.map((event) => ({ label: `${event.title} · ${event.dateLabel}`, to: `/events/${event.id}` })),
     };
@@ -562,6 +603,7 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     const docs = ctx.knowledgeDocs.slice(0, 2);
     return {
       role: 'assistant',
+      sources: ['iWiki'],
       text: 'Mình tìm thấy các tài liệu iWiki liên quan — bản đầy đủ sẽ trả lời trực tiếp kèm trích dẫn nguồn:',
       links: [
         ...docs.map((doc) => ({ label: `${doc.title} · ${doc.topic}`, to: `/knowledge/${doc.id}` })),

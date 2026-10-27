@@ -2,6 +2,7 @@ import {
   Bell,
   CalendarDots,
   ChatsCircle,
+  Gauge,
   House,
   MagnifyingGlass,
   Moon,
@@ -12,7 +13,7 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { useEffect, useRef, useState, type KeyboardEvent, type PropsWithChildren } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { AppLauncher } from './AppLauncher';
 import { BrandLogo } from './BrandLogo';
@@ -37,9 +38,30 @@ const iKamerNavGroups: NavGroup[] = [
   ] },
 ];
 
+// COM Admin: "Tổng quan COM" thay Trang chủ — nơi ghim/push/đo acknowledge; các mục còn lại dùng chung.
+const adminNavGroups: NavGroup[] = [
+  { label: 'QUẢN TRỊ COM', items: [
+    { label: 'Tổng quan COM', to: '/admin', icon: Gauge },
+  ] },
+  { label: 'KHÔNG GIAN CHUNG', items: [
+    { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
+    { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+    { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
+    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
+  ] },
+];
+
 // Fixed 5 — mobile bottom-nav mirrors the MVP sidebar.
 const iKamerBottomNav: NavEntry[] = [
   { label: 'Trang chủ', to: '/home', icon: House },
+  { label: 'Feed', to: '/feed', icon: ChatsCircle },
+  { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+  { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
+  { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
+];
+
+const adminBottomNav: NavEntry[] = [
+  { label: 'COM', to: '/admin', icon: Gauge },
   { label: 'Feed', to: '/feed', icon: ChatsCircle },
   { label: 'Sự kiện', to: '/events', icon: CalendarDots },
   { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
@@ -55,8 +77,23 @@ function Logo() {
   );
 }
 
-// MVP: PerspectiveSwitch (iKamer/Manager) tạm gỡ khỏi sidebar — module Manager parked.
-// Khôi phục: render lại <PerspectiveSwitch /> trong sidebar-account (xem git history).
+/** Chuyển góc nhìn demo: iKamer ↔ COM Admin (Manager parked ở MVP — thêm lại 1 nút khi cần). */
+function PerspectiveSwitch() {
+  const { perspective, setPerspective } = useAppState();
+  const navigate = useNavigate();
+
+  const select = (next: 'ikamer' | 'admin') => {
+    setPerspective(next);
+    navigate(next === 'admin' ? '/admin' : '/home');
+  };
+
+  return (
+    <div className="perspective-switch" role="group" aria-label="Chọn góc nhìn">
+      <button type="button" aria-pressed={perspective === 'ikamer'} className={perspective === 'ikamer' ? 'is-active' : ''} onClick={() => select('ikamer')}>iKamer</button>
+      <button type="button" aria-pressed={perspective === 'admin'} className={perspective === 'admin' ? 'is-active' : ''} onClick={() => select('admin')}>COM Admin</button>
+    </div>
+  );
+}
 
 function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement | null> }) {
   const {
@@ -121,9 +158,9 @@ function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLB
 }
 
 export function AppShell({ children }: PropsWithChildren) {
-  const { user, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
-  const navGroups = iKamerNavGroups;
-  const bottomNav = iKamerBottomNav;
+  const { perspective, user, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
+  const navGroups = perspective === 'admin' ? adminNavGroups : iKamerNavGroups;
+  const bottomNav = perspective === 'admin' ? adminBottomNav : iKamerBottomNav;
   const unreadCount = notifications.filter((item) => !item.read).length;
   const notificationTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -169,6 +206,7 @@ export function AppShell({ children }: PropsWithChildren) {
           </nav>
         </div>
         <div className="sidebar-account">
+          <PerspectiveSwitch />
           <NavLink to="/profile" className="account-row">
             <span className="avatar" aria-hidden="true">{user.shortName.slice(0, 1)}</span>
             <span className="account-copy"><strong>{user.name}</strong><small>{user.role}</small></span>

@@ -36,6 +36,7 @@ const DEMO_NOW = new Date(2026, 7, 10, 9, 0);
  * parse được rơi xuống cuối feed thay vì gây lỗi.
  */
 function hoursAgo(label: string): number {
+  if (/vừa xong/i.test(label)) return 0; // bài vừa đăng trong phiên demo — luôn lên đầu
   const minutes = label.match(/(\d+)\s*phút trước/i);
   if (minutes) return Number(minutes[1]) / 60;
   const hours = label.match(/(\d+)\s*giờ trước/i);

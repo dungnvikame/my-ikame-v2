@@ -1,5 +1,5 @@
 import { useEffect, useState, type RefCallback } from 'react';
-import { BookmarkSimple, ChatCircle, HandsClapping, Heart, SealCheck, ShareNetwork } from '@phosphor-icons/react';
+import { BookmarkSimple, ChatCircle, HandsClapping, Heart, PushPin, SealCheck, ShareNetwork } from '@phosphor-icons/react';
 import type { Post, PostCover, ReactionKind } from '../../types';
 import { Button, StatusPill } from '../../components/UI';
 
@@ -22,11 +22,13 @@ type PostCardProps = {
   onAddComment: (id: string, text: string) => void;
   onToggleSave: (id: string) => void;
   onShare: (id: string) => void;
+  /** Chỉ COM Admin truyền vào → hiện nút Ghim/Bỏ ghim ngay trên card. */
+  onTogglePin?: (id: string) => void;
   registerRef?: RefCallback<HTMLElement>;
 };
 
 export function PostCard({
-  post, expanded, demoResetCount, onToggleExpanded, onToggleReaction, onAddComment, onToggleSave, onShare, registerRef,
+  post, expanded, demoResetCount, onToggleExpanded, onToggleReaction, onAddComment, onToggleSave, onShare, onTogglePin, registerRef,
 }: PostCardProps) {
   const [draft, setDraft] = useState('');
   const [bump, setBump] = useState<ReactionKind | null>(null);
@@ -59,9 +61,24 @@ export function PostCard({
           <strong>{post.authorName}</strong>
           <span className="community-post-meta">{post.role} · {post.time}</span>
         </div>
+        {post.kudos && <StatusPill tone="success"><HandsClapping size={14} />Ghi nhận</StatusPill>}
         {post.official && <StatusPill tone="info"><SealCheck size={14} />Chính thức</StatusPill>}
+        {onTogglePin && (
+          <button type="button" className={`community-pin-toggle ${post.pinned ? 'is-active' : ''}`} aria-pressed={!!post.pinned} onClick={() => onTogglePin(post.id)}>
+            <PushPin size={15} weight={post.pinned ? 'fill' : 'regular'} /> {post.pinned ? 'Bỏ ghim' : 'Ghim'}
+          </button>
+        )}
       </header>
 
+      {post.kudos && (
+        <div className="community-kudos" aria-label={`Ghi nhận dành cho ${post.kudos.toName}`}>
+          <span className="community-kudos-emoji" aria-hidden="true">🙌</span>
+          <div>
+            <small>{post.authorShort} ghi nhận</small>
+            <strong>{post.kudos.toName}</strong>
+          </div>
+        </div>
+      )}
       <p className="community-post-body">{post.body}</p>
       {post.cover && <PostCoverBlock cover={post.cover} />}
 

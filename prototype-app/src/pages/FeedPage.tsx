@@ -9,7 +9,8 @@ import { useToast } from '../components/toast';
 import { CommunityRail } from './community/CommunityRail';
 import { PinnedCarousel } from './community/PinnedCarousel';
 import { PostCard } from './community/PostCard';
-import { PostComposer } from './community/PostComposer';
+import { PostComposer, type ComposerSubmit } from './community/PostComposer';
+import { colleagues } from '../data/community-data';
 import { buildFeed, FEED_TAB_LABELS, feedItemKey, matchesFeedTab, pendingMandatoryNews, type FeedTab } from './feed/feed-items';
 import { isEligible } from '../lib/audience';
 
@@ -29,8 +30,8 @@ const FILTER_EMPTY_COPY: Record<FeedTab, { title: string; body: string }> = {
 /** iKame Feed hợp nhất (MVP) — kênh truyền thông chính thức: thông báo công ty + bài social + bài theo team. */
 export function FeedPage() {
   const {
-    posts, news, birthdays, milestones, topFans, events, user, demoResetCount,
-    addPost, toggleReaction, addComment, toggleSavePost, congratulate,
+    posts, news, birthdays, milestones, topFans, events, user, demoResetCount, perspective,
+    addPost, toggleReaction, addComment, toggleSavePost, congratulate, togglePinPost,
   } = useAppState();
 
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -67,9 +68,9 @@ export function FeedPage() {
     return next;
   });
 
-  const handleSubmitPost = (body: string) => {
-    addPost({ body });
-    show('Đã đăng lên iKame Feed');
+  const handleSubmitPost = ({ body, kudos }: ComposerSubmit) => {
+    addPost({ body, kudos });
+    show(kudos ? `Đã gửi ghi nhận tới ${kudos.toName} 🙌` : 'Đã đăng lên iKame Feed');
   };
 
   const handleToggleSave = (id: string) => {
@@ -77,6 +78,15 @@ export function FeedPage() {
     toggleSavePost(id);
     show(target?.saved ? 'Đã bỏ lưu bài viết' : 'Đã lưu bài viết');
   };
+
+  // Ghim chỉ dành cho COM Admin — iKamer không thấy nút này.
+  const handleTogglePin = perspective === 'admin'
+    ? (id: string) => {
+      const target = posts.find((item) => item.id === id);
+      togglePinPost(id);
+      show(target?.pinned ? 'Đã bỏ ghim bài viết' : 'Đã ghim bài lên đầu iKame Feed');
+    }
+    : undefined;
 
   const handleCongratulate = (personId: string, postId: string, name: string) => {
     congratulate(personId);
@@ -120,7 +130,7 @@ export function FeedPage() {
 
       <div className="community-layout">
         <div className="community-feed">
-          <PostComposer userShort={user.shortName} demoResetCount={demoResetCount} onSubmit={handleSubmitPost} />
+          <PostComposer userShort={user.shortName} demoResetCount={demoResetCount} colleagues={colleagues} onSubmit={handleSubmitPost} />
           <Tabs
             className="neutral-tabs community-feed-tabs"
             tabs={FEED_TABS}
@@ -141,6 +151,7 @@ export function FeedPage() {
               onAddComment={addComment}
               onToggleSave={handleToggleSave}
               onShare={() => show('Đã sao chép liên kết bài viết')}
+              onTogglePin={handleTogglePin}
               registerRef={(el) => { if (el) postRefs.current.set(item.post.id, el); else postRefs.current.delete(item.post.id); }}
             />
           ) : (

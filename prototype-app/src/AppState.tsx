@@ -82,7 +82,10 @@ function appendComment(posts: Post[], postId: string, comment: Comment): Post[] 
   return posts.map((post) => (post.id === postId ? { ...post, comments: [...post.comments, comment] } : post));
 }
 
-type NewPostInput = { body: string; cover?: Post['cover']; official?: boolean };
+type NewPostInput = { body: string; cover?: Post['cover']; official?: boolean; kudos?: Post['kudos'] };
+
+/** Góc nhìn → user đăng nhập mock. Manager parked ở MVP nhưng mapping giữ để khôi phục 1 dòng. */
+const USER_BY_PERSPECTIVE: Record<Perspective, User> = { ikamer: users.an, manager: users.mai, admin: users.ngoc };
 type SubmitReportInput = Omit<CheckInReport, 'id' | 'submittedAt'>;
 type NewRequestInput = Omit<RequestItem, 'id' | 'createdAtLabel' | 'status'>;
 
@@ -144,6 +147,12 @@ type AppStateValue = {
   addRequest: (input: NewRequestInput) => void;
   addNewsComment: (postId: string, text: string) => void;
   resolveApproval: (id: string, next: 'approved' | 'rejected') => void;
+  // COM Admin — quản trị nội dung chính thức.
+  togglePinPost: (postId: string) => void;
+  pushNews: (newsId: string) => void;
+  remindPendingAck: (newsId: string) => void;
+  // Sự kiện đã diễn ra — khảo sát sau sự kiện.
+  completeEventSurvey: (eventId: string) => void;
   setSearchOpen: (open: boolean) => void;
   resetDemo: () => void;
 };
@@ -177,7 +186,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   // MVP: tạm không persist perspective để không ghi đè 'manager' đã lưu (xem comment ở khởi tạo).
   // useEffect(() => { writeStored(PERSPECTIVE_STORAGE_KEY, perspective); }, [perspective]);
 
-  const user = perspective === 'manager' ? users.mai : users.an;
+  const user = USER_BY_PERSPECTIVE[perspective];
 
   const value = useMemo<AppStateValue>(() => ({
     perspective,
@@ -214,11 +223,29 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     setNotificationOpen,
     setAskOpen,
     acknowledgeNews: (id) => {
-      setNews((items) => items.map((item) => item.id === id ? { ...item, acknowledged: true, read: true } : item));
+      // Cờ read/acknowledged là của iKamer đang demo (An) — COM Admin chỉ quan sát,
+      // không được "xác nhận hộ" làm hỏng vòng lặp iKamer xác nhận → COM thấy số tăng.
+      if (perspective === 'admin') return;
+      setNews((items) => items.map((item) => {
+        if (item.id !== id || item.acknowledged) return item;
+        const wasPending = item.pendingAckNames?.includes(user.name);
+        return {
+          ...item,
+          acknowledged: true,
+          read: true,
+          pendingAckNames: item.pendingAckNames?.filter((name) => name !== user.name),
+          metrics: item.metrics && wasPending
+            ? { ...item.metrics, read: item.read ? item.metrics.read : item.metrics.read + 1, acknowledged: item.metrics.acknowledged + 1 }
+            : item.metrics,
+        };
+      }));
       setNotifications((items) => items.map((item) => item.href.endsWith(id) ? { ...item, read: true } : item));
     },
     markNewsRead: (id) => {
-      setNews((items) => items.map((item) => item.id === id && !item.read ? { ...item, read: true } : item));
+      if (perspective === 'admin') return;
+      setNews((items) => items.map((item) => item.id === id && !item.read
+        ? { ...item, read: true, metrics: item.metrics ? { ...item.metrics, read: item.metrics.read + 1 } : item.metrics }
+        : item));
     },
     setEventRegistration: (id, next) => {
       setEvents((items) => items.map((item) => {
@@ -250,7 +277,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         ? { ...item, lastCheckIn: 'Vừa xong', status: 'on_track' }
         : item));
     },
-    addPost: ({ body, cover, official }) => {
+    addPost: ({ body, cover, official, kudos }) => {
       setPosts((items) => [{
         id: generateId('post'),
         authorName: user.name,
@@ -260,6 +287,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         body,
         cover,
         official,
+        kudos,
         reactions: { heart: 0, clap: 0 },
         myReactions: [],
         comments: [],
@@ -337,6 +365,48 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     },
     resolveApproval: (id, next) => {
       setApprovals((items) => items.map((item) => item.id === id ? { ...item, state: next } : item));
+    },
+    togglePinPost: (postId) => {
+      // Giữ pinnedUntilLabel gốc khi bỏ ghim để ghim lại vẫn đúng nhãn mock.
+      setPosts((items) => items.map((item) => item.id === postId
+        ? { ...item, pinned: !item.pinned, pinnedUntilLabel: item.pinnedUntilLabel ?? 'Ghim bởi COM' }
+        : item));
+    },
+    // Push mô phỏng: toàn công ty nhận notification — ở demo một user nên drawer của
+    // iKamer hiện ngay thông báo mới.
+    pushNews: (newsId) => {
+      const target = news.find((item) => item.id === newsId);
+      if (!target) return;
+      const label = `Hôm nay · ${nowTimeLabel()}`;
+      setNews((items) => items.map((item) => item.id === newsId ? { ...item, pushedLabel: label } : item));
+      setNotifications((items) => [{
+        id: generateId('push'),
+        title: target.mandatory ? 'Thông báo bắt buộc từ iKame' : 'Thông báo chính thức từ iKame',
+        body: target.title,
+        time: 'Vừa xong',
+        priority: target.mandatory ? 'critical' : 'required',
+        read: false,
+        href: `/feed/article/${newsId}`,
+      }, ...items]);
+    },
+    remindPendingAck: (newsId) => {
+      const target = news.find((item) => item.id === newsId);
+      if (!target?.pendingAckNames?.length) return;
+      setNews((items) => items.map((item) => item.id === newsId ? { ...item, remindersSent: (item.remindersSent ?? 0) + 1 } : item));
+      setNotifications((items) => [{
+        id: generateId('remind'),
+        title: `Nhắc lại: cần xác nhận trước ${target.dueLabel?.replace('Hạn ', '') ?? 'hạn'}`,
+        body: target.title,
+        time: 'Vừa xong',
+        priority: 'critical',
+        read: false,
+        href: `/feed/article/${newsId}`,
+      }, ...items]);
+    },
+    completeEventSurvey: (eventId) => {
+      setEvents((items) => items.map((item) => item.id === eventId && item.survey
+        ? { ...item, survey: { ...item.survey, done: true } }
+        : item));
     },
     setSearchOpen,
     // Restores every mutable slice so the presenter can re-run the golden path.

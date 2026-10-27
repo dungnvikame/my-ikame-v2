@@ -1015,3 +1015,53 @@ textarea.workspace-input {
     max-width: 100%;
   }
 }
+
+/* ===== Nguá»“n káº¿t ná»‘i qua MCP (cÃ¢u chuyá»‡n agent platform) ===== */
+.assistant-connectors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.assistant-connector {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border: 1px solid var(--border-primary);
+  border-radius: 999px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.assistant-connector::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fg-success);
+}
+
+.assistant-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.assistant-sources span:not(.assistant-sources-label) {
+  padding: 2px 8px;
+  border: 1px solid var(--border-primary);
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+

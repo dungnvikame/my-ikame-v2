@@ -1,6 +1,6 @@
 import {
   AirplaneTilt, BellRinging, CalendarPlus, CheckCircle, CircleNotch, ClipboardText,
-  NotePencil, SealCheck, Sparkle, Target, UsersThree, Wrench,
+  ListChecks, NotePencil, Sparkle, Target, UsersThree, Wrench,
 } from '@phosphor-icons/react';
 import type { Perspective } from '../../types';
 import type { ThreadMessage } from './assistant-history';
@@ -28,13 +28,17 @@ export function generateMessageId() {
 
 export type Capability = { icon: typeof Sparkle; title: string; prompt: string };
 
+/** Hệ thống nguồn Trợ lý AI đọc/ghi qua MCP framework dùng chung của iKame. */
+export const CONNECTORS = ['iGoal', 'iWiki', 'HRIS', 'Asana', 'Google Calendar'];
+
 export const IKAMER_CAPABILITIES: Capability[] = [
+  { icon: ListChecks, title: 'Việc hôm nay', prompt: 'Hôm nay tôi cần làm gì?' },
   { icon: CalendarPlus, title: 'Đặt phòng họp', prompt: 'Đặt phòng họp 14:00 hôm nay cho 6 người' },
   { icon: Wrench, title: 'Request IT support', prompt: 'Tạo request IT support: laptop không kết nối được wifi' },
   { icon: Target, title: 'Mục tiêu & check-in', prompt: 'Mục tiêu nào của tôi cần cập nhật?' },
   { icon: NotePencil, title: 'Viết bài iWiki', prompt: 'Viết bài iWiki về quy trình onboarding thành viên mới' },
   { icon: AirplaneTilt, title: 'Nghỉ phép & HR', prompt: 'Tôi còn bao nhiêu ngày nghỉ phép?' },
-  { icon: SealCheck, title: 'Việc cần xác nhận', prompt: 'Tôi có việc gì cần xác nhận?' },
+  // "Việc cần xác nhận" gộp vào "Việc hôm nay" (daily digest) — intent vẫn chạy khi gõ tay.
 ];
 
 /** Manager có bộ nghiệp vụ quản lý riêng — team, check-in, OKR, hàng đợi duyệt. */
@@ -48,6 +52,7 @@ export const MANAGER_CAPABILITIES: Capability[] = [
 ];
 
 export function capabilitiesFor(perspective: Perspective): Capability[] {
+  // COM Admin dùng bộ năng lực cá nhân như iKamer (chưa có intent quản trị nội dung riêng).
   return perspective === 'manager' ? MANAGER_CAPABILITIES : IKAMER_CAPABILITIES;
 }
 

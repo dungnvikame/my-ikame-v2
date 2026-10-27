@@ -3,9 +3,11 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType,
 import { AppStateProvider, useAppState } from './AppState';
 import { AppShell } from './components/AppShell';
 import { ToastProvider } from './components/toast';
+import type { Perspective } from './types';
 
 // Route-level code splitting — mỗi trang một chunk, initial bundle chỉ còn shell.
 // Data đều là mock cục bộ nên fallback trống là đủ (không cần skeleton).
+const AdminPage = lazy(() => import('./pages/AdminPage').then((m) => ({ default: m.AdminPage })));
 const AppsPage = lazy(() => import('./pages/AppsPage').then((m) => ({ default: m.AppsPage })));
 const AssistantPage = lazy(() => import('./pages/AssistantPage').then((m) => ({ default: m.AssistantPage })));
 const FeedPage = lazy(() => import('./pages/FeedPage').then((m) => ({ default: m.FeedPage })));
@@ -43,9 +45,12 @@ function NewsArticleRedirect() {
   return <Navigate to={`/feed/article/${postId}`} replace />;
 }
 
-function PerspectiveGuard({ children, expected }: { children: React.ReactNode; expected: 'ikamer' | 'manager' }) {
+/** Trang "nhà" của từng góc nhìn — guard đưa người dùng về đúng nhà khi vào nhầm. */
+const HOME_BY_PERSPECTIVE: Record<Perspective, string> = { ikamer: '/home', manager: '/manager/overview', admin: '/admin' };
+
+function PerspectiveGuard({ children, expected }: { children: React.ReactNode; expected: Perspective }) {
   const { perspective } = useAppState();
-  if (perspective !== expected) return <Navigate to={perspective === 'manager' ? '/manager/overview' : '/home'} replace />;
+  if (perspective !== expected) return <Navigate to={HOME_BY_PERSPECTIVE[perspective]} replace />;
   return children;
 }
 
@@ -60,6 +65,7 @@ function AppRoutes() {
         {/* Accessible in both perspectives — no PerspectiveGuard by design. */}
         <Route path="/assistant" element={<AssistantPage />} />
         <Route path="/apps" element={<AppsPage />} />
+        <Route path="/admin" element={<PerspectiveGuard expected="admin"><AdminPage /></PerspectiveGuard>} />
         <Route path="/requests" element={<RequestsPage />} />
         <Route path="/feed" element={<FeedPage />} />
         <Route path="/feed/article/:postId" element={<ArticlePage />} />

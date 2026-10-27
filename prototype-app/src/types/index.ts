@@ -1,4 +1,5 @@
-export type Perspective = 'ikamer' | 'manager';
+/** 'admin' = COM Admin (team Communication) — quản trị nội dung chính thức; 'manager' đang parked ở MVP. */
+export type Perspective = 'ikamer' | 'manager' | 'admin';
 
 /** AI maturity ladder (spec §23): A1 Tóm tắt · A2 Xuyên nguồn · A3 Soạn thảo · A4 Thực thi. */
 export type AiLevel = 'A1' | 'A2' | 'A3' | 'A4';
@@ -74,6 +75,13 @@ export type NewsPost = {
   acknowledged: boolean;
   /** Bình luận trên bài Tin tức — undefined coi như chưa có bình luận nào. */
   comments?: Comment[];
+  /** Số liệu phân phối (COM Admin dashboard) — reach = số người trong audience. */
+  metrics?: { reach: number; read: number; acknowledged: number };
+  /** Người chưa xác nhận (chỉ bài mandatory) — rút tên khi user xác nhận. */
+  pendingAckNames?: string[];
+  /** Nhãn thời điểm Admin gửi push gần nhất; undefined = chưa push. */
+  pushedLabel?: string;
+  remindersSent?: number;
 };
 
 export type EventRegistration = 'not_registered' | 'going' | 'waitlisted';
@@ -107,6 +115,10 @@ export type EventItem = {
   closingSoon?: boolean;
   registrationDeadlineLabel?: string;
   featured?: boolean;
+  /** Sự kiện đã diễn ra: album ảnh (cover block mock) + link Drive gốc. */
+  album?: { photos: { emoji: string; palette: string; caption: string }[]; driveUrl?: string };
+  /** Khảo sát sau sự kiện — nhắc trong ≤3 ngày nếu chưa làm. */
+  survey?: { questions: number; minutes: number; dueLabel: string; done?: boolean };
 };
 
 export type AttentionItem = {
@@ -231,6 +243,8 @@ export type Post = {
   pinnedUntilLabel?: string;
   mentionsMe?: boolean;
   saved?: boolean;
+  /** Bài ghi nhận đồng nghiệp (Kudos) — body là lý do ghi nhận. */
+  kudos?: { toName: string; toShort: string };
   reactions: Record<ReactionKind, number>;
   myReactions: ReactionKind[];
   comments: Comment[];

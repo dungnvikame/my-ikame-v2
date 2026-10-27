@@ -97,6 +97,8 @@ export function EventCardV2({ event, highlighted = false, compact = false, cardR
           <StatusPill tone={registrationTone(event)}>{registrationLabel(event)}</StatusPill>
           <StatusPill>{event.format}</StatusPill>
           {event.closingSoon && event.status === 'open' && <StatusPill tone="warning">Sắp hết hạn đăng ký</StatusPill>}
+          {event.status === 'past' && event.album && <StatusPill tone="info">📷 Album</StatusPill>}
+          {event.status === 'past' && event.survey && !event.survey.done && <StatusPill tone="warning">Khảo sát · {event.survey.dueLabel}</StatusPill>}
         </div>
         <h3><Link to={`/events/${event.id}`}>{event.title}</Link></h3>
         <div className="event-meta">

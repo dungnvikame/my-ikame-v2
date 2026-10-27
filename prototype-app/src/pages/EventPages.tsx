@@ -8,6 +8,8 @@ import { isEligible } from '../lib/audience';
 import { buildIcs, downloadIcs } from '../lib/ics';
 import type { EventRegistration } from '../types';
 import { EventAgenda, EventParticipants } from './events/EventAgenda';
+import { EventAlbum } from './events/EventAlbum';
+import { EventSurveyPanel } from './events/EventSurveyPanel';
 import { EventCardV2 } from './events/EventCardV2';
 import { eventTimeRange, formatInTz } from './events/event-dates';
 import { EventGroupedList } from './events/EventGroupedList';
@@ -96,7 +98,7 @@ export function EventsPage() {
 
 export function EventDetailPage() {
   const { eventId } = useParams();
-  const { events, user, setEventRegistration } = useAppState();
+  const { events, user, setEventRegistration, completeEventSurvey } = useAppState();
   const event = events.find((item) => item.id === eventId);
   const [receipt, setReceipt] = useState('');
   const [confirmingCancel, setConfirmingCancel] = useState(false);
@@ -141,6 +143,7 @@ export function EventDetailPage() {
               ? <p><a href={event.joinUrl} target="_blank" rel="noreferrer">Link tham gia: {event.joinUrl}</a></p>
               : <p className="muted-text">Link tham gia sẽ hiển thị sau khi bạn đăng ký.</p>)}
           </section>
+          {event.status === 'past' && event.album && <EventAlbum album={event.album} />}
           <EventAgenda agenda={event.agenda} />
           <EventParticipants names={event.participantNames} />
           {related.length > 0 && (
@@ -152,6 +155,10 @@ export function EventDetailPage() {
         </article>
 
         <aside className="action-rail">
+          {/* Sự kiện đã diễn ra: khảo sát thay cho RSVP — hành động duy nhất còn ý nghĩa. */}
+          {event.status === 'past' && event.survey ? (
+            <EventSurveyPanel survey={event.survey} onComplete={() => completeEventSurvey(event.id)} />
+          ) : (
           <div className={`rsvp-panel ${event.myRegistration === 'going' ? 'is-complete' : ''}`}>
             <EventRsvpPanel
               event={event}
@@ -163,6 +170,7 @@ export function EventDetailPage() {
             />
             {receipt && <span className="receipt" role="status"><CheckCircle size={16} />{receipt}</span>}
           </div>
+          )}
           <div className="side-info"><h2>Cần hỗ trợ?</h2><p>Liên hệ {event.organizer} nếu bạn cần hỗ trợ về địa điểm hoặc khả năng tiếp cận.</p></div>
         </aside>
       </div>
