@@ -20,5 +20,5 @@ Build sạch, chạy kịch bản demo vòng lặp COM↔iKamer trên preview, c
 5. code-reviewer subagent → sửa major; commit.
 
 ## Success Criteria
-- [ ] Toàn bộ Success Criteria plan.md tick
-- [ ] Build + review + commit xong
+- [x] Toàn bộ Success Criteria plan.md tick
+- [x] Build + review + commit xong

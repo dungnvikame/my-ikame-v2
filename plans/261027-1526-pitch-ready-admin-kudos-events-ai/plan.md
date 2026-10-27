@@ -1,7 +1,7 @@
 ---
 title: "Pitch-ready: COM Admin, Kudos, kiểm duyệt, album+khảo sát sự kiện, Trợ lý AI kết nối nguồn"
 description: "Hoàn thiện bản vibe-code My iKame trước pitch C-Level: góc nhìn COM Admin (ghim/push/đo acknowledge & WAU), Kudos, kiểm duyệt tự động, album + khảo sát sự kiện đã diễn ra, Trợ lý AI hiện nguồn MCP + câu 'Hôm nay tôi cần làm gì'."
-status: in-progress
+status: completed
 priority: P1
 effort: "2d"
 tags: [pitch, admin, kudos, moderation, events, assistant]
@@ -27,11 +27,11 @@ Context: Perspective hiện chỉ `ikamer` (Manager parked). Composer chỉ có 
 ## Phases
 | # | Phase | Status |
 |---|-------|--------|
-| 1 | [COM Admin perspective + /admin](./phase-01-start.md) | Pending |
-| 2 | [Kudos + kiểm duyệt tự động](./phase-02-kudos-moderation.md) | Pending |
-| 3 | [Album + khảo sát sự kiện](./phase-03-event-album-survey.md) | Pending |
-| 4 | [Trợ lý AI kết nối nguồn](./phase-04-assistant-connectors.md) | Pending |
-| 5 | [Verify + review + commit](./phase-05-verify-ship.md) | Pending |
+| 1 | [COM Admin perspective + /admin](./phase-01-start.md) | Done |
+| 2 | [Kudos + kiểm duyệt tự động](./phase-02-kudos-moderation.md) | Done |
+| 3 | [Album + khảo sát sự kiện](./phase-03-event-album-survey.md) | Done |
+| 4 | [Trợ lý AI kết nối nguồn](./phase-04-assistant-connectors.md) | Done |
+| 5 | [Verify + review + commit](./phase-05-verify-ship.md) | Done |
 
 ## Success Criteria
 - [x] Switch iKamer ↔ COM Admin trong sidebar; admin thấy nav riêng + `/admin`; iKamer không thấy nút admin trên feed
