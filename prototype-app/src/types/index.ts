@@ -52,6 +52,8 @@ export type User = {
   perspective: Perspective;
   availablePerspectives: Perspective[];
   timezone: string;
+  /** Vai trò HRIS dùng để cấp quyền app (KR3: app theo role/team từ SSO). */
+  roleKey: 'member' | 'manager' | 'com_admin' | 'finance';
 };
 
 export type NewsPost = {
@@ -256,13 +258,30 @@ export type Post = {
 export type BirthdayPerson = { id: string; name: string; shortName: string; role: string; team: string; dateLabel: string; postId: string; congratulated: boolean };
 export type Milestone = { id: string; name: string; shortName: string; years: number; dateLabel: string; note: string };
 export type TopFan = { id: string; name: string; shortName: string; points: number; note: string };
-export type DailyCheckIn = { done: boolean; mode?: 'WFO' | 'Remote'; timeLabel?: string };
-export type LeaveBalance = { annualTotal: number; annualUsed: number; annualRemaining: number; carriedOver: number; sickUsed: number; insuranceLabel: string; healthCheckLabel: string };
+/** Trạng thái chấm công theo legend iCheck (đúng giờ, muộn, phép, WFH, lễ, vắng). */
+export type AttendanceStatus = 'on_time' | 'late' | 'leave_full' | 'leave_half' | 'wfh' | 'holiday' | 'absent' | 'none';
+export type DailyCheckIn = { done: boolean; mode?: 'WFO' | 'Remote'; timeLabel?: string; status?: AttendanceStatus };
+/** Một ngày trong dải tuần iCheck mỏng trên My iKame. */
+export type WeekDayAttendance = { dateLabel: string; weekday: string; status: AttendanceStatus; isToday: boolean };
+export type LeaveBalance = {
+  /** Quota phép hàng năm (iCheck: "Phép hàng năm"). */
+  annualTotal: number;
+  annualUsed: number;
+  /** Phép hiện có = năm nay + năm cũ. */
+  annualRemaining: number;
+  /** Phép năm cũ chuyển sang (iCheck: "Năm cũ"). */
+  carriedOver: number;
+  sickUsed: number;
+  /** Phép hỉ (cưới) còn lại. */
+  weddingLeave: number;
+  insuranceLabel: string;
+  healthCheckLabel: string;
+};
 /** Lương & hợp đồng (Hồ sơ) — số tiền che mặc định, xem chi tiết qua handoff iHRM. */
 export type Payslip = { id: string; periodLabel: string; amountMasked: string; amountRevealed: string; statusLabel: string };
 export type ContractInfo = { type: string; signedAt: string; validity: string; workMode: string };
 /** iRequest center (demo) — mọi request tạo qua AI front door đều theo dõi được ở đây. */
-export type RequestType = 'IT support' | 'Nhân sự' | 'Hành chính' | 'Thiết bị';
+export type RequestType = 'IT support' | 'Nhân sự' | 'Hành chính' | 'Thiết bị' | 'Chấm công';
 export type RequestStatus = 'pending' | 'in_progress' | 'done';
 export type RequestItem = {
   id: string;
@@ -274,6 +293,41 @@ export type RequestItem = {
   handlerLabel?: string;
 };
 export type Equipment = { id: string; name: string; model: string; serial: string; assignedAt: string; condition: string };
+
+/** Hồ sơ HRIS (read-only trong My iKame — chỉnh sửa deep-link iHRM). Nguồn: HRIS. */
+export type HrProfile = {
+  personId: string;
+  employeeCode: string;
+  birthDate: string;
+  gender: string;
+  email: string;
+  slackHandle: string;
+  phone: string;
+  title: string;
+  level: string;
+  unit: string;
+  managerName: string;
+  joinedAt: string;
+  employmentType: string;
+  workMode: string;
+  location: string;
+  /** Nhãn "HRIS · cập nhật dd/mm" cho dòng nguồn. */
+  syncedAt: string;
+};
+/** Giấy tờ & hợp đồng — trách nhiệm cá nhân, có hạn và hành động. */
+export type DocumentStatus = 'valid' | 'missing' | 'expiring' | 'expired';
+export type PersonalDocument = {
+  id: string;
+  name: string;
+  kind: 'contract' | 'identity' | 'degree' | 'policy' | 'insurance';
+  status: DocumentStatus;
+  dueLabel?: string;
+  dueInDays?: number;
+  action?: 'submit' | 'renew';
+  note?: string;
+};
+/** Dữ liệu nhạy cảm — chỉ hiện sau khi xác thực lại (mock). */
+export type SensitiveInfo = { bankAccount: string; bankName: string; insuranceNumber: string; idNumber: string; salaryBand: string };
 export type SeniorityEntry = { id: string; dateLabel: string; title: string; note: string };
 
 /** Mục tiêu — iGoal-style OKR tree. */

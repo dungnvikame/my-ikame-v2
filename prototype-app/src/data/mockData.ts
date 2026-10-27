@@ -23,6 +23,7 @@ export const users: Record<'an' | 'mai' | 'binh' | 'ngoc', User> = {
     perspective: 'admin',
     availablePerspectives: ['admin', 'ikamer'],
     timezone: 'Asia/Ho_Chi_Minh',
+    roleKey: 'com_admin',
   },
   an: {
     id: 'person_an',
@@ -35,6 +36,7 @@ export const users: Record<'an' | 'mai' | 'binh' | 'ngoc', User> = {
     perspective: 'ikamer',
     availablePerspectives: ['ikamer'],
     timezone: 'Asia/Ho_Chi_Minh',
+    roleKey: 'member',
   },
   mai: {
     id: 'person_mai',
@@ -47,6 +49,7 @@ export const users: Record<'an' | 'mai' | 'binh' | 'ngoc', User> = {
     perspective: 'manager',
     availablePerspectives: ['manager', 'ikamer'],
     timezone: 'Asia/Ho_Chi_Minh',
+    roleKey: 'manager',
   },
   // Not used as the signed-in user anywhere; exists so audience-deny fixtures below have
   // a real owning team distinct from person_an/person_mai's team_product.
@@ -61,6 +64,7 @@ export const users: Record<'an' | 'mai' | 'binh' | 'ngoc', User> = {
     perspective: 'ikamer',
     availablePerspectives: ['ikamer'],
     timezone: 'Asia/Ho_Chi_Minh',
+    roleKey: 'finance',
   },
 };
 

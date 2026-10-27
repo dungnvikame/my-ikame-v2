@@ -1,5 +1,6 @@
 import {
   Bell,
+  Briefcase,
   CalendarDots,
   ChatsCircle,
   Gauge,
@@ -10,11 +11,14 @@ import {
   Sparkle,
   SquaresFour,
   Sun,
+  Target,
+  UsersThree,
   X,
 } from '@phosphor-icons/react';
 import { useEffect, useRef, useState, type KeyboardEvent, type PropsWithChildren } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
+import type { Perspective } from '../types';
 import { AppLauncher } from './AppLauncher';
 import { BrandLogo } from './BrandLogo';
 import { IconButton, StatusPill } from './UI';
@@ -31,11 +35,36 @@ type NavGroup = { label: string; items: NavEntry[] };
 const iKamerNavGroups: NavGroup[] = [
   { label: 'KHÔNG GIAN CỦA BẠN', items: [
     { label: 'Trang chủ', to: '/home', icon: House },
+    { label: 'Công việc', to: '/work', icon: Briefcase },
     { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
     { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
     { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
   ] },
+];
+
+// Manager: không gian quản lý (tổng quan, đội ngũ, OKR team) đứng trước; lõi chung phía dưới.
+const managerNavGroups: NavGroup[] = [
+  { label: 'QUẢN LÝ', items: [
+    { label: 'Tổng quan', to: '/manager/overview', icon: House },
+    { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
+    { label: 'Mục tiêu team', to: '/goals', icon: Target },
+  ] },
+  { label: 'KHÔNG GIAN CHUNG', items: [
+    { label: 'Công việc', to: '/work', icon: Briefcase },
+    { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
+    { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+    { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
+    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
+  ] },
+];
+
+const managerBottomNav: NavEntry[] = [
+  { label: 'Tổng quan', to: '/manager/overview', icon: House },
+  { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
+  { label: 'Công việc', to: '/work', icon: Briefcase },
+  { label: 'Feed', to: '/feed', icon: ChatsCircle },
+  { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
 ];
 
 // COM Admin: "Tổng quan COM" thay Trang chủ — nơi ghim/push/đo acknowledge; các mục còn lại dùng chung.
@@ -52,11 +81,12 @@ const adminNavGroups: NavGroup[] = [
 ];
 
 // Fixed 5 — mobile bottom-nav mirrors the MVP sidebar.
+// Mobile: Ứng dụng nhường chỗ cho Công việc (vẫn còn launcher ▦ trên topbar).
 const iKamerBottomNav: NavEntry[] = [
   { label: 'Trang chủ', to: '/home', icon: House },
+  { label: 'Công việc', to: '/work', icon: Briefcase },
   { label: 'Feed', to: '/feed', icon: ChatsCircle },
   { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-  { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
   { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
 ];
 
@@ -68,6 +98,14 @@ const adminBottomNav: NavEntry[] = [
   { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
 ];
 
+/** Một shell, ba lăng kính — nav/bottom-nav/nhà riêng theo góc nhìn. */
+const NAV_BY_PERSPECTIVE: Record<Perspective, { groups: NavGroup[]; bottom: NavEntry[]; home: string; label: string }> = {
+  ikamer: { groups: iKamerNavGroups, bottom: iKamerBottomNav, home: '/home', label: 'iKamer' },
+  manager: { groups: managerNavGroups, bottom: managerBottomNav, home: '/manager/overview', label: 'Manager' },
+  admin: { groups: adminNavGroups, bottom: adminBottomNav, home: '/admin', label: 'COM Admin' },
+};
+const PERSPECTIVE_ORDER: Perspective[] = ['ikamer', 'manager', 'admin'];
+
 function Logo() {
   return (
     <div className="brand" aria-label="My iKame">
@@ -77,20 +115,23 @@ function Logo() {
   );
 }
 
-/** Chuyển góc nhìn demo: iKamer ↔ COM Admin (Manager parked ở MVP — thêm lại 1 nút khi cần). */
+/** Chuyển góc nhìn demo: iKamer · Manager · COM Admin — mỗi lăng kính có nhà riêng. */
 function PerspectiveSwitch() {
   const { perspective, setPerspective } = useAppState();
   const navigate = useNavigate();
 
-  const select = (next: 'ikamer' | 'admin') => {
+  const select = (next: Perspective) => {
     setPerspective(next);
-    navigate(next === 'admin' ? '/admin' : '/home');
+    navigate(NAV_BY_PERSPECTIVE[next].home);
   };
 
   return (
-    <div className="perspective-switch" role="group" aria-label="Chọn góc nhìn">
-      <button type="button" aria-pressed={perspective === 'ikamer'} className={perspective === 'ikamer' ? 'is-active' : ''} onClick={() => select('ikamer')}>iKamer</button>
-      <button type="button" aria-pressed={perspective === 'admin'} className={perspective === 'admin' ? 'is-active' : ''} onClick={() => select('admin')}>COM Admin</button>
+    <div className="perspective-switch perspective-switch--3" role="group" aria-label="Chọn góc nhìn">
+      {PERSPECTIVE_ORDER.map((key) => (
+        <button key={key} type="button" aria-pressed={perspective === key} className={perspective === key ? 'is-active' : ''} onClick={() => select(key)}>
+          {NAV_BY_PERSPECTIVE[key].label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -159,8 +200,7 @@ function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLB
 
 export function AppShell({ children }: PropsWithChildren) {
   const { perspective, user, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
-  const navGroups = perspective === 'admin' ? adminNavGroups : iKamerNavGroups;
-  const bottomNav = perspective === 'admin' ? adminBottomNav : iKamerBottomNav;
+  const { groups: navGroups, bottom: bottomNav } = NAV_BY_PERSPECTIVE[perspective];
   const unreadCount = notifications.filter((item) => !item.read).length;
   const notificationTriggerRef = useRef<HTMLButtonElement>(null);
 

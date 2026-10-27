@@ -1,0 +1,258 @@
+/* iCheck mỏng (widget Home + tab Công việc). Classes prefixed `icheck-`. */
+
+.icheck-widget {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+  gap: 16px;
+}
+
+.icheck-widget.is-compact {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.icheck-widget-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-12);
+  background: var(--bg-primary);
+}
+
+.icheck-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 92px;
+  padding: 18px;
+  border-radius: var(--radius-12);
+  text-align: center;
+}
+
+.icheck-banner strong {
+  font-size: 22px;
+}
+
+.icheck-banner > div[role="status"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Cặp token contrast/on-contrast đổi theo theme → đọc được cả dark mode. */
+.icheck-banner--success { background: var(--bg-green-contrast); color: var(--fg-on-contrast); }
+.icheck-banner--warning { background: var(--bg-amber-contrast); color: var(--fg-on-contrast); }
+.icheck-banner--accent { background: var(--bg-accent-primary); color: var(--fg-on-accent); }
+.icheck-banner--pending { background: var(--bg-tertiary); color: var(--text-primary); }
+.icheck-banner--pending .button { margin-top: 4px; }
+
+.icheck-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.icheck-quick-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-8);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.icheck-quick-action:hover {
+  border-color: var(--border-tertiary);
+  background: var(--bg-secondary);
+}
+
+/* Ngày phép còn lại */
+.icheck-leave {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-12);
+  background: var(--bg-primary);
+}
+
+.icheck-leave-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icheck-leave-head h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.icheck-leave-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 10px;
+}
+
+.icheck-leave-main,
+.icheck-leave-side > div {
+  padding: 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-8);
+  background: var(--bg-secondary);
+}
+
+.icheck-leave-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.icheck-leave-main > strong {
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+.icheck-leave-main small,
+.icheck-leave-side small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.icheck-leave-split {
+  display: flex;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.icheck-leave-split span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icheck-leave-side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.icheck-leave-side b,
+.icheck-leave-split b {
+  font-size: 16px;
+}
+
+.is-compact .icheck-leave-main > strong { font-size: 26px; }
+
+/* Dải tuần */
+.icheck-week-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.icheck-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: var(--radius-8);
+  background: var(--bg-secondary);
+  font-size: 12px;
+}
+
+.icheck-day.is-today {
+  outline: 2px solid var(--border-accent-primary);
+}
+
+.icheck-day small { color: var(--text-secondary); }
+.icheck-day strong { font-size: 14px; }
+
+.icheck-day-mark {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-on-contrast);
+}
+
+.icheck-day--success .icheck-day-mark, .icheck-legend-dot.icheck-day--success { background: var(--bg-green-contrast); }
+.icheck-day--warning .icheck-day-mark, .icheck-legend-dot.icheck-day--warning { background: var(--bg-orange-contrast); }
+.icheck-day--info .icheck-day-mark, .icheck-legend-dot.icheck-day--info { background: var(--bg-blue-contrast); }
+.icheck-day--accent .icheck-day-mark, .icheck-legend-dot.icheck-day--accent { background: var(--bg-purple-contrast); }
+.icheck-day--error .icheck-day-mark, .icheck-legend-dot.icheck-day--error { background: var(--bg-red-contrast, var(--bg-error-contrast)); }
+.icheck-day--neutral .icheck-day-mark { background: transparent; color: var(--text-secondary); }
+.icheck-legend-dot.icheck-day--neutral { background: var(--border-tertiary); }
+
+.icheck-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.icheck-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.icheck-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* Tab Công việc */
+.work-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.work-request-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.work-request {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-8);
+  background: var(--bg-primary);
+}
+
+.work-request strong { display: block; font-size: 14px; }
+.work-request small { color: var(--text-secondary); }
+
+@media (max-width: 900px) {
+  .icheck-widget, .work-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .icheck-quick-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .icheck-leave-grid { grid-template-columns: 1fr; }
+}

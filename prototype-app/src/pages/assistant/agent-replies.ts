@@ -2,6 +2,7 @@ import type {
   ApprovalItem, AttentionItem, EventItem, Goal, KnowledgeDoc, LeaveBalance,
   MemberEksStat, NewsPost, Perspective, RequestType, User,
 } from '../../types';
+import { buildDailyDigestItems, DIGEST_SOURCES, type DigestCtx } from './daily-digest';
 
 /**
  * Trợ lý AI page — keyword-routed intent engine over LIVE mock data.
@@ -14,15 +15,22 @@ import type {
  * - okr    → trình tạo báo cáo check-in OKR (gửi THẬT qua submitReport)
  * - info   → thẻ thông tin read-only (nghỉ phép, xác nhận tin bắt buộc)
  */
+/** Đơn chấm công tạo qua MCP iCheck — WFH/quên chấm công đè lên dải tuần ngay. */
+export type AttendanceCommit = { kind: 'late' | 'leave' | 'missing' | 'wfh'; title: string; dateLabel?: string };
+
 export type AgentAction =
-  | { kind: 'ack-news'; targetId: string; label: string; receipt: string }
+  | { kind: 'ack-news'; targetId: string; label: string; receipt: string; tool?: string }
   | {
     kind: 'confirm';
     label: string;
     receipt: string;
-    commit?: 'report' | 'request';
+    commit?: 'report' | 'request' | 'attendance';
     /** commit 'request' → addRequest thật vào iRequest center. */
     request?: { type: RequestType; title: string; slaLabel?: string; handlerLabel?: string };
+    /** commit 'attendance' → addAttendanceRequest (iCheck). */
+    attendance?: AttendanceCommit;
+    /** Tool MCP sẽ được gọi khi người dùng duyệt — hiện trong receipt/audit. */
+    tool?: string;
   };
 
 export type WorkspaceField = { label: string; value: string; multiline?: boolean };
@@ -63,6 +71,8 @@ export type AgentMessage = {
   workspace?: AgentWorkspace;
   /** Hệ thống nguồn agent đã đọc (qua MCP) — hiển thị chip "Nguồn" dưới câu trả lời. */
   sources?: string[];
+  /** Tool MCP (read) agent đã gọi để dựng câu trả lời — audit trail. */
+  toolCalls?: string[];
 };
 
 export type AgentCtx = {
@@ -77,6 +87,9 @@ export type AgentCtx = {
   attention: AttentionItem[];
   memberEksStats: MemberEksStat[];
   approvals: ApprovalItem[];
+  /** Daily digest — chấm công hôm nay + nhắc giấy tờ (cùng nguồn với Home). */
+  checkedIn: boolean;
+  documentReminders?: DigestCtx['documentReminders'];
 };
 
 const MEETING_ROOMS = [
@@ -242,29 +255,174 @@ function buildManagerReply(q: string, ctx: AgentCtx): AgentMessage | null {
  * bản thật đọc qua connector tương ứng.
  */
 function buildDailyDigestReply(q: string, ctx: AgentCtx): AgentMessage | null {
-  if (!/hôm nay.*(cần|làm|việc)|việc hôm nay|cần làm gì|to-?do/.test(q)) return null;
+  // Regex hẹp: "hôm nay tôi làm việc từ xa" là intent WFH, không phải digest.
+  if (!/hôm nay.*(cần làm|làm gì|việc gì|có gì)|việc hôm nay|cần làm gì|to-?do/.test(q)) return null;
 
-  const pendingNews = ctx.news.filter((post) => !post.expired && post.mandatory && !post.acknowledged);
-  const registeredEvents = ctx.events.filter((event) => event.status !== 'past' && event.status !== 'cancelled'
-    && (event.myRegistration === 'going' || event.myRegistration === 'waitlisted')).slice(0, 2);
-  const staleGoals = ctx.goals.filter((goal) => goal.status === 'needs_update').slice(0, 2);
-
-  const links: AgentMessage['links'] = [
-    ...pendingNews.map((post) => ({ label: `Xác nhận: ${post.title} · ${post.dueLabel ?? 'hôm nay'}`, to: `/feed/article/${post.id}` })),
-    ...staleGoals.map((goal) => ({ label: `Check-in OKR: ${goal.title}`, to: `/goals/${goal.id}` })),
-    { label: 'Asana: Review flow onboarding (hạn hôm nay)', to: '/apps' },
-    { label: 'Asana: Cập nhật spec màn Sự kiện', to: '/apps' },
-    { label: 'Lịch: Họp nhóm Product 14:00 · Mercury', to: '/assistant?q=Đặt phòng họp 14:00 hôm nay cho 6 người' },
-    ...registeredEvents.map((event) => ({ label: `Sự kiện: ${event.title} · ${event.dateLabel}`, to: `/events/${event.id}` })),
-  ];
-  const total = links.length;
+  const items = buildDailyDigestItems({ news: ctx.news, events: ctx.events, goals: ctx.goals, checkedIn: ctx.checkedIn, documentReminders: ctx.documentReminders });
+  const urgent = items.filter((item) => item.urgent).length;
 
   return {
     role: 'assistant',
-    text: `Hôm nay bạn có ${total} việc, mình xếp theo mức khẩn: ${pendingNews.length ? `${pendingNews.length} thông báo bắt buộc cần xác nhận trước hạn, ` : ''}${staleGoals.length ? `${staleGoals.length} mục tiêu trễ check-in, ` : ''}2 task Asana và 1 cuộc họp lúc 14:00. Bấm vào từng mục để xử lý ngay.`,
-    links,
-    sources: ['HRIS', 'My iKame', 'iGoal', 'Asana', 'Google Calendar'],
+    text: `Hôm nay bạn có ${items.length} việc${urgent ? `, trong đó ${urgent} việc khẩn mình xếp lên đầu` : ''}. Bấm vào từng mục để xử lý ngay — mình đã gom từ HRIS, iCheck, iGoal, Asana và lịch của bạn.`,
+    links: items.map((item) => ({ label: `${item.label} · ${item.meta}`, to: item.to })),
+    sources: DIGEST_SOURCES,
+    toolCalls: ['icheck.get_today_status', 'hris.get_pending_acks', 'hris.list_documents', 'igoal.get_my_objectives', 'asana.list_my_tasks', 'calendar.list_events'],
   };
+}
+
+/** dd/mm của hôm nay / ngày mai theo giờ máy — hành động iCheck luôn "như thật" theo ngày demo. */
+function dayLabel(offsetDays: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+/** yyyy-mm-dd theo giờ máy (toISOString là UTC — trước 07:00 ở VN sẽ lệch 1 ngày). */
+function isoDate(offsetDays: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+/** "ngày mai" thật — không bắt "chị Mai"/"email". */
+function mentionsTomorrow(q: string): boolean {
+  return /\b(ngày )?mai\b/.test(q) && !/chị mai|anh mai|em mai/.test(q);
+}
+/** Offset tới ngày làm việc đầu tiên sau ≥7 ngày (đơn nghỉ mẫu không rơi vào cuối tuần). */
+function nextWorkdayOffset(minOffset: number): number {
+  const date = new Date();
+  date.setDate(date.getDate() + minOffset);
+  const day = date.getDay();
+  return minOffset + (day === 6 ? 2 : day === 0 ? 1 : 0);
+}
+
+const ATTENDANCE_READ_TOOLS = ['hris.get_profile', 'icheck.get_today_status', 'icheck.get_leave_balance'];
+const APPROVER = 'Trần Thanh Mai · Quản lý trực tiếp';
+
+/**
+ * 4 hành động iCheck qua MCP (đề xuất → duyệt → icheck.* write → receipt): nghỉ phép, WFH,
+ * quên chấm công, đi muộn/về sớm. Thứ tự regex: tạo đơn trước intent "số dư phép".
+ */
+function buildAttendanceReply(q: string, question: string, ctx: AgentCtx): AgentMessage | null {
+  // Câu HỎI về chính sách/quy định đi tới iWiki/Q&A, không biến thành đơn.
+  if (/chính sách|quy định|là gì|bao nhiêu|hướng dẫn|như thế nào|thế nào/.test(q)) return null;
+  const remaining = ctx.leaveBalance.annualRemaining;
+
+  if (/\bwfh\b|work from home|làm từ xa|làm ở nhà|làm việc tại nhà/.test(q)) {
+    const tomorrow = mentionsTomorrow(q) && !/hôm nay/.test(q);
+    const label = tomorrow ? dayLabel(1) : dayLabel(0);
+    return {
+      role: 'assistant',
+      sources: ['iCheck', 'HRIS'],
+      toolCalls: ATTENDANCE_READ_TOOLS,
+      text: `Mình đã điền sẵn đăng ký làm việc từ xa ${tomorrow ? 'ngày mai' : 'hôm nay'} (${label}) — chính sách Hybrid của bạn còn 1 ngày WFH tuần này nên hợp lệ. Duyệt là mình gửi iCheck và báo quản lý.`,
+      links: [{ label: 'Xem tab Công việc', to: '/work' }],
+      action: {
+        kind: 'confirm', label: 'Gửi đăng ký WFH', tool: 'icheck.create_wfh_request', commit: 'attendance',
+        attendance: { kind: 'wfh', title: `Đăng ký WFH ngày ${label}`, dateLabel: label },
+        receipt: `iCheck đã ghi nhận WFH ngày ${label} — quản lý nhận thông báo duyệt, dải tuần của bạn đã cập nhật.`,
+      },
+      workspace: {
+        kind: 'form', breadcrumb: 'iCheck / Work from home', title: 'Đăng ký làm việc từ xa', badge: 'Chưa gửi',
+        formFields: [
+          { id: 'date', label: 'Ngày', value: isoDate(tomorrow ? 1 : 0), type: 'date', half: true },
+          { id: 'mode', label: 'Hình thức', value: 'Cả ngày', type: 'select', options: ['Cả ngày', 'Buổi sáng', 'Buổi chiều'], half: true },
+          { id: 'reason', label: 'Lý do', value: question, type: 'textarea' },
+          { id: 'approver', label: 'Người duyệt', value: APPROVER },
+        ],
+        steps: ['Đã đọc chính sách Hybrid từ HRIS (3 ngày văn phòng/tuần)', 'Đã kiểm tra số ngày WFH đã dùng tuần này trên iCheck', 'Đã điền sẵn đơn theo yêu cầu', 'Chờ bạn duyệt → gọi icheck.create_wfh_request'],
+      },
+    };
+  }
+
+  if (/quên chấm công|bổ sung chấm công|chưa chấm công|quên check ?in/.test(q)) {
+    const label = dayLabel(0);
+    return {
+      role: 'assistant',
+      sources: ['iCheck'],
+      toolCalls: ['icheck.get_today_status', 'calendar.list_events'],
+      text: `iCheck chưa có giờ vào của bạn hôm nay (${label}). Lịch cho thấy bạn có mặt ở họp 09:00 tại Mercury nên mình đề xuất bổ sung giờ vào 08:06 — bạn duyệt là mình gửi quản lý xác nhận.`,
+      links: [{ label: 'Xem tab Công việc', to: '/work' }],
+      action: {
+        kind: 'confirm', label: 'Gửi bổ sung chấm công', tool: 'icheck.report_missing_checkin', commit: 'attendance',
+        attendance: { kind: 'missing', title: `Bổ sung chấm công ngày ${label} (08:06)`, dateLabel: label },
+        receipt: `Đã gửi bổ sung chấm công ${label} — iCheck tạm ghi nhận 08:06, chờ quản lý xác nhận.`,
+      },
+      workspace: {
+        kind: 'form', breadcrumb: 'iCheck / Quên chấm công', title: 'Bổ sung chấm công', badge: 'Chưa gửi',
+        formFields: [
+          { id: 'date', label: 'Ngày', value: isoDate(0), type: 'date', half: true },
+          { id: 'time', label: 'Giờ vào thực tế', value: '08:06', type: 'time', half: true },
+          { id: 'evidence', label: 'Bằng chứng', value: 'Lịch họp 09:00 · Mercury (Google Calendar) · log VPN 08:04' },
+          { id: 'reason', label: 'Lý do', value: 'Quên chấm công khi vào văn phòng', type: 'textarea' },
+          { id: 'approver', label: 'Người duyệt', value: APPROVER },
+        ],
+        steps: ['Đã kiểm tra trạng thái chấm công hôm nay trên iCheck', 'Đã đối chiếu lịch họp & log truy cập để gợi ý giờ vào', 'Chờ bạn duyệt → gọi icheck.report_missing_checkin'],
+      },
+    };
+  }
+
+  if (/đi muộn|đến muộn|về sớm|đi trễ/.test(q)) {
+    const early = /về sớm/.test(q);
+    const tomorrow = mentionsTomorrow(q);
+    const label = dayLabel(tomorrow ? 1 : 0);
+    return {
+      role: 'assistant',
+      sources: ['iCheck', 'HRIS'],
+      toolCalls: ATTENDANCE_READ_TOOLS,
+      text: `Mình đã soạn đơn xin ${early ? 'về sớm' : 'đi muộn'} ${tomorrow ? 'ngày mai' : 'hôm nay'} (${label}). Tháng này bạn chưa dùng lần nào trong 2 lần linh hoạt theo chính sách — duyệt là mình gửi iCheck.`,
+      links: [{ label: 'Xem tab Công việc', to: '/work' }],
+      action: {
+        kind: 'confirm', label: `Gửi đơn ${early ? 'về sớm' : 'đi muộn'}`, tool: 'icheck.create_late_early_request', commit: 'attendance',
+        attendance: { kind: 'late', title: `Xin ${early ? 'về sớm' : 'đi muộn'} ngày ${label} (30 phút)`, dateLabel: label },
+        receipt: `Đơn xin ${early ? 'về sớm' : 'đi muộn'} ${label} đã gửi quản lý — iCheck sẽ không tính muộn sau khi duyệt.`,
+      },
+      workspace: {
+        kind: 'form', breadcrumb: 'iCheck / Đi muộn · về sớm', title: `Xin ${early ? 'về sớm' : 'đi muộn'}`, badge: 'Chưa gửi',
+        formFields: [
+          { id: 'date', label: 'Ngày', value: isoDate(tomorrow ? 1 : 0), type: 'date', half: true },
+          { id: 'minutes', label: 'Số phút', value: '30', type: 'number', half: true },
+          { id: 'reason', label: 'Lý do', value: question, type: 'textarea' },
+          { id: 'approver', label: 'Người duyệt', value: APPROVER },
+        ],
+        steps: ['Đã đọc chính sách linh hoạt giờ làm từ HRIS (2 lần/tháng)', 'Đã kiểm tra số lần đã dùng tháng này trên iCheck', 'Chờ bạn duyệt → gọi icheck.create_late_early_request'],
+      },
+    };
+  }
+
+  if (/đơn nghỉ|xin nghỉ|tạo đơn.*nghỉ|nghỉ phép \d|nghỉ \d ngày/.test(q)) {
+    const days = Math.max(1, Number(q.match(/(\d+)\s*ngày/)?.[1] ?? 2));
+    const startOffset = nextWorkdayOffset(7);
+    const from = dayLabel(startOffset);
+    const to = dayLabel(startOffset + days - 1);
+    const enough = days <= remaining;
+    return {
+      role: 'assistant',
+      sources: ['iCheck', 'HRIS', 'Google Calendar'],
+      toolCalls: [...ATTENDANCE_READ_TOOLS, 'calendar.list_events'],
+      text: enough
+        ? `Mình đã soạn đơn nghỉ phép ${days} ngày (${from}–${to}) — bạn còn ${remaining} ngày phép năm nên đơn hợp lệ, lịch không trùng deadline sprint. Kiểm tra form rồi duyệt, mình gửi iCheck và báo quản lý.`
+        : `Bạn còn ${remaining} ngày phép năm, chưa đủ cho ${days} ngày (${from}–${to}) — mình giữ đơn ${days} ngày, bạn chọn "Nghỉ không lương" ở ô Loại nghỉ cho phần vượt, hoặc rút ngắn số ngày.`,
+      links: [{ label: 'Theo dõi đề xuất của tôi', to: '/work' }],
+      action: {
+        kind: 'confirm', label: 'Gửi đơn nghỉ phép', tool: 'icheck.create_leave_request', commit: 'attendance',
+        attendance: { kind: 'leave', title: `Đơn nghỉ phép ${days} ngày (${from}–${to})` },
+        receipt: 'Đơn nghỉ phép đã gửi tới quản lý trực tiếp qua iCheck — theo dõi trạng thái tại tab Công việc.',
+      },
+      workspace: {
+        kind: 'form', breadcrumb: 'iCheck / Nghỉ phép', title: 'Đơn nghỉ phép', badge: 'Chưa gửi',
+        formFields: [
+          { id: 'leave-type', label: 'Loại nghỉ', value: `Nghỉ phép năm (còn ${remaining} ngày)`, type: 'select', options: [`Nghỉ phép năm (còn ${remaining} ngày)`, `Phép hỉ (còn ${ctx.leaveBalance.weddingLeave} ngày)`, 'Nghỉ ốm', 'Nghỉ không lương'] },
+          { id: 'from', label: 'Từ ngày', value: isoDate(startOffset), type: 'date', half: true },
+          { id: 'to', label: 'Đến ngày', value: isoDate(startOffset + days - 1), type: 'date', half: true },
+          { id: 'reason', label: 'Lý do', value: 'Việc gia đình', type: 'textarea' },
+          { id: 'handover', label: 'Bàn giao công việc cho', value: 'Lan Nguyễn · Product Designer' },
+          { id: 'approver', label: 'Người duyệt', value: APPROVER },
+        ],
+        steps: [`Đã kiểm tra số dư phép năm trên iCheck (${remaining}/${ctx.leaveBalance.annualTotal} ngày)`, 'Đã đối chiếu lịch sprint & lịch họp — không trùng deadline', 'Đã điền sẵn đơn theo yêu cầu của bạn', 'Chờ bạn duyệt → gọi icheck.create_leave_request'],
+      },
+    };
+  }
+
+  return null;
 }
 
 export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
@@ -273,6 +431,10 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
   const managerReply = buildManagerReply(q, ctx);
   if (managerReply) return managerReply;
 
+  // Hành động iCheck trước digest — câu "hôm nay tôi làm việc từ xa" không được rơi vào digest.
+  const attendanceReply = buildAttendanceReply(q, question, ctx);
+  if (attendanceReply) return attendanceReply;
+
   const digest = buildDailyDigestReply(q, ctx);
   if (digest) return digest;
 
@@ -280,8 +442,9 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     return {
       role: 'assistant',
       sources: ['Google Calendar', 'Phòng họp'],
+      toolCalls: ['calendar.list_events', 'calendar.find_free_room'],
       text: 'Mình đã kiểm tra lịch phòng và điền sẵn form đặt phòng theo yêu cầu của bạn — phòng Mercury tầng 6 đang trống khung 14:00. Bạn chỉnh lại nếu cần rồi xác nhận nhé.',
-      action: { kind: 'confirm', label: 'Đặt phòng & gửi lời mời', receipt: 'Đã đặt phòng và gửi lời mời lịch tới người tham dự. Phòng sẽ tự hủy nếu không check-in sau 15 phút.' },
+      action: { kind: 'confirm', label: 'Đặt phòng & gửi lời mời', tool: 'calendar.book_room', receipt: 'Đã đặt phòng và gửi lời mời lịch tới người tham dự. Phòng sẽ tự hủy nếu không check-in sau 15 phút.' },
       workspace: {
         kind: 'form',
         breadcrumb: 'Workplace / Đặt phòng họp',
@@ -302,39 +465,6 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
           'Đã lọc phòng đủ 6 chỗ, có TV trình chiếu',
           'Đã điền sẵn form với khung giờ trống 14:00',
           'Chờ bạn xác nhận để giữ phòng & gửi lời mời',
-        ],
-      },
-    };
-  }
-
-  if (/đơn nghỉ|xin nghỉ|tạo đơn.*nghỉ/.test(q)) {
-    return {
-      role: 'assistant',
-      text: `Mình đã soạn đơn nghỉ phép — bạn còn ${ctx.leaveBalance.annualRemaining} ngày phép năm nên đơn này hợp lệ. Kiểm tra form rồi gửi, đơn sẽ chuyển tới quản lý trực tiếp duyệt.`,
-      links: [{ label: 'Theo dõi request của tôi', to: '/requests' }],
-      action: {
-        kind: 'confirm', label: 'Gửi đơn nghỉ phép',
-        receipt: 'Đơn nghỉ phép đã gửi tới quản lý trực tiếp — theo dõi trạng thái tại iRequest.',
-        commit: 'request',
-        request: { type: 'Nhân sự', title: 'Đơn nghỉ phép 2 ngày (21–22/08)', slaLabel: 'Quản lý duyệt trong 1 ngày', handlerLabel: 'Trần Thanh Mai' },
-      },
-      workspace: {
-        kind: 'form',
-        breadcrumb: 'iRequest / Nhân sự',
-        title: 'Đơn nghỉ phép',
-        badge: 'Chưa gửi',
-        formFields: [
-          { id: 'leave-type', label: 'Loại nghỉ', value: 'Nghỉ phép năm (còn 7 ngày)', type: 'select', options: ['Nghỉ phép năm (còn 7 ngày)', 'Nghỉ ốm', 'Nghỉ không lương'] },
-          { id: 'from', label: 'Từ ngày', value: '2026-08-21', type: 'date', half: true },
-          { id: 'to', label: 'Đến ngày', value: '2026-08-22', type: 'date', half: true },
-          { id: 'reason', label: 'Lý do', value: 'Việc gia đình', type: 'textarea' },
-          { id: 'handover', label: 'Bàn giao công việc cho', value: 'Lan Nguyễn · Product Designer' },
-        ],
-        steps: [
-          'Đã kiểm tra số dư phép năm (7/12 ngày)',
-          'Đã đối chiếu lịch sprint — không trùng deadline',
-          'Đã điền sẵn đơn theo yêu cầu của bạn',
-          'Chờ bạn xác nhận để gửi quản lý duyệt',
         ],
       },
     };
@@ -499,9 +629,10 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     return {
       role: 'assistant',
       sources: ['iGoal'],
+      toolCalls: ['igoal.get_my_objectives'],
       text: `Mục tiêu "${goal.title}" đã quá hạn check-in (${goal.nextDue}). Mình đã soạn sẵn báo cáo check-in với tiến độ đề xuất — bạn chỉnh số liệu và nội dung rồi gửi, hệ thống iGoal sẽ cập nhật ngay.`,
       links: [{ label: 'Mở mục tiêu trên iGoal', to: `/goals/${goal.id}` }],
-      action: { kind: 'confirm', label: 'Gửi báo cáo check-in', receipt: 'Đã gửi báo cáo check-in lên iGoal — tiến độ và trạng thái mục tiêu đã được cập nhật.', commit: 'report' },
+      action: { kind: 'confirm', label: 'Gửi báo cáo check-in', tool: 'igoal.submit_checkin', receipt: 'Đã gửi báo cáo check-in lên iGoal — tiến độ và trạng thái mục tiêu đã được cập nhật.', commit: 'report' },
       workspace: {
         kind: 'okr',
         breadcrumb: 'iGoal / Báo cáo check-in',
@@ -527,7 +658,8 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     const { annualRemaining, annualTotal, annualUsed, carriedOver, insuranceLabel, healthCheckLabel } = ctx.leaveBalance;
     return {
       role: 'assistant',
-      sources: ['HRIS'],
+      sources: ['iCheck', 'HRIS'],
+      toolCalls: ['icheck.get_leave_balance', 'hris.get_profile'],
       text: `Bạn còn ${annualRemaining}/${annualTotal} ngày phép năm. Chi tiết số dư ở khung bên phải — cần soạn đơn nghỉ phép thì nói ngày cụ thể nhé.`,
       links: [{ label: 'Xem chi tiết trong Hồ sơ', to: '/profile' }],
       workspace: {
@@ -554,9 +686,10 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     return {
       role: 'assistant',
       sources: ['HRIS', 'COM'],
+      toolCalls: ['hris.get_pending_acks'],
       text: `Bạn có 1 thông báo bắt buộc: "${pending.title}". Nội dung tóm tắt ở khung bên phải — đọc xong bấm xác nhận là hoàn tất.`,
       links: [{ label: 'Mở bài viết đầy đủ', to: `/feed/article/${pending.id}` }],
-      action: { kind: 'ack-news', targetId: pending.id, label: 'Xác nhận đã đọc', receipt: 'Đã ghi nhận xác nhận của bạn. Cảm ơn đã hoàn tất đúng hạn!' },
+      action: { kind: 'ack-news', targetId: pending.id, label: 'Xác nhận đã đọc', tool: 'hris.acknowledge_policy', receipt: 'Đã ghi nhận xác nhận của bạn. Cảm ơn đã hoàn tất đúng hạn!' },
       workspace: {
         kind: 'info',
         breadcrumb: 'Tin tức / Thông báo bắt buộc',
@@ -604,6 +737,7 @@ export function buildAgentReply(question: string, ctx: AgentCtx): AgentMessage {
     return {
       role: 'assistant',
       sources: ['iWiki'],
+      toolCalls: ['iwiki.search'],
       text: 'Mình tìm thấy các tài liệu iWiki liên quan — bản đầy đủ sẽ trả lời trực tiếp kèm trích dẫn nguồn:',
       links: [
         ...docs.map((doc) => ({ label: `${doc.title} · ${doc.topic}`, to: `/knowledge/${doc.id}` })),

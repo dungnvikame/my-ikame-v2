@@ -16,7 +16,7 @@ export const searchSeedAnswers: SearchSeedAnswer[] = [
     question: 'Tôi còn bao nhiêu ngày phép?',
     level: 'A2',
     paragraphs: [
-      'Bạn còn 7/12 ngày phép năm (đã dùng 5 ngày, 2 ngày chuyển từ năm trước) và đã dùng 1 ngày nghỉ ốm — số này khớp với mục Nghỉ phép & phúc lợi trong Hồ sơ của bạn.',
+      'Bạn còn 2,5/11 ngày phép năm (đã dùng 8,5 ngày, không có phép năm cũ chuyển sang), 4 ngày phép hỉ và đã dùng 1 ngày nghỉ ốm — số này khớp với iCheck và mục Nghỉ phép & phúc lợi trong Hồ sơ của bạn.',
       'Gửi đơn xin nghỉ trên HRIS ít nhất 2 ngày làm việc trước ngày nghỉ (trừ nghỉ ốm); quản lý trực tiếp phê duyệt trong vòng 1 ngày làm việc.',
     ],
     citations: [

@@ -3,12 +3,14 @@ import type { ApprovalItem, ContractInfo, DailyCheckIn, Equipment, LeaveBalance,
 // Hồ sơ (Demo v2) — dữ liệu hư cấu của An, không dùng thông tin nhân viên thật.
 export const initialDailyCheckIn: DailyCheckIn = { done: false };
 
+// Khớp màn iCheck 27/10/2026: hiện có 2,5 (năm nay 2,5 · năm cũ 0) · phép hỉ 4 · phép hàng năm 11.
 export const leaveBalance: LeaveBalance = {
-  annualTotal: 12,
-  annualUsed: 5,
-  annualRemaining: 7,
-  carriedOver: 2,
+  annualTotal: 11,
+  annualUsed: 8.5,
+  annualRemaining: 2.5,
+  carriedOver: 0,
   sickUsed: 1,
+  weddingLeave: 4,
   insuranceLabel: 'Bảo Việt An Gia — hiệu lực đến 31/12/2026',
   healthCheckLabel: 'Khám sức khoẻ định kỳ: 12/09/2026 (đã đặt lịch)',
 };

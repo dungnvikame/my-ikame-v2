@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useAppState } from '../AppState';
 import { Button, StatusPill } from '../components/UI';
 import { ProfileActivity } from './profile/ProfileActivity';
+import { ProfileDocuments } from './profile/ProfileDocuments';
+import { ProfileHrisCard } from './profile/ProfileHrisCard';
 import { ProfileEquipment, ProfileLeave, ProfilePay, ProfileTimeline } from './profile/ProfileHrSection';
 import { ProfileOrgSection } from './profile/ProfileOrgSection';
 
@@ -15,7 +17,7 @@ export function ProfilePage() {
   const {
     user, theme, setTheme, resetDemo, demoResetCount,
     news, events, checkInReports, posts, leaveBalance, equipment, seniorityEntries,
-    payslips, contractInfo,
+    payslips, contractInfo, hrProfile, documents, sensitive, sensitiveUnlocked,
   } = useAppState();
   const [resetReceipt, setResetReceipt] = useState(false);
 
@@ -40,12 +42,12 @@ export function ProfilePage() {
           <div className="profile-identity-main">
             <div className="profile-identity-name">
               <h1>{user.name}</h1>
-              <StatusPill tone="success">Nhân viên chính thức</StatusPill>
+              <StatusPill tone="success">{hrProfile.employmentType}</StatusPill>
             </div>
             <p className="profile-identity-role">{user.role} · {user.team}</p>
             <div className="profile-contact-chips">
-              <span><EnvelopeSimple size={14} />an.nguyen@ikameglobal.com</span>
-              <span><SlackLogo size={14} />@an.nguyen</span>
+              <span><EnvelopeSimple size={14} />{hrProfile.email}</span>
+              <span><SlackLogo size={14} />{hrProfile.slackHandle}</span>
               <span><Clock size={14} />{user.timezone}</span>
             </div>
           </div>
@@ -72,13 +74,15 @@ export function ProfilePage() {
 
       <div className="profile-grid">
         <div className="profile-main">
+          <ProfileHrisCard profile={hrProfile} sensitive={sensitive} unlocked={sensitiveUnlocked} />
+          <ProfileDocuments documents={documents} />
           <ProfileActivity user={user} news={news} events={events} checkInReports={checkInReports} posts={posts} />
           <ProfileTimeline entries={seniorityEntries} />
         </div>
         <aside className="profile-rail">
           <ProfileOrgSection user={user} />
           <ProfileLeave leaveBalance={leaveBalance} />
-          <ProfilePay payslips={payslips} contractInfo={contractInfo} />
+          <ProfilePay payslips={payslips} contractInfo={contractInfo} unlocked={sensitiveUnlocked} />
           <ProfileEquipment equipment={equipment} />
         </aside>
       </div>

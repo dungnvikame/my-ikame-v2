@@ -9,9 +9,12 @@ import { Button } from './UI';
  * việc trên platform gốc" → nút quay về My iKame + toast xác nhận đồng bộ.
  * Toàn bộ là mô phỏng — bản thật sẽ deep-link kèm SSO token.
  */
-export type PlatformKey = 'iWiki' | 'iGoal' | 'iHRM' | 'iHiring' | 'iRefer';
+export type PlatformKey = 'iWiki' | 'iGoal' | 'iHRM' | 'iHiring' | 'iRefer' | 'iCheck' | 'iFinance' | 'BM Ops';
 
 const PLATFORM_META: Record<PlatformKey, { emoji: string; tagline: string }> = {
+  iCheck: { emoji: '🕗', tagline: 'Chấm công, nghỉ phép & lịch làm việc' },
+  iFinance: { emoji: '💰', tagline: 'Ngân sách, đề nghị thanh toán & dự toán' },
+  'BM Ops': { emoji: '🧭', tagline: 'Quản trị dự án & workload team BM' },
   iWiki: { emoji: '📖', tagline: 'Nền tảng tri thức & biên tập nội dung' },
   iGoal: { emoji: '🎯', tagline: 'Nền tảng quản trị mục tiêu & OKR' },
   iHRM: { emoji: '🧾', tagline: 'Nền tảng nhân sự, lương & phúc lợi' },

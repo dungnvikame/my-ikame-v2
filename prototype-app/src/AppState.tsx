@@ -25,8 +25,11 @@ import {
   seniorityEntries,
   users,
 } from './data/mockData';
+import { buildWeekAttendance } from './data/icheck-data';
+import { hrProfiles, personalDocumentsByPerson, sensitiveByPerson } from './data/profile-data';
 import type {
   ApprovalItem,
+  AttendanceStatus,
   AttentionItem,
   BirthdayPerson,
   CheckInReport,
@@ -35,14 +38,18 @@ import type {
   EventRegistration,
   EventItem,
   Goal,
+  HrProfile,
   KnowledgeDoc,
   NewsPost,
+  PersonalDocument,
+  SensitiveInfo,
   NotificationItem,
   Perspective,
   Post,
   ReactionKind,
   RequestItem,
   User,
+  WeekDayAttendance,
 } from './types';
 
 type Theme = 'light' | 'dark';
@@ -83,11 +90,16 @@ function appendComment(posts: Post[], postId: string, comment: Comment): Post[] 
 }
 
 type NewPostInput = { body: string; cover?: Post['cover']; official?: boolean; kudos?: Post['kudos'] };
+/** Đơn chấm công tạo qua Trợ lý AI / nút nhanh iCheck — vào iRequest, WFH đè lên dải tuần. */
+type AttendanceRequestInput = { kind: 'late' | 'leave' | 'missing' | 'wfh'; title: string; dateLabel?: string };
 
 /** Góc nhìn → user đăng nhập mock. Manager parked ở MVP nhưng mapping giữ để khôi phục 1 dòng. */
 const USER_BY_PERSPECTIVE: Record<Perspective, User> = { ikamer: users.an, manager: users.mai, admin: users.ngoc };
 type SubmitReportInput = Omit<CheckInReport, 'id' | 'submittedAt'>;
 type NewRequestInput = Omit<RequestItem, 'id' | 'createdAtLabel' | 'status'>;
+
+export type AgentMetrics = { tasks: number; totalMs: number; toolCalls: string[] };
+const INITIAL_AGENT_METRICS: AgentMetrics = { tasks: 0, totalMs: 0, toolCalls: [] };
 
 type AppStateValue = {
   perspective: Perspective;
@@ -107,6 +119,8 @@ type AppStateValue = {
   posts: Post[];
   birthdays: BirthdayPerson[];
   dailyCheckIn: DailyCheckIn;
+  /** iCheck mỏng — dải tuần hiện tại (tính từ ngày máy + override WFH). */
+  weekAttendance: WeekDayAttendance[];
   // Demo v2 — Mục tiêu check-in reports.
   checkInReports: CheckInReport[];
   // Demo v2 — ⌘K palette open state.
@@ -115,6 +129,15 @@ type AppStateValue = {
   requests: RequestItem[];
   // Hàng đợi duyệt của manager.
   approvals: ApprovalItem[];
+  // Hồ sơ cá nhân "như thật" — HRIS là nguồn; giấy tờ có hạn; dữ liệu nhạy cảm có gate.
+  hrProfile: HrProfile;
+  documents: PersonalDocument[];
+  sensitive: SensitiveInfo;
+  sensitiveUnlocked: boolean;
+  unlockSensitive: () => void;
+  /** Đo lường agent (tiêu chí hiệu quả): số tác vụ duyệt, tổng ms từ hỏi → receipt, số tool write đã gọi. */
+  agentMetrics: AgentMetrics;
+  recordAgentTask: (entry: { ms: number; tool?: string }) => void;
   // Demo v2 — read-only pass-through fixtures (no mutator; nothing writes to these — YAGNI).
   milestones: typeof initialMilestones;
   topFans: typeof initialTopFans;
@@ -143,6 +166,7 @@ type AppStateValue = {
   toggleSavePost: (postId: string) => void;
   congratulate: (birthdayId: string) => void;
   submitDailyCheckIn: (mode: 'WFO' | 'Remote') => void;
+  addAttendanceRequest: (input: AttendanceRequestInput) => void;
   submitReport: (input: SubmitReportInput) => void;
   addRequest: (input: NewRequestInput) => void;
   addNewsComment: (postId: string, text: string) => void;
@@ -177,10 +201,22 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const [posts, setPosts] = useState(initialPosts);
   const [birthdays, setBirthdays] = useState(initialBirthdays);
   const [dailyCheckIn, setDailyCheckIn] = useState(initialDailyCheckIn);
+  const [attendanceOverrides, setAttendanceOverrides] = useState<Record<string, AttendanceStatus>>({});
+  const weekAttendance = useMemo(() => buildWeekAttendance(new Date(), dailyCheckIn, attendanceOverrides), [dailyCheckIn, attendanceOverrides]);
   const [checkInReports, setCheckInReports] = useState(initialCheckInReports);
   const [searchOpen, setSearchOpen] = useState(false);
   const [requests, setRequests] = useState(initialRequests);
   const [approvals, setApprovals] = useState(initialApprovals);
+  // Gate dữ liệu nhạy cảm mở 5 phút rồi tự khoá (step-up auth mock).
+  const [sensitiveUnlockedUntil, setSensitiveUnlockedUntil] = useState(0);
+  const [, setGateTick] = useState(0);
+  useEffect(() => {
+    if (!sensitiveUnlockedUntil) return;
+    const timer = setTimeout(() => setGateTick((tick) => tick + 1), Math.max(0, sensitiveUnlockedUntil - Date.now()));
+    return () => clearTimeout(timer);
+  }, [sensitiveUnlockedUntil]);
+  const sensitiveUnlocked = sensitiveUnlockedUntil > Date.now();
+  const [agentMetrics, setAgentMetrics] = useState<AgentMetrics>(INITIAL_AGENT_METRICS);
 
   useEffect(() => { writeStored(THEME_STORAGE_KEY, theme); }, [theme]);
   // MVP: tạm không persist perspective để không ghi đè 'manager' đã lưu (xem comment ở khởi tạo).
@@ -204,10 +240,21 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     posts,
     birthdays,
     dailyCheckIn,
+    weekAttendance,
     checkInReports,
     searchOpen,
     requests,
     approvals,
+    // Hồ sơ/giấy tờ/dữ liệu nhạy cảm luôn theo personId của user đang đăng nhập — không rò giữa lăng kính.
+    hrProfile: hrProfiles[user.personId],
+    documents: personalDocumentsByPerson[user.personId] ?? [],
+    sensitive: sensitiveByPerson[user.personId],
+    sensitiveUnlocked,
+    unlockSensitive: () => setSensitiveUnlockedUntil(Date.now() + 5 * 60_000),
+    agentMetrics,
+    recordAgentTask: ({ ms, tool }) => {
+      setAgentMetrics((prev) => ({ tasks: prev.tasks + 1, totalMs: prev.totalMs + ms, toolCalls: tool ? [...prev.toolCalls, tool] : prev.toolCalls }));
+    },
     milestones: initialMilestones,
     topFans: initialTopFans,
     leaveBalance,
@@ -218,7 +265,8 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     okrTree,
     eks: eksObjectives,
     memberEksStats,
-    setPerspective,
+    // Đổi lăng kính = đổi người đăng nhập → khoá lại dữ liệu nhạy cảm đã mở.
+    setPerspective: (next) => { setPerspective(next); setSensitiveUnlockedUntil(0); },
     setTheme,
     setNotificationOpen,
     setAskOpen,
@@ -332,7 +380,32 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       }
     },
     submitDailyCheckIn: (mode) => {
-      setDailyCheckIn({ done: true, mode, timeLabel: nowTimeLabel() });
+      // Prototype: giờ vào cố định 08:06 "Đúng giờ" (khớp màn iCheck 27/10) để demo buổi chiều
+      // không ra "Muộn". Bản thật: iCheck trả giờ thực + trạng thái theo rule công ty.
+      setDailyCheckIn({ done: true, mode, timeLabel: '08:06', status: mode === 'Remote' ? 'wfh' : 'on_time' });
+    },
+    addAttendanceRequest: ({ kind, title, dateLabel }) => {
+      const typeByKind: Record<AttendanceRequestInput['kind'], RequestItem['type']> = { late: 'Chấm công', leave: 'Nhân sự', missing: 'Chấm công', wfh: 'Chấm công' };
+      setRequests((items) => [{
+        id: generateId('att'),
+        type: typeByKind[kind],
+        title,
+        status: 'pending',
+        createdAtLabel: `Hôm nay · ${nowTimeLabel()}`,
+        slaLabel: kind === 'leave' ? 'Quản lý duyệt trong 1 ngày' : 'iCheck ghi nhận sau khi quản lý duyệt',
+        handlerLabel: 'Trần Thanh Mai',
+      }, ...items]);
+      // WFH / quên chấm công phản ánh ngay lên dải tuần; nếu là hôm nay thì banner + digest cũng đổi theo.
+      if (dateLabel && (kind === 'wfh' || kind === 'missing')) {
+        setAttendanceOverrides((prev) => ({ ...prev, [dateLabel]: kind === 'wfh' ? 'wfh' : 'on_time' }));
+        const today = new Date();
+        const todayLabel = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}`;
+        if (dateLabel === todayLabel) {
+          setDailyCheckIn((prev) => kind === 'wfh'
+            ? { done: true, mode: 'Remote', timeLabel: prev.timeLabel ?? '08:06', status: 'wfh' }
+            : { ...prev, done: true, status: 'on_time', timeLabel: prev.timeLabel ?? '08:06' });
+        }
+      }
     },
     submitReport: (input) => {
       setCheckInReports((items) => [{ ...input, id: generateId('report'), submittedAt: 'Vừa xong' }, ...items]);
@@ -422,14 +495,17 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       setPosts(initialPosts);
       setBirthdays(initialBirthdays);
       setDailyCheckIn(initialDailyCheckIn);
+      setAttendanceOverrides({});
       setCheckInReports(initialCheckInReports);
       setSearchOpen(false);
       setRequests(initialRequests);
       setApprovals(initialApprovals);
+      setSensitiveUnlockedUntil(0);
+      setAgentMetrics(INITIAL_AGENT_METRICS);
       setDemoResetCount((count) => count + 1);
     },
-  }), [approvals, askOpen, attention, birthdays, checkInReports, dailyCheckIn, demoResetCount, events, goals, news,
-    notificationOpen, notifications, perspective, posts, requests, searchOpen, theme, user]);
+  }), [agentMetrics, approvals, askOpen, attention, birthdays, checkInReports, dailyCheckIn, demoResetCount, events, goals, news,
+    notificationOpen, notifications, perspective, posts, requests, searchOpen, sensitiveUnlocked, theme, user, weekAttendance]);
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;
 }

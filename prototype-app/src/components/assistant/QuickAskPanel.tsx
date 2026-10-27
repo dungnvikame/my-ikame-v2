@@ -8,6 +8,7 @@ import {
   AssistantSteps, capabilitiesFor, generateMessageId, generateReceiptId,
 } from '../../pages/assistant/assistant-shared';
 import { Button, IconButton } from '../UI';
+import { documentReminders } from '../../data/profile-data';
 
 const ASK_TRIGGER_SELECTOR = 'button[aria-label="Hỏi iKame"]';
 
@@ -20,8 +21,8 @@ const ASK_TRIGGER_SELECTOR = 'button[aria-label="Hỏi iKame"]';
 export function QuickAskPanel() {
   const {
     askOpen, setAskOpen, demoResetCount, perspective, user,
-    news, events, goals, knowledgeDocs, leaveBalance, attention, memberEksStats, approvals,
-    acknowledgeNews,
+    news, events, goals, knowledgeDocs, leaveBalance, attention, memberEksStats, approvals, dailyCheckIn, documents,
+    acknowledgeNews, addAttendanceRequest, recordAgentTask,
   } = useAppState();
   const navigate = useNavigate();
   const panelRef = useRef<HTMLElement>(null);
@@ -69,11 +70,11 @@ export function QuickAskPanel() {
   function ask(question: string) {
     const trimmed = question.trim();
     if (!trimmed || busy) return;
-    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance, perspective, attention, memberEksStats, approvals };
+    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance, perspective, attention, memberEksStats, approvals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents) };
     setMessages((prev) => [
       ...prev,
       { id: generateMessageId(), role: 'user' as const, text: trimmed },
-      { id: generateMessageId(), ...buildAgentReply(trimmed, ctx), question: trimmed, processing: true, revealedSteps: 0 },
+      { id: generateMessageId(), ...buildAgentReply(trimmed, ctx), question: trimmed, processing: true, revealedSteps: 0, askedAt: Date.now() },
     ]);
   }
 
@@ -89,6 +90,9 @@ export function QuickAskPanel() {
     setMessages((prev) => prev.map((message) => (message.id === messageId ? { ...message, actionRunning: true } : message)));
     setTimeout(() => {
       if (action.kind === 'ack-news') acknowledgeNews(action.targetId);
+      // Đơn chấm công duyệt ngay trong panel nhanh — cùng đường đi MCP iCheck như trang đầy đủ.
+      if (action.kind === 'confirm' && action.commit === 'attendance' && action.attendance) addAttendanceRequest(action.attendance);
+      recordAgentTask({ ms: Date.now() - (target?.askedAt ?? Date.now()), tool: action.tool });
       const receiptId = generateReceiptId();
       setMessages((prev) => prev.map((message) => (
         message.id === messageId ? { ...message, actionRunning: false, actionDone: true, receiptId } : message

@@ -2,6 +2,7 @@ import {
   AirplaneTilt, BellRinging, CalendarPlus, CheckCircle, CircleNotch, ClipboardText,
   ListChecks, NotePencil, Sparkle, Target, UsersThree, Wrench,
 } from '@phosphor-icons/react';
+import { MCP_SERVERS } from '../../lib/mcp-registry';
 import type { Perspective } from '../../types';
 import type { ThreadMessage } from './assistant-history';
 
@@ -28,8 +29,8 @@ export function generateMessageId() {
 
 export type Capability = { icon: typeof Sparkle; title: string; prompt: string };
 
-/** Hệ thống nguồn Trợ lý AI đọc/ghi qua MCP framework dùng chung của iKame. */
-export const CONNECTORS = ['iGoal', 'iWiki', 'HRIS', 'Asana', 'Google Calendar'];
+/** Hệ thống nguồn Trợ lý AI đọc/ghi qua MCP framework dùng chung của iKame — từ registry. */
+export const CONNECTORS = MCP_SERVERS.map((server) => ({ name: server.name, status: server.status, tools: server.tools.length }));
 
 export const IKAMER_CAPABILITIES: Capability[] = [
   { icon: ListChecks, title: 'Việc hôm nay', prompt: 'Hôm nay tôi cần làm gì?' },

@@ -3,7 +3,8 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PlatformHandoffButton } from '../components/PlatformHandoff';
 import { EmptyState, SectionHeader } from '../components/UI';
-import { APP_CATEGORIES, filterApps, internalApps, type AppCategory, type InternalApp } from '../data/apps-data';
+import { useAppState } from '../AppState';
+import { APP_CATEGORIES, filterApps, visibleApps, type AppCategory, type InternalApp } from '../data/apps-data';
 
 function AppCard({ app }: { app: InternalApp }) {
   return (
@@ -30,10 +31,13 @@ function AppCard({ app }: { app: InternalApp }) {
 
 /** Danh bạ ứng dụng nội bộ (MVP): một cửa vào mọi công cụ của iKame. */
 export function AppsPage() {
+  const { user } = useAppState();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<AppCategory | 'all'>('all');
 
-  const filtered = useMemo(() => filterApps(internalApps, query, category), [query, category]);
+  // Chỉ app user có quyền (role HRIS) — app không có quyền không hiện cả tên (spec D8).
+  const allowed = useMemo(() => visibleApps(user), [user]);
+  const filtered = useMemo(() => filterApps(allowed, query, category), [allowed, query, category]);
   const resetFilters = () => { setQuery(''); setCategory('all'); };
 
   return (
@@ -58,10 +62,13 @@ export function AppsPage() {
 
       {filtered.length > 0 ? (
         <section>
-          <SectionHeader title="Ứng dụng nội bộ" meta={`${filtered.length} ứng dụng`} />
+          <SectionHeader title="Ứng dụng của bạn" meta={`${filtered.length} ứng dụng · theo vai trò ${user.role}`} />
           <div className="app-grid">
             {filtered.map((app) => <AppCard key={app.id} app={app} />)}
           </div>
+          <p className="app-access-note">
+            Thiếu công cụ bạn cần cho công việc? <Link className="text-link" to={`/assistant?q=${encodeURIComponent('Tạo request IT support: xin cấp quyền truy cập công cụ nội bộ')}`}>Gửi yêu cầu cấp quyền qua iRequest<ArrowRight size={14} /></Link>
+          </p>
         </section>
       ) : (
         <div className="empty-state">

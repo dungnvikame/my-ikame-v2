@@ -13,6 +13,8 @@ export type ThreadMessage = AgentMessage & {
   /** Staged reveal cho demo: tick từng AI step trước rồi mới lộ câu trả lời. */
   processing?: boolean;
   revealedSteps?: number;
+  /** Thời điểm người dùng hỏi — đo "hỏi → receipt" cho thẻ Đo lường (không lưu lịch sử). */
+  askedAt?: number;
 };
 
 export type StoredSession = {
@@ -50,7 +52,7 @@ export function clearSessions(): void {
 
 /** Bỏ cờ transient để phiên mở lại luôn render ở trạng thái đã hoàn tất. */
 export function sanitizeForStorage(messages: ThreadMessage[]): ThreadMessage[] {
-  return messages.map(({ processing: _p, actionRunning: _r, revealedSteps: _s, ...rest }) => rest);
+  return messages.map(({ processing: _p, actionRunning: _r, revealedSteps: _s, askedAt: _a, ...rest }) => rest);
 }
 
 export function sessionTimeLabel(savedAt: number): string {

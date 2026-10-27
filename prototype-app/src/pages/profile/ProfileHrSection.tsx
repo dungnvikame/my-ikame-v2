@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Eye, EyeSlash, Laptop } from '@phosphor-icons/react';
+import { Eye, Laptop } from '@phosphor-icons/react';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
-import { IconButton, SectionHeader, StatusPill } from '../../components/UI';
+import { SectionHeader, StatusPill } from '../../components/UI';
 import type { ContractInfo, Equipment, LeaveBalance, Payslip, SeniorityEntry } from '../../types';
+import { SensitiveGate } from './SensitiveGate';
 
 /**
  * 3 fixture-driven cards của Hồ sơ, tách export riêng để bố cục 2 cột xếp tự do:
@@ -53,9 +53,9 @@ export function ProfileLeave({ leaveBalance }: { leaveBalance: LeaveBalance }) {
   );
 }
 
-/** Phiếu lương & hợp đồng — xem nhanh tại My iKame, chi tiết đầy đủ handoff sang iHRM. */
-export function ProfilePay({ payslips, contractInfo }: { payslips: Payslip[]; contractInfo: ContractInfo }) {
-  const [revealed, setRevealed] = useState(false);
+/** Phiếu lương & hợp đồng — số tiền chỉ hiện sau khi xác thực lại (SensitiveGate), chi tiết handoff iHRM. */
+export function ProfilePay({ payslips, contractInfo, unlocked }: { payslips: Payslip[]; contractInfo: ContractInfo; unlocked: boolean }) {
+  const revealed = unlocked;
   return (
     <section className="side-info profile-section">
       <SectionHeader title="Lương & hợp đồng" />
@@ -78,9 +78,7 @@ export function ProfilePay({ payslips, contractInfo }: { payslips: Payslip[]; co
         ))}
       </ul>
       <div className="profile-payslip-actions">
-        <IconButton label={revealed ? 'Ẩn số tiền' : 'Hiện số tiền'} onClick={() => setRevealed((current) => !current)}>
-          {revealed ? <EyeSlash size={18} /> : <Eye size={18} />}
-        </IconButton>
+        {revealed ? <span className="profile-unlocked-note"><Eye size={16} /> Đã xác thực · tự khoá sau 5 phút</span> : <SensitiveGate label="Xác thực để xem số tiền" />}
         <PlatformHandoffButton platform="iHRM" action="xem phiếu lương chi tiết và hợp đồng" label="Xem chi tiết trên iHRM" />
       </div>
     </section>

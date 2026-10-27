@@ -28,6 +28,7 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ defa
 const RequestsPage = lazy(() => import('./pages/RequestsPage').then((m) => ({ default: m.RequestsPage })));
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })));
 const TeamPage = lazy(() => import('./pages/TeamPage').then((m) => ({ default: m.TeamPage })));
+const WorkPage = lazy(() => import('./pages/WorkPage').then((m) => ({ default: m.WorkPage })));
 
 /** Điều hướng tiến (PUSH) cuộn về đầu trang; Back/Forward (POP) giữ nguyên vị trí (state preservation). */
 function ScrollToTop() {
@@ -65,6 +66,7 @@ function AppRoutes() {
         {/* Accessible in both perspectives — no PerspectiveGuard by design. */}
         <Route path="/assistant" element={<AssistantPage />} />
         <Route path="/apps" element={<AppsPage />} />
+        <Route path="/work" element={<WorkPage />} />
         <Route path="/admin" element={<PerspectiveGuard expected="admin"><AdminPage /></PerspectiveGuard>} />
         <Route path="/requests" element={<RequestsPage />} />
         <Route path="/feed" element={<FeedPage />} />

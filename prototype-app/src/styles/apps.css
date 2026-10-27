@@ -71,6 +71,12 @@
   border-radius: 999px;
 }
 
+.app-access-note {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
 /* ===== Topbar launcher ===== */
 .app-launcher-wrap {
   position: relative;

@@ -1,4 +1,5 @@
 import type { PlatformKey } from '../components/PlatformHandoff';
+import type { User } from '../types';
 
 /**
  * Danh bạ ứng dụng nội bộ iKame (MVP /apps + topbar launcher).
@@ -7,6 +8,9 @@ import type { PlatformKey } from '../components/PlatformHandoff';
  */
 export type AppCategory = 'Công việc' | 'Nhân sự' | 'Tri thức';
 
+/** Quyền truy cập app lấy từ role HRIS/SSO — không có quyền thì không thấy cả tên app (spec D8). */
+export type AppAccess = { roles?: User['roleKey'][] };
+
 export type InternalApp = {
   id: string;
   name: string;
@@ -14,6 +18,8 @@ export type InternalApp = {
   tagline: string;
   description: string;
   category: AppCategory;
+  /** undefined = mọi iKamer. */
+  access?: AppAccess;
 } & (
   | { kind: 'external'; platform: PlatformKey; action: string }
   | { kind: 'internal'; href: string }
@@ -22,6 +28,16 @@ export type InternalApp = {
 export const APP_CATEGORIES: AppCategory[] = ['Công việc', 'Nhân sự', 'Tri thức'];
 
 export const internalApps: InternalApp[] = [
+  {
+    id: 'icheck',
+    name: 'iCheck',
+    emoji: '🕗',
+    tagline: 'Chấm công & nghỉ phép',
+    description: 'Chấm công, xin nghỉ/WFH, theo dõi ngày phép — phần dùng hằng ngày nằm ngay trong tab Công việc.',
+    category: 'Nhân sự',
+    kind: 'internal',
+    href: '/work',
+  },
   {
     id: 'igoal',
     name: 'iGoal',
@@ -72,9 +88,34 @@ export const internalApps: InternalApp[] = [
     tagline: 'Tuyển dụng',
     description: 'Theo dõi vị trí đang mở, lịch phỏng vấn và đánh giá ứng viên cho hiring team.',
     category: 'Nhân sự',
+    access: { roles: ['manager', 'com_admin'] },
     kind: 'external',
     platform: 'iHiring',
     action: 'xem pipeline tuyển dụng',
+  },
+  {
+    id: 'bm-ops',
+    name: 'BM Ops',
+    emoji: '🧭',
+    tagline: 'Quản trị dự án BM',
+    description: 'Milestone, nhịp vận hành và workload các dự án Business Management — dành cho PM/Manager.',
+    category: 'Công việc',
+    access: { roles: ['manager'] },
+    kind: 'external',
+    platform: 'BM Ops',
+    action: 'xem timeline dự án BM',
+  },
+  {
+    id: 'ifinance',
+    name: 'iFinance',
+    emoji: '💰',
+    tagline: 'Ngân sách & thanh toán',
+    description: 'Đề nghị thanh toán, dự toán và theo dõi ngân sách — dành cho team Finance.',
+    category: 'Công việc',
+    access: { roles: ['finance', 'manager'] },
+    kind: 'external',
+    platform: 'iFinance',
+    action: 'xem đề nghị thanh toán',
   },
   {
     id: 'irefer',
@@ -88,6 +129,11 @@ export const internalApps: InternalApp[] = [
     action: 'gửi referral mới',
   },
 ];
+
+/** App user được dùng theo role HRIS — mọi bề mặt (trang Ứng dụng, launcher, lối tắt Home) dùng chung. */
+export function visibleApps(user: User, apps: InternalApp[] = internalApps): InternalApp[] {
+  return apps.filter((app) => !app.access?.roles || app.access.roles.includes(user.roleKey));
+}
 
 /** Lọc theo từ khóa (tên/tagline/mô tả, không phân biệt hoa thường) + category. */
 export function filterApps(apps: InternalApp[], query: string, category: AppCategory | 'all'): InternalApp[] {

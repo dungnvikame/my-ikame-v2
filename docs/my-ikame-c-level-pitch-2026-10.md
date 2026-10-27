@@ -56,15 +56,16 @@ Chuẩn bị: F4 reset demo, giao diện sáng, cửa sổ 1280px, tab thứ 2 �
 
 | # | Màn | Thao tác | Câu nói chốt |
 |---|---|---|---|
-| 1 | `/home` | Chào buổi sáng + "3 việc cần chú ý"; chỉ banner đỏ *Cần xác nhận — chính sách bảo mật* | "Home ưu tiên **việc cần làm** trước nội dung mới." |
-| 2 | `/feed` | Carousel bài ghim của COM (khác hẳn bài thường) → tab **Thông báo** → mở bài chính sách → bấm *Xác nhận đã đọc* → badge thông báo giảm | "Thông báo chính thống có xác nhận và audit — Facebook không làm được." |
-| 3 | `/feed` tab Toàn công ty | Cuộn feed trộn bài COM + bài đồng nghiệp; đăng 1 bài; reaction/comment; rail sinh nhật *Chúc* | "Vẫn giữ sự ấm của Facebook — nhưng là của iKame." |
-| 4 | `/events` | Hero sự kiện + countdown, timeline 6 tháng đã/đang/sắp, RSVP → *Thêm vào lịch* (.ics) | "Đã – đang – sắp diễn ra, đăng ký trong 1 chạm." |
-| 5 | Topbar launcher ▦ → `/apps` | Grid 6 app; mở **iGoal** → màn SSO → "đang làm việc trên iGoal" → quay về | "Một cửa vào, SSO chung, không lặp lại màn hình của tool khác." |
-| 6 | `/assistant` | Hỏi *"Tôi có việc gì cần xác nhận?"* → trả lời kèm link bài; gợi ý *"Đặt phòng họp 14:00"* | "Đây là chỗ agent của iKame gặp con người — sau này nối MCP iGoal/iWiki/HRIS." |
-| 7 | Tab mobile | Lướt Feed + bottom nav 5 mục | "Dùng được trên điện thoại ngay, không cần app store." |
+| 1 | `/home` (iKamer) | Chào + **widget iCheck** (bấm *Chấm công ngay* → 08:06 Đúng giờ) + **Việc hôm nay** gom từ iCheck/COM/HRIS/iGoal/Asana/Lịch; banner đỏ *Cần xác nhận* | "Home trả lời đúng một câu: hôm nay tôi cần làm gì — không phải lướt tin." |
+| 2 | `/feed` | Carousel bài ghim COM → tab **Thông báo** → mở bài chính sách → *Xác nhận đã đọc* → badge giảm; đăng **Kudos**; thử đăng bài có "mật khẩu" → bộ lọc trả về kèm lý do | "Thông báo chính thống có xác nhận + audit, cộng đồng có kudos, nội dung có bộ lọc — Facebook không có cả ba." |
+| 3 | Switch **COM Admin** → `/admin` | Tỷ lệ xác nhận tăng, tên An biến khỏi *chưa xác nhận*; *Nhắc 5 người*, *Gửi push*, *Ghim* | "Vòng lặp đăng → push → xác nhận → đo. Đây là cách đo WAU và acknowledge rate." |
+| 4 | `/events` | Timeline đã/đang/sắp, RSVP → *Thêm vào lịch*; mở **Town Hall Q2** → album + khảo sát 1 phút | "Đã – đang – sắp diễn ra; sau sự kiện có ảnh và có phản hồi." |
+| 5 | `/work` → `/profile` | Tab Công việc: tuần chấm công, phép 2,5, đề xuất; Hồ sơ: dữ liệu HRIS, giấy tờ *sắp hết hạn* đỏ, **Xác thực để xem** lương | "HRIS/iCheck là nguồn sự thật — My iKame hiển thị, nhắc việc, không nhân bản nghiệp vụ." |
+| 6 | `/assistant` | Dòng *Đang kết nối qua MCP* (7 hệ thống); hỏi **"Hôm nay tôi làm việc từ xa"** → form điền sẵn → duyệt → receipt `via MCP · icheck.create_wfh_request`; tab Công việc đổi thành WFH; thẻ **Đo lường** tăng | "Agent đề xuất – người duyệt – MCP thực thi – có audit. My iKame là client của framework MCP chung, không tự xây AI." |
+| 7 | Switch **Manager** → `/manager/overview` | Attention queue, đơn chờ duyệt, widget iCheck của chính Mai; `/apps` của Mai có thêm BM Ops/iHiring/iFinance | "Một shell, ba lăng kính — cùng lõi, khác Home/nav/quyền/intent AI." |
+| 8 | Tab mobile | Lướt Home + bottom nav 5 mục | "Dùng được trên điện thoại ngay, không cần app store." |
 
-Kết demo bằng 1 slide: *3 lớp – 1 trợ lý – 1 SSO*.
+Kết demo bằng 1 slide: *một shell – ba lăng kính – một trợ lý – một MCP*.
 
 ---
 

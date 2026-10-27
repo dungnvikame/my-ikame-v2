@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle, ClipboardText, UsersThree, WarningCircle, XCir
 import { Link, useNavigate } from 'react-router-dom';
 import { teamMembers } from '../data/mockData';
 import { AttentionCard } from '../components/ContentCards';
+import { ICheckWidget } from '../components/icheck/ICheckWidget';
 import { Button, EmptyState, SectionHeader, StatusPill } from '../components/UI';
 import { useAppState } from '../AppState';
 import { rankCards } from '../lib/ranking';
@@ -149,6 +150,9 @@ export function ManagerPage() {
           <div><strong>{moments.length}</strong><span>Khoảnh khắc cần đồng hành</span></div>
         </Link>
       </div>
+
+      {/* Manager cũng là iKamer: chấm công/phép của chính mình nằm ngay trên Tổng quan. */}
+      <div className="section-block"><ICheckWidget compact /></div>
 
       <ManagerAiBrief items={rankedAttention} />
 

@@ -1,8 +1,11 @@
-import { ArrowRight, ChatsCircle, CheckCircle, Clock, Newspaper, ShieldWarning, SquaresFour, Users } from '@phosphor-icons/react';
+import { ArrowRight, ChatsCircle, CheckCircle, Clock, ShieldWarning, SquaresFour, Users } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { AIAssistant } from '../components/AIAssistant';
 import { NewsCard } from '../components/ContentCards';
+import { ICheckWidget } from '../components/icheck/ICheckWidget';
+import { buildDailyDigestItems } from './assistant/daily-digest';
+import { documentReminders } from '../data/profile-data';
 import { EventCardV2 } from './events/EventCardV2';
 import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
 import { isEligible } from '../lib/audience';
@@ -69,13 +72,8 @@ function eventsFrom(cards: HomeCard[]): EventItem[] {
   return cards.flatMap((card) => (card.kind === 'event' ? [card.event] : []));
 }
 
-function eventStatusLabel(event: EventItem): string {
-  const registration = event.myRegistration === 'waitlisted' ? 'Bạn đang chờ danh sách' : 'Bạn đã đăng ký';
-  return `${registration} · ${event.dateLabel}`;
-}
-
 export function HomePage() {
-  const { user, news, events, posts } = useAppState();
+  const { user, news, events, goals, posts, dailyCheckIn, documents } = useAppState();
   const now = new Date();
 
   const eligibleNews = news.filter((post) => !post.expired && isEligible(user, post.audienceTeamIds));
@@ -85,13 +83,9 @@ export function HomePage() {
   const heroCard = rankHomeCards(heroCandidates, now)[0];
   const hero = heroCard?.kind === 'news' ? heroCard.post : undefined;
 
-  const registeredEvents = eligibleEvents.filter((event) => event.myRegistration === 'going' || event.myRegistration === 'waitlisted');
-  const targetedUnreadNews = eligibleNews.filter((post) => post.id !== hero?.id && ((post.mandatory && !post.acknowledged) || (!!post.audienceTeamIds?.length && !post.read)));
-  const activeCandidates = [
-    ...registeredEvents.map((event): HomeCard => ({ kind: 'event', event })),
-    ...targetedUnreadNews.map((post): HomeCard => ({ kind: 'news', post })),
-  ];
-  const activeItems = rankHomeCards(activeCandidates, now).slice(0, 3);
+  // "Việc hôm nay" — cùng nguồn với Trợ lý AI (Daily Work Hub), tối đa 5 mục trên Home.
+  const digest = buildDailyDigestItems({ news: eligibleNews, events: eligibleEvents, goals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents) }).slice(0, 5);
+  const urgentCount = digest.filter((item) => item.urgent).length;
 
   const newsPreviewCandidates = eligibleNews.filter((post) => post.id !== hero?.id).map((post): HomeCard => ({ kind: 'news', post }));
   const newsPreview = newsFrom(rankHomeCards(newsPreviewCandidates, now)).slice(0, 4);
@@ -99,11 +93,9 @@ export function HomePage() {
   const upcomingCandidates = eligibleEvents.map((event): HomeCard => ({ kind: 'event', event }));
   const upcomingEvents = eventsFrom(rankHomeCards(upcomingCandidates, now)).slice(0, 2);
 
-  const activeTotal = registeredEvents.length + targetedUnreadNews.length;
-
-  const statusLine = activeTotal > 0
-    ? `Bạn có ${activeTotal} việc cần chú ý và ${eligibleEvents.length} sự kiện sắp diễn ra.`
-    : `Bạn đã xử lý hết việc cần chú ý, còn ${eligibleEvents.length} sự kiện sắp diễn ra.`;
+  const statusLine = urgentCount > 0
+    ? `Bạn có ${urgentCount} việc khẩn hôm nay và ${eligibleEvents.length} sự kiện sắp diễn ra.`
+    : `Hôm nay không có việc khẩn, còn ${eligibleEvents.length} sự kiện sắp diễn ra.`;
 
   return (
     <div className="page overview-page">
@@ -125,27 +117,25 @@ export function HomePage() {
 
       <div className="home-grid">
         <section className="home-main">
-          <SectionHeader title="Việc của tôi" meta="Ưu tiên theo thời hạn và mức độ liên quan" />
-          <div className="active-items">
-            {activeItems.length === 0 ? (
-              <div className="active-item">
-                <span className="active-item-icon"><CheckCircle size={20} /></span>
-                <div><strong>Bạn đã xử lý hết việc cần chú ý</strong><span>My iKame sẽ đưa việc mới lên đây khi cần.</span></div>
-              </div>
-            ) : activeItems.map((card) => card.kind === 'event' ? (
-              <article key={`event-${card.event.id}`} className="active-item">
-                <span className="active-item-icon active-item-icon--time"><Clock size={20} /></span>
-                <div><strong>{card.event.title}</strong><span>{eventStatusLabel(card.event)}</span></div>
-                <Link className="text-link" to={`/events/${card.event.id}`}>Xem sự kiện<ArrowRight size={16} /></Link>
-              </article>
-            ) : (
-              <article key={`news-${card.post.id}`} className="active-item">
-                <span className="active-item-icon"><Newspaper size={20} /></span>
-                <div><strong>{card.post.title}</strong><span>{card.post.publisher} · {card.post.readingTime}</span></div>
-                <Link className="text-link" to={`/feed/article/${card.post.id}`}>Đọc bài<ArrowRight size={16} /></Link>
-              </article>
-            ))}
-          </div>
+          <ICheckWidget compact />
+
+          <section className="section-block">
+            <SectionHeader title="Việc hôm nay" meta="Gom từ iCheck, COM, iGoal, Asana và lịch của bạn" href="/assistant?q=Hôm nay tôi cần làm gì?" actionLabel="Hỏi Trợ lý AI" />
+            <div className="active-items">
+              {digest.length === 0 ? (
+                <div className="active-item">
+                  <span className="active-item-icon"><CheckCircle size={20} /></span>
+                  <div><strong>Bạn đã xử lý hết việc hôm nay</strong><span>My iKame sẽ đưa việc mới lên đây khi cần.</span></div>
+                </div>
+              ) : digest.map((item) => (
+                <article key={item.id} className={`active-item ${item.urgent ? 'is-urgent' : ''}`}>
+                  <span className={`active-item-icon ${item.urgent ? '' : 'active-item-icon--time'}`}>{item.urgent ? <ShieldWarning size={20} /> : <Clock size={20} />}</span>
+                  <div><strong>{item.label}</strong><span>{item.meta} · {item.source}</span></div>
+                  <Link className="text-link" to={item.to}>Xử lý<ArrowRight size={16} /></Link>
+                </article>
+              ))}
+            </div>
+          </section>
 
           <section className="section-block">
             <SectionHeader title="Tin dành cho bạn" meta="Chính thức và phù hợp với vai trò của bạn" href="/feed" />

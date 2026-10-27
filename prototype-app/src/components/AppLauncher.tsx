@@ -1,7 +1,8 @@
 import { ArrowRight, SquaresFour } from '@phosphor-icons/react';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { internalApps } from '../data/apps-data';
+import { useAppState } from '../AppState';
+import { visibleApps } from '../data/apps-data';
 import { IconButton } from './UI';
 
 /**
@@ -11,6 +12,8 @@ import { IconButton } from './UI';
  * arrow-key navigation); mở → focus vào item đầu, Escape đóng + focus trả về trigger.
  */
 export function AppLauncher() {
+  const { user } = useAppState();
+  const apps = visibleApps(user);
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -65,7 +68,7 @@ export function AppLauncher() {
       {open && (
         <div ref={panelRef} id="app-launcher-panel" className="app-launcher-panel" aria-label="Ứng dụng nội bộ">
           <div className="app-launcher-grid">
-            {internalApps.map((app) => (
+            {apps.map((app) => (
               <button
                 key={app.id}
                 type="button"

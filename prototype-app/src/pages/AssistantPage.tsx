@@ -12,6 +12,8 @@ import {
 } from './assistant/assistant-history';
 import { AssistantSteps, capabilitiesFor, CONNECTORS, generateMessageId, generateReceiptId, stepsOf } from './assistant/assistant-shared';
 import { AssistantWorkspace, type OkrReportPayload } from './assistant/AssistantWorkspace';
+import { documentReminders } from '../data/profile-data';
+import { AgentMetricsCard } from '../components/assistant/AgentMetricsCard';
 
 /** Danh sách phiên cũ — dùng chung cho popover lịch sử và mục "Gần đây" ở màn chào. */
 function HistoryList({ sessions, onResume, onDelete }: {
@@ -38,8 +40,8 @@ function HistoryList({ sessions, onResume, onDelete }: {
 export function AssistantPage() {
   const {
     user, news, events, goals, knowledgeDocs, leaveBalance, demoResetCount,
-    perspective, attention, memberEksStats, approvals,
-    acknowledgeNews, submitReport, addRequest,
+    perspective, attention, memberEksStats, approvals, dailyCheckIn, documents,
+    acknowledgeNews, submitReport, addRequest, addAttendanceRequest, recordAgentTask,
   } = useAppState();
   const capabilities = capabilitiesFor(perspective);
   const chips = capabilities.map((capability) => capability.prompt);
@@ -175,11 +177,11 @@ export function AssistantPage() {
     const trimmed = question.trim();
     if (!trimmed || busy) return;
     if (!activeSessionId) setActiveSessionId(`s-${Date.now().toString(36)}`);
-    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance, perspective, attention, memberEksStats, approvals };
+    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance, perspective, attention, memberEksStats, approvals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents) };
     setMessages((prev) => [
       ...prev,
       { id: generateMessageId(), role: 'user', text: trimmed },
-      { id: generateMessageId(), ...buildAgentReply(trimmed, ctx), processing: true, revealedSteps: 0 },
+      { id: generateMessageId(), ...buildAgentReply(trimmed, ctx), processing: true, revealedSteps: 0, askedAt: Date.now() },
     ]);
   }
 
@@ -217,6 +219,11 @@ export function AssistantPage() {
       if (action.kind === 'confirm' && action.commit === 'request' && action.request) {
         addRequest(action.request);
       }
+      // Đơn chấm công qua MCP iCheck — vào iRequest + dải tuần ở tab Công việc.
+      if (action.kind === 'confirm' && action.commit === 'attendance' && action.attendance) {
+        addAttendanceRequest(action.attendance);
+      }
+      recordAgentTask({ ms: Date.now() - (target?.askedAt ?? Date.now()), tool: action.tool });
       const receiptId = generateReceiptId();
       setMessages((prev) => prev.map((message) => (
         message.id === messageId ? { ...message, actionRunning: false, actionDone: true, receiptId } : message
@@ -261,8 +268,13 @@ export function AssistantPage() {
           <p>Hỏi đáp và nhờ Agent xử lý nghiệp vụ tại iKame — bạn duyệt, Agent thực thi.</p>
           <div className="assistant-connectors" aria-label="Nguồn đang kết nối">
             <span>Đang kết nối qua MCP:</span>
-            {CONNECTORS.map((name) => <span key={name} className="assistant-connector">{name}</span>)}
+            {CONNECTORS.map((connector) => (
+              <span key={connector.name} className={`assistant-connector is-${connector.status}`} title={`${connector.tools} tool · ${connector.status === 'connected' ? 'hoạt động' : connector.status === 'degraded' ? 'chậm' : 'mất kết nối'}`}>
+                {connector.name}
+              </span>
+            ))}
           </div>
+          <AgentMetricsCard />
           <form className="assistant-input assistant-input--hero" onSubmit={handleSubmit}>
             <Sparkle size={20} weight="fill" className="assistant-input-spark" />
             <input
@@ -347,10 +359,18 @@ export function AssistantPage() {
                         </div>
                       )}
                       {message.action && !message.workspace && message.actionDone && (
-                        <p className="assistant-receipt"><CheckCircle size={16} weight="fill" />{message.action.receipt} <span>#RCPT-{message.receiptId}</span></p>
+                        <p className="assistant-receipt">
+                          <CheckCircle size={16} weight="fill" />{message.action.receipt} <span>#RCPT-{message.receiptId}</span>
+                          {message.action.tool && <span className="assistant-receipt-tool">via MCP · {message.action.tool}</span>}
+                        </p>
                       )}
                       {message.action && message.workspace && message.actionDone && (
                         <p className="assistant-receipt"><CheckCircle size={16} weight="fill" />{message.action.receipt}</p>
+                      )}
+                      {!!message.toolCalls?.length && (
+                        <p className="assistant-toolcalls" aria-label="Tool MCP đã gọi">
+                          {message.toolCalls.map((tool) => <code key={tool}>{tool}</code>)}
+                        </p>
                       )}
                     </>
                   )}

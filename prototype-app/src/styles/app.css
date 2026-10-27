@@ -188,6 +188,16 @@ p {
   background: var(--bg-tertiary);
 }
 
+.perspective-switch--3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.perspective-switch--3 button {
+  padding: 0 2px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
 .perspective-switch button {
   height: 30px;
   border: 0;

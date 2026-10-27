@@ -230,7 +230,10 @@ export function AssistantWorkspace({ workspace, action, actionDone, actionRunnin
             </div>
           )}
           {action && actionDone && (
-            <p className="assistant-receipt"><CheckCircle size={16} weight="fill" />{action.receipt} <span>#RCPT-{receiptId}</span></p>
+            <p className="assistant-receipt">
+              <CheckCircle size={16} weight="fill" />{action.receipt} <span>#RCPT-{receiptId}</span>
+              {action.tool && <span className="assistant-receipt-tool">via MCP · {action.tool}</span>}
+            </p>
           )}
           {/* Việc dài hơi (biên tập, quản trị OKR) thuộc platform gốc — mở bằng SSO chung. */}
           {action && actionDone && workspace.kind === 'editor' && (

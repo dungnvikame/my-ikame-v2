@@ -1,4 +1,4 @@
-import { Buildings, DesktopTower, Sparkle, Ticket, UserCircle, Wrench } from '@phosphor-icons/react';
+import { Buildings, Clock, DesktopTower, Sparkle, Ticket, UserCircle, Wrench } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
@@ -27,6 +27,7 @@ const TYPE_ICON: Record<RequestType, typeof Wrench> = {
   'Nhân sự': UserCircle,
   'Hành chính': Buildings,
   'Thiết bị': DesktopTower,
+  'Chấm công': Clock,
 };
 
 function RequestRow({ request }: { request: RequestItem }) {
