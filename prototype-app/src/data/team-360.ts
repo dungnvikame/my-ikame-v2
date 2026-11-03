@@ -1,4 +1,5 @@
 import type { MemberProfile360 } from '../types';
+import { HUY_JOINED_AT, huyJourneyDateLabel } from './onboarding-data';
 
 /**
  * Hồ sơ 360° của team Product & Technology — dữ liệu hư cấu, không dùng thông
@@ -310,49 +311,56 @@ export const memberProfiles: Record<string, MemberProfile360> = {
     ],
   },
 
+  // Người mới trong hành trình 60 ngày — khớp onboarding-data (Ngày 32/60, 7/12 quest, buddy Lan).
   member_giahuy: {
     memberId: 'member_giahuy',
     email: 'giahuy.pham@ikameglobal.com',
-    slack: 'Chưa kích hoạt',
-    location: 'Hà Nội · Tầng 5 (dự kiến)',
-    joinedAt: '17/08/2026 (sắp tới)',
-    tenureLabel: 'Chưa gia nhập',
-    contractType: 'HĐLĐ thử việc 2 tháng',
+    slack: '@giahuy.pham',
+    location: 'Hà Nội · Tầng 19',
+    joinedAt: HUY_JOINED_AT,
+    tenureLabel: 'Ngày 32/60 · thử việc',
+    contractType: 'HĐ thử việc 2 tháng',
     managerName: 'Trần Thanh Mai',
-    leaveRemaining: 0,
+    leaveRemaining: 1,
     leaveTotal: 12,
     signals: [
-      { key: 'onboarding', label: 'Chuẩn bị onboarding', value: '3/6 mục', hint: 'Còn thiết bị, tài khoản và buddy', tone: 'watch', source: 'HRIS' },
-      { key: 'start', label: 'Ngày bắt đầu', value: 'Còn 4 ngày', hint: '17/08/2026', tone: 'neutral', source: 'HRIS' },
-      { key: 'eks', label: 'Mục tiêu thử việc', value: 'Chưa thiết lập', hint: 'Cần thống nhất trong tuần đầu', tone: 'watch', source: 'iGoal' },
+      { key: 'onboarding', label: 'Hành trình 60 ngày', value: '7/12 cột mốc', hint: 'Mốc 30 ngày đã đạt · buddy Lan Nguyễn', tone: 'good', source: 'Onboarding' },
+      { key: 'survey', label: 'Khảo sát 30 ngày', value: 'Chưa trả lời', hint: 'Đến hạn hôm nay', tone: 'watch', source: 'My iKame' },
+      { key: 'eks', label: 'Mục tiêu thử việc', value: '40%', hint: 'Check-in mốc 30 ngày trong 3 ngày tới', tone: 'neutral', source: 'iGoal' },
     ],
     aiInsight: {
-      headline: 'Còn 4 ngày nữa Gia Huy gia nhập — 3 việc chuẩn bị chưa xong',
+      headline: 'Gia Huy đi được 32/60 ngày — khảo sát 30 ngày chưa trả lời, 1:1 mốc 30 chưa đặt',
       bullets: [
-        'Thiết bị và tài khoản nội bộ chưa được cấp.',
-        'Chưa chỉ định buddy đồng hành 30 ngày đầu.',
-        'Mục tiêu thử việc chưa được thiết lập trên iGoal.',
+        '7/12 cột mốc hành trình đã xong, đúng nhịp; còn "Cà phê với buddy" trễ 25 ngày.',
+        'Khảo sát 30 ngày đến hạn hôm nay — tín hiệu sớm nhất về mức độ hoà nhập.',
+        'Manager tham gia onboarding giúp tỷ lệ thành công tăng 3,4× — nên đặt 1:1 trước thứ Sáu.',
       ],
-      suggestion: 'Hoàn tất checklist onboarding trước 16/08 để ngày đầu tiên của Gia Huy trọn vẹn.',
-      suggestionPrompt: 'Tạo request IT support: cấp thiết bị và tài khoản cho thành viên mới Gia Huy',
+      suggestion: 'Đặt 1:1 mốc 30 ngày trong tuần này và nhắc buddy Lan hẹn cà phê.',
+      suggestionPrompt: 'Đặt lịch 1:1 mốc 30 ngày với Gia Huy 30 phút trong tuần này',
     },
-    eks: [],
-    reportsSubmitted: 0,
-    reportsExpected: 0,
-    nextOneOnOneLabel: 'Ngày đầu tiên · 17/08 · 09:30',
-    oneOnOnes: [],
+    eks: [
+      { id: 'eks-gh-1', code: 'O1', title: 'Nắm quy trình thiết kế nội bộ và ra 2 flow hoàn chỉnh', progress: 40, status: 'on_track', lastCheckIn: 'Tuần trước' },
+    ],
+    reportsSubmitted: 2,
+    reportsExpected: 3,
+    nextOneOnOneLabel: 'Mốc 30 ngày · chưa đặt',
+    oneOnOnes: [
+      { id: 'oo-gh-1', dateLabel: huyJourneyDateLabel(6), topics: ['Kỳ vọng thử việc', 'Cách làm việc với team'], outcome: 'Thống nhất mục tiêu thử việc trên iGoal', mood: 'positive' },
+    ],
     recognitions: [],
     skills: [
       { name: 'Product design', level: 3, target: 4 },
       { name: 'Design system', level: 2, target: 3 },
     ],
     learning: [
-      { id: 'ln-gh-1', title: 'Onboarding iKame 101', status: 'not_started', progress: 0, dueLabel: 'Tuần đầu tiên' },
-      { id: 'ln-gh-2', title: 'An toàn thông tin 2026 (bắt buộc)', status: 'not_started', progress: 0, dueLabel: 'Trong 30 ngày' },
+      { id: 'ln-gh-1', title: 'Onboarding iKame 101', status: 'done', progress: 100 },
+      { id: 'ln-gh-2', title: 'An toàn thông tin 2026 (bắt buộc)', status: 'in_progress', progress: 60, dueLabel: 'Trễ 2 ngày' },
     ],
     careerNote: 'Giai đoạn thử việc 2 tháng: tập trung hoà nhập team và nắm quy trình thiết kế nội bộ.',
     activities: [
-      { id: 'ac-gh-1', source: 'HRIS', text: 'Hồ sơ nhân sự đã hoàn tất, chờ ngày gia nhập', timeLabel: '10/08' },
+      { id: 'ac-gh-1', source: 'HRIS', text: 'Nhận huy hiệu "30 ngày đầu" — mốc Vững vàng', timeLabel: huyJourneyDateLabel(30) },
+      { id: 'ac-gh-2', source: 'iGoal', text: 'Gửi báo cáo check-in tuần', timeLabel: 'Tuần trước' },
+      { id: 'ac-gh-3', source: 'iKame Feed', text: 'Bình luận bài Product Sharing', timeLabel: '4 ngày trước' },
     ],
   },
 };

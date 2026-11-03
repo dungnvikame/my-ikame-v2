@@ -24,6 +24,7 @@ const MemberDetailPage = lazy(() => import('./pages/MemberDetailPage').then((m) 
 const ArticlePage = lazy(() => import('./pages/NewsPages').then((m) => ({ default: m.ArticlePage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage').then((m) => ({ default: m.NotificationsPage })));
+const OnboardingPage = lazy(() => import('./pages/OnboardingPage').then((m) => ({ default: m.OnboardingPage })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ default: m.ProfilePage })));
 const RequestsPage = lazy(() => import('./pages/RequestsPage').then((m) => ({ default: m.RequestsPage })));
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })));
@@ -67,6 +68,7 @@ function AppRoutes() {
         <Route path="/assistant" element={<AssistantPage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/work" element={<WorkPage />} />
+        <Route path="/onboarding" element={<PerspectiveGuard expected="ikamer"><OnboardingPage /></PerspectiveGuard>} />
         <Route path="/admin" element={<PerspectiveGuard expected="admin"><AdminPage /></PerspectiveGuard>} />
         <Route path="/requests" element={<RequestsPage />} />
         <Route path="/feed" element={<FeedPage />} />

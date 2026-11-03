@@ -1,0 +1,103 @@
+/* Manager Intelligence lát mỏng: Nhịp team, tín hiệu sớm, thẻ người mới; phân rã WAER cho COM. Prefix `pulse-`, `newjoiner-card`, `admin-waer`. */
+
+.pulse-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pulse-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-primary);
+  border-left-width: 3px;
+  border-radius: var(--radius-12);
+  background: var(--bg-primary);
+}
+
+.pulse-tile small { color: var(--text-secondary); font-size: 12px; }
+.pulse-tile strong { font-size: 22px; line-height: 1.15; }
+.pulse-tile p { margin: 4px 0 0; color: var(--text-secondary); font-size: 12px; }
+.pulse-tile--good { border-left-color: var(--bg-success-contrast); }
+.pulse-tile--watch { border-left-color: var(--bg-amber-contrast); }
+.pulse-tile--risk { border-left-color: var(--bg-error-contrast); }
+.pulse-tile--neutral { border-left-color: var(--border-tertiary); }
+
+.pulse-tile-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 4px;
+  border-radius: var(--radius-8);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.pulse-signals {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px dashed var(--border-tertiary);
+  border-radius: var(--radius-12);
+}
+
+.pulse-signals-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-weight: var(--font-semibold);
+}
+
+.pulse-signal-list { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+
+.pulse-signal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius-8);
+  background: var(--bg-secondary);
+}
+
+.pulse-signal-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.pulse-signal-copy span { color: var(--text-secondary); font-size: 13px; }
+.pulse-signal-copy small { color: var(--text-tertiary); }
+.pulse-signal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.newjoiner-card-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1; }
+.newjoiner-card-body h3 { margin: 0; }
+.newjoiner-card-body p { margin: 0; color: var(--text-secondary); font-size: 13px; }
+.newjoiner-card-task strong { color: var(--text-primary); }
+
+/* Phân rã WAER theo loại hành động (Tổng quan COM) */
+.admin-waer-list { display: flex; flex-direction: column; gap: 10px; margin: 0 0 10px; padding: 0; list-style: none; }
+
+.admin-waer-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) 1fr 48px;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-waer-label { color: var(--text-secondary); font-size: 13px; }
+.admin-waer-bar { height: 10px; border-radius: var(--radius-round); background: var(--bg-tertiary); overflow: hidden; }
+.admin-waer-bar-fill { height: 100%; border-radius: var(--radius-round); background: var(--bg-green-contrast); }
+.admin-waer-value { text-align: right; font-size: 14px; }
+
+@media (max-width: 720px) {
+  .pulse-tiles { grid-template-columns: 1fr; }
+  .pulse-signal-actions .button { flex: 1; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .admin-waer-row { grid-template-columns: 1fr 40px; }
+  .admin-waer-label { grid-column: 1 / -1; }
+}

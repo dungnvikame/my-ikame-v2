@@ -1,0 +1,243 @@
+/* Hành trình 60 ngày (overlay Người mới): thẻ Home, trang /onboarding, huy hiệu Hồ sơ. Prefix `journey-`, `quest-`, `badge-`. */
+
+.newjoiner-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  margin-top: 6px;
+  padding: 4px 10px;
+  border: 1px dashed var(--border-tertiary);
+  border-radius: var(--radius-round);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: var(--body-xs-size);
+  cursor: pointer;
+}
+
+.newjoiner-chip.is-active {
+  border-style: solid;
+  border-color: transparent;
+  background: var(--bg-accent-primary);
+  color: var(--fg-on-accent);
+  font-weight: var(--font-semibold);
+}
+
+.app-shell.sidebar-collapsed .newjoiner-chip { display: none; }
+
+.journey-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-12);
+  background: var(--bg-primary);
+}
+
+.journey-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.journey-card-icon {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-8);
+  background: var(--bg-accent-primary);
+  color: var(--fg-on-accent);
+  flex-shrink: 0;
+}
+
+.journey-card-copy { flex: 1; min-width: 0; }
+.journey-card-copy h2 { margin: 2px 0; font-size: 18px; }
+.journey-card-copy p:not(.eyebrow) { margin: 0; color: var(--text-secondary); font-size: 13px; }
+.journey-card.is-compact .journey-card-copy h2 { font-size: 15px; }
+
+.journey-progress {
+  position: relative;
+  height: 8px;
+  border-radius: var(--radius-round);
+  background: var(--bg-tertiary);
+}
+
+.journey-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-round);
+  background: var(--bg-accent-primary);
+}
+
+.journey-progress-tick {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--bg-primary);
+  border-radius: 50%;
+  background: var(--border-tertiary);
+  transform: translate(-50%, -50%);
+}
+
+.journey-progress-tick--done { background: var(--fg-success); }
+.journey-progress-tick--open { background: var(--fg-warning); }
+.journey-progress-tick--current { background: var(--bg-accent-primary); box-shadow: 0 0 0 3px var(--bg-accent-primary-subtle); }
+
+.journey-milestone-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.journey-milestone-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-8);
+  background: var(--bg-secondary);
+  font-size: 13px;
+}
+
+.journey-milestone-chip small { color: var(--text-tertiary); }
+.journey-milestone-chip--done { border-color: var(--fg-success); }
+.journey-milestone-chip--open { border-color: var(--fg-warning); }
+.journey-milestone-chip--current { border-color: var(--bg-accent-primary); background: var(--bg-primary); }
+.journey-milestone-chip--upcoming { opacity: 0.7; }
+
+/* Timeline 4 mốc */
+.journey-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.journey-timeline-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.journey-timeline-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--text-tertiary);
+}
+
+.journey-timeline-item--done .journey-timeline-dot { color: var(--fg-success); }
+.journey-timeline-item--open .journey-timeline-dot { color: var(--fg-warning); }
+.journey-timeline-item--current .journey-timeline-dot { color: var(--bg-accent-primary); }
+.journey-timeline-item--upcoming { opacity: 0.75; }
+.journey-timeline-head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.journey-timeline-head small { color: var(--text-tertiary); }
+.journey-timeline-item p { margin: 2px 0 0; color: var(--text-secondary); font-size: 13px; }
+
+/* Checklist quest */
+.quest-group { margin-top: 12px; }
+.quest-group-title { margin: 0 0 6px; color: var(--text-tertiary); font-size: 12px; font-weight: var(--font-semibold); text-transform: uppercase; letter-spacing: 0.04em; }
+.quest-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+
+.quest-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-8);
+  background: var(--bg-primary);
+}
+
+.quest-item.is-done { background: var(--bg-secondary); }
+.quest-item.is-done .quest-title { color: var(--text-tertiary); text-decoration: line-through; }
+.quest-item.is-late { border-color: var(--fg-warning); }
+.quest-check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.quest-check input { width: 18px; height: 18px; accent-color: var(--bg-accent-primary); }
+.quest-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.quest-meta small { color: var(--text-tertiary); }
+
+/* Khảo sát 30 ngày */
+.journey-survey p { margin: 0 0 10px; }
+.journey-mood-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+
+.journey-mood {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-round);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.journey-mood.is-active { border-color: var(--bg-accent-primary); background: var(--bg-secondary); font-weight: var(--font-semibold); }
+
+/* Người đồng hành */
+.buddy-list { display: flex; flex-direction: column; gap: 12px; margin: 0 0 10px; padding: 0; list-style: none; }
+.buddy-row { display: flex; gap: 10px; align-items: flex-start; }
+.buddy-row strong { display: block; }
+.buddy-row small { color: var(--text-tertiary); }
+.buddy-next { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
+
+/* Huy hiệu */
+.badge-list { display: flex; flex-direction: column; gap: 10px; margin: 0 0 10px; padding: 0; list-style: none; }
+.badge-row { display: flex; gap: 10px; align-items: center; opacity: 0.6; }
+.badge-row.is-earned { opacity: 1; }
+.badge-row strong { display: block; }
+.badge-row small { color: var(--text-tertiary); }
+
+.badge-emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-8);
+  background: var(--bg-tertiary);
+  font-size: 18px;
+}
+
+.profile-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+/* Thẻ Demo trong Hồ sơ chứa 2 nút (Người mới + Đặt lại) — xếp dọc trên mobile. */
+.profile-setting-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+
+.profile-badges span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-round);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--body-xs-size);
+}
+
+@media (max-width: 720px) {
+  .journey-card-head { flex-wrap: wrap; }
+  .journey-card-head .button { width: 100%; justify-content: center; }
+  .journey-milestone-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

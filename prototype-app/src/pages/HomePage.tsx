@@ -4,7 +4,9 @@ import { useAppState } from '../AppState';
 import { AIAssistant } from '../components/AIAssistant';
 import { NewsCard } from '../components/ContentCards';
 import { ICheckWidget } from '../components/icheck/ICheckWidget';
-import { buildDailyDigestItems } from './assistant/daily-digest';
+import { JourneyCard } from '../components/onboarding/JourneyCard';
+import { buildDailyDigestItems, HOME_DIGEST_LIMIT } from './assistant/daily-digest';
+import { journeyDigestQuests } from '../lib/onboarding';
 import { documentReminders } from '../data/profile-data';
 import { EventCardV2 } from './events/EventCardV2';
 import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
@@ -73,8 +75,10 @@ function eventsFrom(cards: HomeCard[]): EventItem[] {
 }
 
 export function HomePage() {
-  const { user, news, events, goals, posts, dailyCheckIn, documents } = useAppState();
+  const { user, news, events, goals, posts, dailyCheckIn, documents, isNewJoiner, journey } = useAppState();
   const now = new Date();
+  // Người mới: quest đến hạn/trễ của hành trình 60 ngày lên Việc hôm nay (tối đa 2).
+  const journeyQuests = isNewJoiner ? journeyDigestQuests(journey) : undefined;
 
   const eligibleNews = news.filter((post) => !post.expired && isEligible(user, post.audienceTeamIds));
   const eligibleEvents = events.filter((event) => event.status !== 'past' && event.status !== 'cancelled' && isEligible(user, event.audienceTeamIds));
@@ -84,7 +88,7 @@ export function HomePage() {
   const hero = heroCard?.kind === 'news' ? heroCard.post : undefined;
 
   // "Việc hôm nay" — cùng nguồn với Trợ lý AI (Daily Work Hub), tối đa 5 mục trên Home.
-  const digest = buildDailyDigestItems({ news: eligibleNews, events: eligibleEvents, goals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents) }).slice(0, 5);
+  const digest = buildDailyDigestItems({ news: eligibleNews, events: eligibleEvents, goals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents), journeyQuests }).slice(0, HOME_DIGEST_LIMIT);
   const urgentCount = digest.filter((item) => item.urgent).length;
 
   const newsPreviewCandidates = eligibleNews.filter((post) => post.id !== hero?.id).map((post): HomeCard => ({ kind: 'news', post }));
@@ -114,6 +118,9 @@ export function HomePage() {
           <Link className="button button--primary" to={`/feed/article/${hero.id}`}>Đọc & xác nhận<ArrowRight size={16} /></Link>
         </section>
       )}
+
+      {/* Overlay Người mới (joinedAt < 60 ngày): thẻ hành trình, gọn lại khi đã có hero bắt buộc. */}
+      {isNewJoiner && journey && <JourneyCard journey={journey} compact={!!hero} />}
 
       <div className="home-grid">
         <section className="home-main">

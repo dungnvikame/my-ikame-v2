@@ -2,7 +2,12 @@ import { BellRinging, PaperPlaneTilt } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, SectionHeader, StatusPill } from '../../components/UI';
+import { RULES } from '../../lib/notification-rules';
 import type { NewsPost } from '../../types';
+
+/** Lịch nhắc tự động của nhóm bắt buộc — lấy từ rule engine để bảng và engine không lệch nhau. */
+const MANDATORY_RULE = RULES.news_mandatory;
+const MAX_REMINDERS = MANDATORY_RULE.maxReminders ?? 3;
 
 type OfficialNewsTableProps = {
   news: NewsPost[];
@@ -21,7 +26,7 @@ export function OfficialNewsTable({ news, onPush, onRemind }: OfficialNewsTableP
 
   return (
     <section className="admin-block" aria-label="Thông báo chính thức">
-      <SectionHeader title="Thông báo chính thức" meta={`${rows.length} bài · audience lấy từ HRIS`} />
+      <SectionHeader title="Thông báo chính thức" meta={`${rows.length} bài · audience lấy từ HRIS · bắt buộc: nhắc tự động sau ${MANDATORY_RULE.remindAfterHours}h, tối đa ${MAX_REMINDERS} lần`} />
       <div className="admin-table-wrap">
         <table className="admin-table">
           <thead>
@@ -73,8 +78,14 @@ export function OfficialNewsTable({ news, onPush, onRemind }: OfficialNewsTableP
                       {item.pushedLabel ? 'Push lại' : 'Gửi push'}
                     </Button>
                     {item.mandatory && pending.length > 0 && (
-                      <Button variant="dim" icon={<BellRinging size={15} />} onClick={() => onRemind(item.id)}>
-                        Nhắc {pending.length} người{item.remindersSent ? ` (đã nhắc ${item.remindersSent})` : ''}
+                      <Button
+                        variant="dim"
+                        icon={<BellRinging size={15} />}
+                        disabled={(item.remindersSent ?? 0) >= MAX_REMINDERS}
+                        title={(item.remindersSent ?? 0) >= MAX_REMINDERS ? `Đã đủ ${MAX_REMINDERS} lần nhắc theo quy định` : undefined}
+                        onClick={() => onRemind(item.id)}
+                      >
+                        Nhắc {pending.length} người · {item.remindersSent ?? 0}/{MAX_REMINDERS}
                       </Button>
                     )}
                   </td>

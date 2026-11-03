@@ -3,6 +3,7 @@ import {
   Briefcase,
   CalendarDots,
   ChatsCircle,
+  Compass,
   Gauge,
   House,
   MagnifyingGlass,
@@ -106,6 +107,18 @@ const NAV_BY_PERSPECTIVE: Record<Perspective, { groups: NavGroup[]; bottom: NavE
 };
 const PERSPECTIVE_ORDER: Perspective[] = ['ikamer', 'manager', 'admin'];
 
+const JOURNEY_NAV: NavEntry = { label: 'Hành trình', to: '/onboarding', icon: Compass };
+
+/** Overlay Người mới: thêm "Hành trình" ngay sau Trang chủ; mobile nhường chỗ của Sự kiện (vẫn vào được từ Home). */
+function navFor(perspective: Perspective, newJoiner: boolean) {
+  const base = NAV_BY_PERSPECTIVE[perspective];
+  if (perspective !== 'ikamer' || !newJoiner) return base;
+  const [first, ...rest] = base.groups;
+  const groups = [{ ...first, items: [first.items[0], JOURNEY_NAV, ...first.items.slice(1)] }, ...rest];
+  const bottom = base.bottom.map((entry) => (entry.to === '/events' ? JOURNEY_NAV : entry));
+  return { ...base, groups, bottom };
+}
+
 function Logo() {
   return (
     <div className="brand" aria-label="My iKame">
@@ -117,7 +130,7 @@ function Logo() {
 
 /** Chuyển góc nhìn demo: iKamer · Manager · COM Admin — mỗi lăng kính có nhà riêng. */
 function PerspectiveSwitch() {
-  const { perspective, setPerspective } = useAppState();
+  const { perspective, setPerspective, demoNewJoiner, setDemoNewJoiner } = useAppState();
   const navigate = useNavigate();
 
   const select = (next: Perspective) => {
@@ -125,14 +138,27 @@ function PerspectiveSwitch() {
     navigate(NAV_BY_PERSPECTIVE[next].home);
   };
 
+  // Chip demo: cùng lăng kính iKamer nhưng đăng nhập là người mới (Gia Huy, Ngày 32/60).
+  const toggleNewJoiner = () => {
+    setDemoNewJoiner(!demoNewJoiner);
+    navigate('/home');
+  };
+
   return (
-    <div className="perspective-switch perspective-switch--3" role="group" aria-label="Chọn góc nhìn">
-      {PERSPECTIVE_ORDER.map((key) => (
-        <button key={key} type="button" aria-pressed={perspective === key} className={perspective === key ? 'is-active' : ''} onClick={() => select(key)}>
-          {NAV_BY_PERSPECTIVE[key].label}
+    <>
+      <div className="perspective-switch perspective-switch--3" role="group" aria-label="Chọn góc nhìn">
+        {PERSPECTIVE_ORDER.map((key) => (
+          <button key={key} type="button" aria-pressed={perspective === key} className={perspective === key ? 'is-active' : ''} onClick={() => select(key)}>
+            {NAV_BY_PERSPECTIVE[key].label}
+          </button>
+        ))}
+      </div>
+      {perspective === 'ikamer' && (
+        <button type="button" className={`newjoiner-chip ${demoNewJoiner ? 'is-active' : ''}`} aria-pressed={demoNewJoiner} onClick={toggleNewJoiner}>
+          <Compass size={14} /> Người mới · Gia Huy
         </button>
-      ))}
-    </div>
+      )}
+    </>
   );
 }
 
@@ -199,8 +225,8 @@ function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLB
 }
 
 export function AppShell({ children }: PropsWithChildren) {
-  const { perspective, user, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
-  const { groups: navGroups, bottom: bottomNav } = NAV_BY_PERSPECTIVE[perspective];
+  const { perspective, user, isNewJoiner, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
+  const { groups: navGroups, bottom: bottomNav } = navFor(perspective, isNewJoiner);
   const unreadCount = notifications.filter((item) => !item.read).length;
   const notificationTriggerRef = useRef<HTMLButtonElement>(null);
 

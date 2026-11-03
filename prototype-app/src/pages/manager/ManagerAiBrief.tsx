@@ -1,6 +1,7 @@
 import { ArrowRight } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { AiBadge } from '../../components/AiBadge';
+import type { EarlySignal } from '../../lib/engagement';
 import type { AttentionItem } from '../../types';
 
 type BriefBullet = { id: string; headline: string; reason: string; href: string };
@@ -15,14 +16,20 @@ export function attentionHref(item: AttentionItem): string {
   return '/manager/team';
 }
 
-/** Pure mapping, zero hardcoded numbers — every digit comes from live `attention` state. */
-export function buildBrief(items: AttentionItem[]): BriefBullet[] {
-  return items.map((item) => ({
+/** Pure mapping, zero hardcoded numbers — every digit comes from live `attention` state; tín hiệu sớm (engagement) đứng đầu. */
+export function buildBrief(items: AttentionItem[], signals: EarlySignal[] = []): BriefBullet[] {
+  const fromSignals = signals.filter((signal) => signal.severity === 'risk').map((signal) => ({
+    id: `signal-${signal.memberId}`,
+    headline: `${signal.name} đang chùng xuống — nên 1:1 trước thứ Sáu`,
+    reason: signal.reason,
+    href: `/manager/team/${signal.memberId}`,
+  }));
+  return [...fromSignals, ...items.map((item) => ({
     id: item.id,
     headline: item.title,
     reason: `${item.reason} · ${item.people}`,
     href: attentionHref(item),
-  }));
+  }))];
 }
 
 /**
@@ -30,8 +37,8 @@ export function buildBrief(items: AttentionItem[]): BriefBullet[] {
  * live scoped `attention` queue, so resolving an item changes the brief on next render
  * (RED TEAM F6 covers the empty case below).
  */
-export function ManagerAiBrief({ items }: { items: AttentionItem[] }) {
-  const bullets = buildBrief(items);
+export function ManagerAiBrief({ items, signals = [] }: { items: AttentionItem[]; signals?: EarlySignal[] }) {
+  const bullets = buildBrief(items, signals);
 
   return (
     <section className="ai-brief">
@@ -58,7 +65,7 @@ export function ManagerAiBrief({ items }: { items: AttentionItem[] }) {
             ))}
           </ul>
           <div className="ai-brief-footer-row">
-            <p className="ai-brief-footer">Tổng hợp từ iGoal · Event · HRIS — mô phỏng khái niệm.</p>
+            <p className="ai-brief-footer">Tổng hợp từ iGoal · Event · HRIS · engagement iKame Feed/iCheck — mô phỏng khái niệm.</p>
             <Link className="ai-brief-cta" to={`/assistant?q=${encodeURIComponent('Team tôi hôm nay có gì cần chú ý?')}`}>
               Hỏi Trợ lý AI về team<ArrowRight size={14} />
             </Link>

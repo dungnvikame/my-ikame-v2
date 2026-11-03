@@ -13,6 +13,7 @@ import {
 import { AssistantSteps, capabilitiesFor, CONNECTORS, generateMessageId, generateReceiptId, stepsOf } from './assistant/assistant-shared';
 import { AssistantWorkspace, type OkrReportPayload } from './assistant/AssistantWorkspace';
 import { documentReminders } from '../data/profile-data';
+import { journeyDigestQuests } from '../lib/onboarding';
 import { AgentMetricsCard } from '../components/assistant/AgentMetricsCard';
 
 /** Danh sách phiên cũ — dùng chung cho popover lịch sử và mục "Gần đây" ở màn chào. */
@@ -40,7 +41,7 @@ function HistoryList({ sessions, onResume, onDelete }: {
 export function AssistantPage() {
   const {
     user, news, events, goals, knowledgeDocs, leaveBalance, demoResetCount,
-    perspective, attention, memberEksStats, approvals, dailyCheckIn, documents,
+    perspective, attention, memberEksStats, approvals, dailyCheckIn, documents, isNewJoiner, journey,
     acknowledgeNews, submitReport, addRequest, addAttendanceRequest, recordAgentTask,
   } = useAppState();
   const capabilities = capabilitiesFor(perspective);
@@ -177,7 +178,7 @@ export function AssistantPage() {
     const trimmed = question.trim();
     if (!trimmed || busy) return;
     if (!activeSessionId) setActiveSessionId(`s-${Date.now().toString(36)}`);
-    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance, perspective, attention, memberEksStats, approvals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents) };
+    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance, perspective, attention, memberEksStats, approvals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents), journeyQuests: isNewJoiner ? journeyDigestQuests(journey) : undefined };
     setMessages((prev) => [
       ...prev,
       { id: generateMessageId(), role: 'user', text: trimmed },

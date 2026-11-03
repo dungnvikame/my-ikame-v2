@@ -33,9 +33,10 @@ Ba lớp, một nguyên tắc (spec D1): *native chỉ những gì làm xong tro
 Điểm khác biệt so với Facebook/Slack: **acknowledge bắt buộc + audit** cho thông báo chính sách; **audience theo team/HRIS**; không bị phân tâm bởi nội dung ngoài.
 
 ### 5. Hướng đi dài — Daily Work Hub trên Agent Platform (2')
-- H2 (bản launch): Feed + Events + Apps. Đo WAU, acknowledge rate.
-- 2027 H1: **Daily Work Hub** — Trợ lý AI gọi MCP của iGoal/iWiki/HRIS/Asana để trả lời "hôm nay tôi cần làm gì" và *hành động* (check-in OKR, đặt phòng, gửi request) — không tự build intelligence, dùng framework MCP chung (Tâm PIC).
-- 2027 H2: onboarding journey, kudos, album, gamification theo chiến dịch COM — chỉ khi Feed đã là thói quen.
+- H2 (bản launch): Feed + Events + Apps. Đo **WAER** (có ≥1 hành động có nghĩa/tuần) bên cạnh WAU, acknowledge rate.
+- 2027 H1: **Daily Work Hub** — Trợ lý AI gọi MCP của iGoal/iWiki/HRIS/Asana để trả lời "hôm nay tôi cần làm gì" và *hành động* (check-in OKR, đặt phòng, gửi request) — không tự build intelligence, dùng framework MCP chung (Tâm PIC). Cùng lúc: **Hành trình 60 ngày** cho người mới (ưu tiên #1 deck Vòng đời iKamer 5/2026, KR2 OKR H2) + **notification engine** dùng chung + lát mỏng **Manager Intelligence**.
+- 2027 H2: skill tree/learning path, sự kiện & mini-game theo mùa, Alumni — huy hiệu mốc thay EXP/coin.
+- Vòng đời iKamer: "Ngày 0 → Ngày 60 trên một hub, manager thấy tín hiệu sớm, COM đo WAER" — 80% quyết định ở/đi trong 90 ngày; manager tham gia onboarding → 3,4× thành công.
 → Thông điệp: *"My iKame không cạnh tranh với iGoal/iWiki — nó là cửa trước để iKamer đi vào chúng, và là nơi agent của iKame nói chuyện với con người."*
 
 ### 6. Kế hoạch ra bản chạy thực tế T11–T12 (1')
@@ -52,26 +53,27 @@ Nguồn lực: Dũng 20% + Linh (mobile/vibe) + Chung 20% (UI) như PM Monthly �
 
 ## B. Demo flow (10 phút) — chạy trên prototype `prototype-app/` (localhost:5180)
 
-Chuẩn bị: F4 reset demo, giao diện sáng, cửa sổ 1280px, tab thứ 2 ở chế độ mobile 375px. Kịch bản bám persona **An — Product Designer**.
+Chuẩn bị: F4 reset demo, giao diện sáng, cửa sổ 1280px, tab thứ 2 ở chế độ mobile 375px. Kịch bản bám persona **An — Product Designer**, rẽ sang **Gia Huy — người mới Ngày 32/60** ở bước 2.
 
 | # | Màn | Thao tác | Câu nói chốt |
 |---|---|---|---|
-| 1 | `/home` (iKamer) | Chào + **widget iCheck** (bấm *Chấm công ngay* → 08:06 Đúng giờ) + **Việc hôm nay** gom từ iCheck/COM/HRIS/iGoal/Asana/Lịch; banner đỏ *Cần xác nhận* | "Home trả lời đúng một câu: hôm nay tôi cần làm gì — không phải lướt tin." |
-| 2 | `/feed` | Carousel bài ghim COM → tab **Thông báo** → mở bài chính sách → *Xác nhận đã đọc* → badge giảm; đăng **Kudos**; thử đăng bài có "mật khẩu" → bộ lọc trả về kèm lý do | "Thông báo chính thống có xác nhận + audit, cộng đồng có kudos, nội dung có bộ lọc — Facebook không có cả ba." |
-| 3 | Switch **COM Admin** → `/admin` | Tỷ lệ xác nhận tăng, tên An biến khỏi *chưa xác nhận*; *Nhắc 5 người*, *Gửi push*, *Ghim* | "Vòng lặp đăng → push → xác nhận → đo. Đây là cách đo WAU và acknowledge rate." |
-| 4 | `/events` | Timeline đã/đang/sắp, RSVP → *Thêm vào lịch*; mở **Town Hall Q2** → album + khảo sát 1 phút | "Đã – đang – sắp diễn ra; sau sự kiện có ảnh và có phản hồi." |
-| 5 | `/work` → `/profile` | Tab Công việc: tuần chấm công, phép 2,5, đề xuất; Hồ sơ: dữ liệu HRIS, giấy tờ *sắp hết hạn* đỏ, **Xác thực để xem** lương | "HRIS/iCheck là nguồn sự thật — My iKame hiển thị, nhắc việc, không nhân bản nghiệp vụ." |
-| 6 | `/assistant` | Dòng *Đang kết nối qua MCP* (7 hệ thống); hỏi **"Hôm nay tôi làm việc từ xa"** → form điền sẵn → duyệt → receipt `via MCP · icheck.create_wfh_request`; tab Công việc đổi thành WFH; thẻ **Đo lường** tăng | "Agent đề xuất – người duyệt – MCP thực thi – có audit. My iKame là client của framework MCP chung, không tự xây AI." |
-| 7 | Switch **Manager** → `/manager/overview` | Attention queue, đơn chờ duyệt, widget iCheck của chính Mai; `/apps` của Mai có thêm BM Ops/iHiring/iFinance | "Một shell, ba lăng kính — cùng lõi, khác Home/nav/quyền/intent AI." |
-| 8 | Tab mobile | Lướt Home + bottom nav 5 mục | "Dùng được trên điện thoại ngay, không cần app store." |
+| 1 | `/home` (iKamer) | Chào + **widget iCheck** (bấm *Chấm công ngay* → 08:06 Đúng giờ) + **Việc hôm nay** gom từ iCheck/COM/HRIS/iGoal/Asana/Lịch; banner đỏ *Cần xác nhận*; chuông → **Bản tin sáng 08:00** gộp 4 việc | "Home trả lời đúng một câu: hôm nay tôi cần làm gì — và Bản tin sáng trả lời trước cả khi mở app." |
+| 2 | Chip **Người mới · Gia Huy** → `/home` → `/onboarding` | Home đổi: thẻ **Hành trình 60 ngày · Ngày 32/60 · 7/12 cột mốc**, Việc hôm nay có *Khảo sát 30 ngày*; mở hành trình: 4 mốc, checklist theo mốc, tick *Cà phê với buddy* → 8/12, trả lời khảo sát 1 chạm; buddy Lan + manager Mai từ roster; huy hiệu *30 ngày đầu* | "80% quyết định ở hay đi trong 90 ngày đầu. Ngày 0 → Ngày 60 nằm trên cùng một hub, không phải file Excel của HR." |
+| 3 | `/profile` → `/feed` (vẫn Gia Huy) | Hồ sơ: huy hiệu mốc + timeline *Gia nhập · Huy hiệu 30 ngày*, HRIS thử việc, giấy tờ còn thiếu; Feed: bài **tự động từ HRIS** "Huy hoàn thành 30 ngày đầu 🌱" | "Cột mốc vòng đời tự thành nội dung chính thống — COM không phải ngồi viết." |
+| 4 | Tắt chip → `/feed` (An) | Carousel bài ghim COM → tab **Thông báo** → mở bài chính sách → *Xác nhận đã đọc* → badge giảm; đăng **Kudos**; thử đăng bài có "mật khẩu" → bộ lọc trả về kèm lý do | "Thông báo chính thống có xác nhận + audit, cộng đồng có kudos, nội dung có bộ lọc — Facebook không có cả ba." |
+| 5 | `/notifications` tab **Cài đặt** → switch **COM Admin** → `/admin` | Tắt nhóm *Tin COM* (nhóm *Bắt buộc* khoá); COM: tile **WAER 71%** + phân rã 5 hành động, WAU 78% làm tham chiếu; *Gửi push* tin thường → không vào hộp, *Gửi push* tin bắt buộc → vào; *Nhắc 6 người · 0/3* (nhắc tự động 24h × 3) | "Notification là hạ tầng có rule, người dùng tự chọn — nhưng cái bắt buộc thì không ai tắt được. North Star là WAER: hành động có nghĩa, không phải mở app." |
+| 6 | `/events` | Timeline đã/đang/sắp, RSVP → notification xác nhận + *Thêm vào lịch*; mở **Town Hall Q2** → album + khảo sát 1 phút | "Đã – đang – sắp diễn ra; sau sự kiện có ảnh và có phản hồi." |
+| 7 | `/work` → `/assistant` | Tab Công việc: tuần chấm công, phép 2,5, **Xác thực để xem** lương ở Hồ sơ; Trợ lý AI: *Đang kết nối qua MCP* (7 hệ thống); hỏi **"Hôm nay tôi làm việc từ xa"** → form → duyệt → receipt `via MCP · icheck.create_wfh_request` + notification *Đơn đã gửi tới Mai*; thẻ **Đo lường** tăng | "Agent đề xuất – người duyệt – MCP thực thi – có audit. My iKame là client của framework MCP chung, không tự xây AI." |
+| 8 | Switch **Manager** → `/manager/overview` | **Nhịp team tuần này**: WAER 5/6 ▼, Kudos cho 4/nhận 3, check-in 3/6; **Tín hiệu sớm**: Tuấn Lê im lặng 2 tuần → *Gửi ghi nhận* (composer mở sẵn) / *Đặt 1:1*; thẻ **Gia Huy Ngày 32/60** → *Đặt 1:1 mốc 30 ngày* → receipt MCP; 360° có tab *Hành trình 60 ngày*; bản tin AI nhắc đích danh Tuấn | "Manager thấy tín hiệu trước khi thành đơn nghỉ việc — và hành động mất 2 phút. Một shell, ba lăng kính." |
+| 9 | Tab mobile | Lướt Home của Gia Huy + bottom nav có *Hành trình* | "Dùng được trên điện thoại ngay, không cần app store." |
 
-Kết demo bằng 1 slide: *một shell – ba lăng kính – một trợ lý – một MCP*.
+Kết demo bằng 1 slide: *một shell – ba lăng kính – một trợ lý – một MCP – một vòng đời*.
 
 ---
 
 ## C. 4 quyết định cần chốt (7 phút)
 1. **Scope launch H2 = Feed + Events + Apps (+ Trợ lý AI đọc).** Album/Push/Analytics dashboard → ngay sau launch (KR1 còn lại), không chặn launch.
-2. **Ngày soft launch 05/12** (hoặc gắn Year-End Party) + **đo WAU** = user đăng nhập ≥1 lần/tuần qua GA + SSO log; mục tiêu 80% sau 4 tuần.
+2. **Ngày soft launch 05/12** (hoặc gắn Year-End Party) + **đo WAU** = user đăng nhập ≥1 lần/tuần qua GA + SSO log; mục tiêu 80% sau 4 tuần. Đề xuất bổ sung **WAER** (≥1 hành động có nghĩa/tuần: xác nhận, đăng/kudos, check-in OKR, request) làm North Star từ T11 — WAU dễ đạt giả tạo nếu COM ép mở app.
 3. **COM là owner nội dung**: trả lời rule phân quyền trước 07/11; cam kết *mọi* thông báo chính thức đi qua Feed từ ngày launch (đây là đòn bẩy duy nhất đạt WAU 80%).
 4. **Giữ nguồn lực T11–T12** như PM Monthly 02/10 đã ghi — My iKame là ngoại lệ "ra bản chạy thực tế".
 

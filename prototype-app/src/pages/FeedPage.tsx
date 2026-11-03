@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, ChatsCircle, ShieldWarning, X } from '@phosphor-icons/react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { NewsCard } from '../components/ContentCards';
 import { Tabs } from '../components/Tabs';
@@ -34,6 +34,8 @@ export function FeedPage() {
     addPost, toggleReaction, addComment, toggleSavePost, congratulate, togglePinPost,
   } = useAppState();
 
+  const [searchParams] = useSearchParams();
+  const kudosTo = searchParams.get('compose') === 'kudos' ? searchParams.get('to') ?? undefined : undefined;
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [feedFilter, setFeedFilter] = useState<FeedTab>('company');
@@ -44,6 +46,8 @@ export function FeedPage() {
   useEffect(() => { setExpanded(new Set()); setBannerDismissed(false); setFeedFilter('company'); }, [demoResetCount]);
 
   const feed = useMemo(() => buildFeed(posts, news, user, feedFilter), [posts, news, user, feedFilter]);
+  // Không tự ghi nhận chính mình (Gia Huy cũng nằm trong danh sách đồng nghiệp).
+  const kudosColleagues = useMemo(() => colleagues.filter((person) => person.name !== user.name), [user.name]);
   // Audience check áp dụng cho MỌI lối vào feed — carousel ghim và banner mention cũng vậy.
   const visiblePosts = useMemo(() => posts.filter((post) => isEligible(user, post.audienceTeamIds)), [posts, user]);
   const pinned = useMemo(() => visiblePosts.filter((post) => post.pinned), [visiblePosts]);
@@ -130,7 +134,7 @@ export function FeedPage() {
 
       <div className="community-layout">
         <div className="community-feed">
-          <PostComposer userShort={user.shortName} demoResetCount={demoResetCount} colleagues={colleagues} onSubmit={handleSubmitPost} />
+          <PostComposer userShort={user.shortName} demoResetCount={demoResetCount} colleagues={kudosColleagues} onSubmit={handleSubmitPost} initialKudosTo={kudosTo} />
           <Tabs
             className="neutral-tabs community-feed-tabs"
             tabs={FEED_TABS}

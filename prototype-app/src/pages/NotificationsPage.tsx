@@ -1,17 +1,18 @@
-import { CheckCircle, Info, SealCheck, WarningCircle } from '@phosphor-icons/react';
+import { CheckCircle, Info, SealCheck, Sun, WarningCircle } from '@phosphor-icons/react';
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { Tabs } from '../components/Tabs';
 import { Button, EmptyState } from '../components/UI';
 import type { NotificationItem } from '../types';
+import { NotificationSettings } from './notifications/NotificationSettings';
 
-type TabKey = 'all' | 'todo' | 'read';
+type TabKey = 'all' | 'todo' | 'read' | 'settings';
 
 const BUCKET_ORDER = ['Hôm nay', 'Hôm qua', 'Vài ngày trước', 'Trước đó'];
 
 function dayBucket(time: string): string {
-  if (/phút|giờ/.test(time)) return 'Hôm nay';
+  if (/phút|giờ|vừa xong|hôm nay/i.test(time)) return 'Hôm nay';
   if (/Hôm qua/.test(time)) return 'Hôm qua';
   if (/ngày/.test(time)) return 'Vài ngày trước';
   return 'Trước đó';
@@ -72,15 +73,23 @@ export function NotificationList({
               {row.items.map((item) => (
                 <button key={item.id} className={`notification-item ${item.read ? '' : 'is-unread'}`} onClick={() => openItem(item)}>
                   {/* Icon theo mức ưu tiên (không chỉ dựa vào màu chấm) + vẫn báo trạng thái đọc cho SR. */}
-                  <span className={`notification-icon notification-icon--${item.priority}`} aria-label={item.read ? 'Đã đọc' : 'Chưa đọc'}>
-                    {item.priority === 'critical' ? <WarningCircle size={18} weight="fill" />
-                      : item.priority === 'required' ? <SealCheck size={18} weight="fill" />
-                        : item.priority === 'transactional' ? <CheckCircle size={18} weight="fill" />
-                          : <Info size={18} weight="fill" />}
+                  <span className={`notification-icon notification-icon--${item.groupKey === 'digest' ? 'digest' : item.priority}`} aria-label={item.read ? 'Đã đọc' : 'Chưa đọc'}>
+                    {item.groupKey === 'digest' ? <Sun size={18} weight="fill" />
+                      : item.priority === 'critical' ? <WarningCircle size={18} weight="fill" />
+                        : item.priority === 'required' ? <SealCheck size={18} weight="fill" />
+                          : item.priority === 'transactional' ? <CheckCircle size={18} weight="fill" />
+                            : <Info size={18} weight="fill" />}
                   </span>
                   <span className="notification-copy">
                     <span className="notification-title">{item.title}</span>
                     <span>{item.body}</span>
+                    {/* Bản tin gộp: các dòng việc ngay trong thông báo — không cần mở app mới biết hôm nay có gì. */}
+                    {/* Chỉ phrasing content trong <button> — các dòng là <span> xếp block. */}
+                    {item.lines && item.lines.length > 0 && (
+                      <span className="notification-lines">
+                        {item.lines.map((line) => <span key={line}>{line}</span>)}
+                      </span>
+                    )}
                     <span className="notification-time">{item.time}</span>
                   </span>
                 </button>
@@ -93,7 +102,7 @@ export function NotificationList({
   );
 }
 
-const TAB_EMPTY_COPY: Record<TabKey, { title: string; body: string }> = {
+const TAB_EMPTY_COPY: Record<Exclude<TabKey, 'settings'>, { title: string; body: string }> = {
   all: { title: 'Chưa có thông báo nào', body: 'Thông báo mới sẽ xuất hiện tại đây.' },
   todo: { title: 'Không có việc cần làm', body: 'Bạn đã xử lý hết các thông báo quan trọng.' },
   read: { title: 'Chưa có thông báo nào đã đọc', body: 'Các thông báo đã đọc sẽ hiển thị tại đây.' },
@@ -101,7 +110,9 @@ const TAB_EMPTY_COPY: Record<TabKey, { title: string; body: string }> = {
 
 export function NotificationsPage() {
   const { notifications, markAllNotificationsRead } = useAppState();
-  const [tab, setTab] = useState<TabKey>('all');
+  const [searchParams] = useSearchParams();
+  // /notifications?tab=settings — link từ Hồ sơ mở thẳng Cài đặt.
+  const [tab, setTab] = useState<TabKey>(searchParams.get('tab') === 'settings' ? 'settings' : 'all');
   const [receipt, setReceipt] = useState(false);
 
   const lists = useMemo(() => ({
@@ -111,7 +122,7 @@ export function NotificationsPage() {
   }), [notifications]);
 
   const unreadTotal = notifications.filter((item) => !item.read).length;
-  const activeList = lists[tab];
+  const activeList = tab === 'settings' ? [] : lists[tab];
 
   const markAll = () => {
     markAllNotificationsRead();
@@ -137,13 +148,16 @@ export function NotificationsPage() {
           { key: 'all' as TabKey, label: `Tất cả (${lists.all.length})` },
           { key: 'todo' as TabKey, label: `Cần làm (${lists.todo.length})` },
           { key: 'read' as TabKey, label: `Đã đọc (${lists.read.length})` },
+          { key: 'settings' as TabKey, label: 'Cài đặt' },
         ]}
         active={tab}
         onChange={setTab}
         ariaLabel="Bộ lọc thông báo"
       />
 
-      {activeList.length > 0 ? <NotificationList items={activeList} /> : <EmptyState title={TAB_EMPTY_COPY[tab].title} body={TAB_EMPTY_COPY[tab].body} />}
+      {tab === 'settings'
+        ? <NotificationSettings />
+        : activeList.length > 0 ? <NotificationList items={activeList} /> : <EmptyState title={TAB_EMPTY_COPY[tab].title} body={TAB_EMPTY_COPY[tab].body} />}
     </div>
   );
 }

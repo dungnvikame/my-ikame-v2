@@ -1,4 +1,5 @@
 import type { ApprovalItem, ContractInfo, DailyCheckIn, Equipment, LeaveBalance, Payslip, RequestItem, SeniorityEntry } from '../types';
+import { HUY_JOINED_AT, huyJourneyDateLabel } from './onboarding-data';
 
 // Hồ sơ (Demo v2) — dữ liệu hư cấu của An, không dùng thông tin nhân viên thật.
 export const initialDailyCheckIn: DailyCheckIn = { done: false };
@@ -27,6 +28,51 @@ export const seniorityEntries: SeniorityEntry[] = [
   { id: 'seniority-award', dateLabel: 'Q4-2025', title: 'Giải iKame Star Q4-2025', note: 'Ghi nhận đóng góp nổi bật trong dự án Core DS 1.1.' },
   { id: 'seniority-2years', dateLabel: '06/2025', title: 'Tròn 2 năm đồng hành', note: 'Kỷ niệm 2 năm gắn bó cùng iKame.' },
 ];
+
+/** Thâm niên theo personId — người mới chỉ có 2 cột mốc; người không có entry riêng dùng mặc định của An. */
+export const seniorityByPerson: Record<string, SeniorityEntry[]> = {
+  person_an: seniorityEntries,
+  person_huy: [
+    { id: 'seniority-join', dateLabel: HUY_JOINED_AT, title: 'Gia nhập iKame', note: 'Bắt đầu vai trò Product Designer (thử việc) tại team Product.' },
+    { id: 'seniority-30d', dateLabel: huyJourneyDateLabel(30), title: 'Huy hiệu 30 ngày đầu', note: 'Hoàn thành mốc Vững vàng của hành trình 60 ngày.' },
+  ],
+};
+
+/** Hợp đồng, phiếu lương, thiết bị theo personId — người mới (thử việc) không được thấy dữ liệu của An. */
+export const contractByPerson: Record<string, ContractInfo> = {
+  person_huy: {
+    type: 'HĐ thử việc 2 tháng',
+    signedAt: HUY_JOINED_AT,
+    validity: 'Đang thử việc · ký HĐLĐ chính thức sau ngày 60',
+    workMode: 'Toàn thời gian · Hybrid (3 ngày văn phòng)',
+  },
+};
+
+export const payslipsByPerson: Record<string, Payslip[]> = {
+  person_huy: [
+    { id: 'payslip-huy-1', periodLabel: 'Kỳ lương tháng đầu (thử việc 85%)', amountMasked: '•• ••• ••• đ', amountRevealed: '14.450.000 đ', statusLabel: 'Đã thanh toán' },
+  ],
+};
+
+export const equipmentByPerson: Record<string, Equipment[]> = {
+  person_huy: [
+    { id: 'equip-huy-macbook', name: 'MacBook Air 13" M3', model: 'MacBook Air 13-inch (M3, 2024)', serial: 'IK-2610-0231', assignedAt: HUY_JOINED_AT, condition: 'Cấp ngày đầu tiên · đang sử dụng tốt' },
+  ],
+};
+
+/** Phép năm theo personId — người mới tích luỹ 1 ngày/tháng trong thử việc. */
+export const leaveBalanceByPerson: Record<string, LeaveBalance> = {
+  person_huy: {
+    annualTotal: 12,
+    annualUsed: 0,
+    annualRemaining: 1,
+    carriedOver: 0,
+    sickUsed: 0,
+    weddingLeave: 4,
+    insuranceLabel: 'Bảo hiểm sức khoẻ: cấp sau khi ký HĐLĐ chính thức',
+    healthCheckLabel: 'Khám sức khoẻ đầu vào: đã hoàn tất',
+  },
+};
 
 // Lương & hợp đồng — số liệu hư cấu; số tiền che mặc định, xem đầy đủ qua handoff iHRM.
 export const contractInfo: ContractInfo = {

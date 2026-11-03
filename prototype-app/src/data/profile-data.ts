@@ -1,4 +1,5 @@
 import type { HrProfile, PersonalDocument, SensitiveInfo } from '../types';
+import { HUY_JOINED_AT } from './onboarding-data';
 
 /**
  * Hồ sơ cá nhân "như thật" — nhân vật hư cấu, dữ liệu theo cấu trúc HRIS. Ngày sinh luôn
@@ -59,6 +60,25 @@ export const hrProfiles: Record<string, HrProfile> = {
     location: 'Tầng 9 · Tòa iKame Hà Nội',
     syncedAt: 'HRIS · cập nhật 26/10/2026',
   },
+  // Người mới — ngày gia nhập lùi từ ngày máy (onboarding-data) để hành trình luôn ở Ngày 32/60.
+  person_huy: {
+    personId: 'person_huy',
+    employeeCode: 'IK-2610-0231',
+    birthDate: '09/07/2001',
+    gender: 'Nam',
+    email: 'giahuy.pham@ikameglobal.com',
+    slackHandle: '@giahuy.pham',
+    phone: '0933 777 889',
+    title: 'Product Designer',
+    level: 'Junior (P1) · thử việc',
+    unit: 'Product & Technology · Team Product',
+    managerName: 'Trần Thanh Mai',
+    joinedAt: HUY_JOINED_AT,
+    employmentType: 'Thử việc 2 tháng',
+    workMode: 'Hybrid · 3 ngày văn phòng',
+    location: 'Tầng 19 · Tòa iKame Hà Nội',
+    syncedAt: 'HRIS · cập nhật hôm nay',
+  },
 };
 
 const anDocuments: PersonalDocument[] = [
@@ -87,6 +107,12 @@ export const personalDocumentsByPerson: Record<string, PersonalDocument[]> = {
     { id: 'doc-id', name: 'CCCD gắn chip (bản scan)', kind: 'identity', status: 'valid', note: 'Cập nhật 06/2024' },
     { id: 'doc-insurance', name: 'Sổ BHXH điện tử', kind: 'insurance', status: 'valid', note: 'Đã liên kết VssID' },
   ],
+  person_huy: [
+    { id: 'doc-contract', name: 'HĐ thử việc 2 tháng', kind: 'contract', status: 'valid', note: `Ký ${HUY_JOINED_AT} · hết thử việc sau 60 ngày` },
+    { id: 'doc-nda', name: 'Cam kết bảo mật thông tin (NDA) 2026', kind: 'policy', status: 'valid', note: `Ký ngày đầu tiên ${HUY_JOINED_AT}` },
+    { id: 'doc-id', name: 'CCCD gắn chip (bản scan)', kind: 'identity', status: 'valid', note: 'Nộp khi gia nhập' },
+    { id: 'doc-degree', name: 'Bằng tốt nghiệp đại học', kind: 'degree', status: 'missing', action: 'submit', note: 'HR cần bản scan trước khi ký HĐLĐ chính thức' },
+  ],
 };
 
 /** Dữ liệu nhạy cảm theo từng người — số liệu hư cấu. */
@@ -94,6 +120,7 @@ export const sensitiveByPerson: Record<string, SensitiveInfo> = {
   person_an: { bankAccount: '0123 4567 8901', bankName: 'Techcombank · CN Hà Nội', insuranceNumber: '0123456789', idNumber: '001098012345', salaryBand: 'P3 · bậc 4' },
   person_mai: { bankAccount: '1900 2233 4455', bankName: 'Vietcombank · CN Ba Đình', insuranceNumber: '0198765432', idNumber: '001091054321', salaryBand: 'M1 · bậc 2' },
   person_ngoc: { bankAccount: '0555 6677 8899', bankName: 'MB Bank · CN Hoàn Kiếm', insuranceNumber: '0112233445', idNumber: '001094067890', salaryBand: 'L2 · bậc 3' },
+  person_huy: { bankAccount: '0707 1122 3344', bankName: 'Techcombank · CN Hà Nội', insuranceNumber: 'Chưa cấp', idNumber: '001201033456', salaryBand: 'P1 · thử việc 85%' },
 };
 
 /** Giấy tờ cần nhắc trên Home/Trợ lý AI: thiếu hoặc hết hạn ≤30 ngày. */

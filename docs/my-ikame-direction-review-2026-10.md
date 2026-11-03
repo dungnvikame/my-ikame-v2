@@ -81,6 +81,8 @@ Cách làm: áp **quy trình AI-native của anh Nghĩa** cho bản này — PRD
 
 ---
 
+> **Cập nhật 27/10 (chiều):** sau khi đối chiếu deck *Vòng đời iKamer* (5/2026), thứ tự ưu tiên bước tiếp theo đổi: **Onboarding Journey 60 ngày + Notification engine + Manager Intelligence lát mỏng** — xem `my-ikame-journey-map-insights-2026-10.md`.
+
 ## 5. Câu hỏi cần Dũng chốt trước khi lập plan chi tiết
 1. "Vận hành" = COM/HR Admin lens trong My iKame (đề xuất) hay bao gồm cả cấu hình nghiệp vụ sâu (trái D2 spec)?
 2. iCheck: **widget + deep-link + hành động qua MCP** (đề xuất) hay tái hiện cả lịch tháng/lịch sử trong My iKame?

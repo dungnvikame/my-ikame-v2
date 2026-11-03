@@ -14,17 +14,23 @@ type PostComposerProps = {
   demoResetCount: number;
   colleagues: Colleague[];
   onSubmit: (input: ComposerSubmit) => void;
+  /** Mở sẵn chế độ Kudos với người nhận (từ Tín hiệu sớm của manager: /feed?compose=kudos&to=…). */
+  initialKudosTo?: string;
 };
 
 /** Composer 2 chế độ: chia sẻ thường / ghi nhận đồng nghiệp (Kudos) — cả hai qua bộ lọc tự động. */
-export function PostComposer({ userShort, demoResetCount, colleagues, onSubmit }: PostComposerProps) {
-  const [mode, setMode] = useState<ComposerMode>('share');
+export function PostComposer({ userShort, demoResetCount, colleagues, onSubmit, initialKudosTo }: PostComposerProps) {
+  const presetRecipient = colleagues.find((person) => person.name === initialKudosTo)?.name;
+  const [mode, setMode] = useState<ComposerMode>(presetRecipient ? 'kudos' : 'share');
   const [body, setBody] = useState('');
-  const [recipient, setRecipient] = useState(colleagues[0]?.name ?? '');
+  const [recipient, setRecipient] = useState(presetRecipient ?? colleagues[0]?.name ?? '');
   const [rejection, setRejection] = useState<Extract<ModerationResult, { ok: false }> | null>(null);
 
   // Draft is component-local UI state — must clear on resetDemo() (F4), not stored in AppState.
   useEffect(() => { setBody(''); setMode('share'); setRejection(null); setRecipient(colleagues[0]?.name ?? ''); }, [demoResetCount, colleagues]);
+  useEffect(() => {
+    if (presetRecipient) { setMode('kudos'); setRecipient(presetRecipient); }
+  }, [presetRecipient]);
 
   const canSubmit = body.trim().length > 0 && (mode === 'share' || !!recipient);
 

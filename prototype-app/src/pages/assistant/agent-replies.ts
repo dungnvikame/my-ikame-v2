@@ -90,6 +90,8 @@ export type AgentCtx = {
   /** Daily digest — chấm công hôm nay + nhắc giấy tờ (cùng nguồn với Home). */
   checkedIn: boolean;
   documentReminders?: DigestCtx['documentReminders'];
+  /** Người mới: quest hành trình đến hạn — cùng mapping với Home (lib/onboarding.journeyDigestQuests). */
+  journeyQuests?: DigestCtx['journeyQuests'];
 };
 
 const MEETING_ROOMS = [
@@ -258,7 +260,7 @@ function buildDailyDigestReply(q: string, ctx: AgentCtx): AgentMessage | null {
   // Regex hẹp: "hôm nay tôi làm việc từ xa" là intent WFH, không phải digest.
   if (!/hôm nay.*(cần làm|làm gì|việc gì|có gì)|việc hôm nay|cần làm gì|to-?do/.test(q)) return null;
 
-  const items = buildDailyDigestItems({ news: ctx.news, events: ctx.events, goals: ctx.goals, checkedIn: ctx.checkedIn, documentReminders: ctx.documentReminders });
+  const items = buildDailyDigestItems({ news: ctx.news, events: ctx.events, goals: ctx.goals, checkedIn: ctx.checkedIn, documentReminders: ctx.documentReminders, journeyQuests: ctx.journeyQuests });
   const urgent = items.filter((item) => item.urgent).length;
 
   return {

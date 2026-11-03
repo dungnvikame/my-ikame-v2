@@ -1,5 +1,5 @@
 import { useEffect, useState, type RefCallback } from 'react';
-import { BookmarkSimple, ChatCircle, HandsClapping, Heart, PushPin, SealCheck, ShareNetwork } from '@phosphor-icons/react';
+import { BookmarkSimple, ChatCircle, HandsClapping, Heart, PushPin, Robot, SealCheck, ShareNetwork } from '@phosphor-icons/react';
 import type { Post, PostCover, ReactionKind } from '../../types';
 import { Button, StatusPill } from '../../components/UI';
 
@@ -62,7 +62,10 @@ export function PostCard({
           <span className="community-post-meta">{post.role} · {post.time}</span>
         </div>
         {post.kudos && <StatusPill tone="success"><HandsClapping size={14} />Ghi nhận</StatusPill>}
-        {post.official && <StatusPill tone="info"><SealCheck size={14} />Chính thức</StatusPill>}
+        {/* Bài tự động: một nhãn nguồn thay cho "Chính thức" — người đọc biết không ai ngồi viết bài này. */}
+        {post.autoSource
+          ? <StatusPill tone="info"><Robot size={14} />Tự động từ {post.autoSource}</StatusPill>
+          : post.official && <StatusPill tone="info"><SealCheck size={14} />Chính thức</StatusPill>}
         {onTogglePin && (
           <button type="button" className={`community-pin-toggle ${post.pinned ? 'is-active' : ''}`} aria-pressed={!!post.pinned} onClick={() => onTogglePin(post.id)}>
             <PushPin size={15} weight={post.pinned ? 'fill' : 'regular'} /> {post.pinned ? 'Bỏ ghim' : 'Ghim'}

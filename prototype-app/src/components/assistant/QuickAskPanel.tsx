@@ -9,6 +9,7 @@ import {
 } from '../../pages/assistant/assistant-shared';
 import { Button, IconButton } from '../UI';
 import { documentReminders } from '../../data/profile-data';
+import { journeyDigestQuests } from '../../lib/onboarding';
 
 const ASK_TRIGGER_SELECTOR = 'button[aria-label="Hỏi iKame"]';
 
@@ -21,7 +22,7 @@ const ASK_TRIGGER_SELECTOR = 'button[aria-label="Hỏi iKame"]';
 export function QuickAskPanel() {
   const {
     askOpen, setAskOpen, demoResetCount, perspective, user,
-    news, events, goals, knowledgeDocs, leaveBalance, attention, memberEksStats, approvals, dailyCheckIn, documents,
+    news, events, goals, knowledgeDocs, leaveBalance, attention, memberEksStats, approvals, dailyCheckIn, documents, isNewJoiner, journey,
     acknowledgeNews, addAttendanceRequest, recordAgentTask,
   } = useAppState();
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ export function QuickAskPanel() {
   function ask(question: string) {
     const trimmed = question.trim();
     if (!trimmed || busy) return;
-    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance, perspective, attention, memberEksStats, approvals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents) };
+    const ctx = { user, news, events, goals, knowledgeDocs, leaveBalance, perspective, attention, memberEksStats, approvals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents), journeyQuests: isNewJoiner ? journeyDigestQuests(journey) : undefined };
     setMessages((prev) => [
       ...prev,
       { id: generateMessageId(), role: 'user' as const, text: trimmed },

@@ -1,5 +1,6 @@
-import { ArrowCounterClockwise, Clock, EnvelopeSimple, Moon, SlackLogo, Sun } from '@phosphor-icons/react';
+import { ArrowCounterClockwise, BellRinging, Clock, Compass, EnvelopeSimple, Moon, SlackLogo, Sun } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { Button, StatusPill } from '../components/UI';
 import { ProfileActivity } from './profile/ProfileActivity';
@@ -7,6 +8,8 @@ import { ProfileDocuments } from './profile/ProfileDocuments';
 import { ProfileHrisCard } from './profile/ProfileHrisCard';
 import { ProfileEquipment, ProfileLeave, ProfilePay, ProfileTimeline } from './profile/ProfileHrSection';
 import { ProfileOrgSection } from './profile/ProfileOrgSection';
+import { LIFECYCLE_BADGES } from '../data/onboarding-data';
+import { earnedBadges } from '../lib/onboarding';
 
 /**
  * Hồ sơ redesign — theo pattern employee-profile của các HR platform (BambooHR/HiBob):
@@ -17,9 +20,13 @@ export function ProfilePage() {
   const {
     user, theme, setTheme, resetDemo, demoResetCount,
     news, events, checkInReports, posts, leaveBalance, equipment, seniorityEntries,
-    payslips, contractInfo, hrProfile, documents, sensitive, sensitiveUnlocked,
+    payslips, contractInfo, hrProfile, documents, sensitive, sensitiveUnlocked, journeyDay, journey, preference,
+    perspective, demoNewJoiner, setDemoNewJoiner,
   } = useAppState();
+  // Huy hiệu mốc vòng đời theo số ngày gắn bó (HRIS joinedAt): onboarding cho người có hành trình, thâm niên lấy mốc cao nhất.
+  const badges = earnedBadges(journeyDay, LIFECYCLE_BADGES, !!journey);
   const [resetReceipt, setResetReceipt] = useState(false);
+  const navigate = useNavigate();
 
   // Receipt only for a reset triggered while this page is mounted.
   useEffect(() => {
@@ -50,6 +57,11 @@ export function ProfilePage() {
               <span><SlackLogo size={14} />{hrProfile.slackHandle}</span>
               <span><Clock size={14} />{user.timezone}</span>
             </div>
+            {badges.length > 0 && (
+              <div className="profile-badges" aria-label="Huy hiệu mốc">
+                {badges.map((badge) => <span key={badge.id} title={badge.description}><span aria-hidden="true">{badge.emoji}</span>{badge.title}</span>)}
+              </div>
+            )}
           </div>
         </div>
         <div className="profile-stats" role="list">
@@ -90,6 +102,13 @@ export function ProfilePage() {
       <section className="profile-settings" aria-label="Cài đặt">
         <div className="side-info profile-section profile-setting-card">
           <div>
+            <strong>Thông báo</strong>
+            <p>Chọn nhóm thông báo muốn nhận; Bản tin sáng gộp việc hôm nay lúc {preference.digestTime}.</p>
+          </div>
+          <Link className="button" to="/notifications?tab=settings"><BellRinging size={18} />Cài đặt thông báo</Link>
+        </div>
+        <div className="side-info profile-section profile-setting-card">
+          <div>
             <strong>Hiển thị</strong>
             <p>Chuyển đổi giao diện sáng/tối cho toàn bộ ứng dụng.</p>
           </div>
@@ -103,7 +122,15 @@ export function ProfilePage() {
             <p>Đưa dữ liệu demo (tin tức, sự kiện, mục tiêu, iKame Feed, hội thoại AI) về trạng thái ban đầu.</p>
             {resetReceipt && <p className="receipt" role="status">Đã đặt lại dữ liệu demo về trạng thái ban đầu.</p>}
           </div>
-          <Button icon={<ArrowCounterClockwise size={18} />} onClick={resetDemo}>Đặt lại demo</Button>
+          <div className="profile-setting-actions">
+            {/* Mobile không có sidebar → công tắc Người mới cũng nằm ở đây để demo trên điện thoại. */}
+            {perspective === 'ikamer' && (
+              <Button icon={<Compass size={18} />} aria-pressed={demoNewJoiner} onClick={() => { setDemoNewJoiner(!demoNewJoiner); navigate('/home'); }}>
+                {demoNewJoiner ? 'Quay lại An' : 'Xem như người mới (Gia Huy)'}
+              </Button>
+            )}
+            <Button icon={<ArrowCounterClockwise size={18} />} onClick={resetDemo}>Đặt lại demo</Button>
+          </div>
         </div>
       </section>
     </div>

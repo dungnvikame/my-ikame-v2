@@ -1,6 +1,7 @@
 import { useAppState } from '../AppState';
 import { useToast } from '../components/toast';
 import { AdminMetrics } from './admin/AdminMetrics';
+import { AdminWaerBreakdown } from './admin/AdminWaerBreakdown';
 import { OfficialNewsTable } from './admin/OfficialNewsTable';
 import { PinManager } from './admin/PinManager';
 
@@ -37,6 +38,7 @@ export function AdminPage() {
         </div>
       </header>
       <AdminMetrics news={news} />
+      <AdminWaerBreakdown />
       <OfficialNewsTable news={news} onPush={handlePush} onRemind={handleRemind} />
       <PinManager posts={posts} onTogglePin={handlePin} />
     </div>

@@ -10,7 +10,21 @@ export * from './team-360';
 export const TEAM_PRODUCT = 'team_product';
 export const TEAM_FINANCE = 'team_finance';
 
-export const users: Record<'an' | 'mai' | 'binh' | 'ngoc', User> = {
+export const users: Record<'an' | 'mai' | 'binh' | 'ngoc' | 'huy', User> = {
+  // Người mới — demo overlay Hành trình 60 ngày trên lăng kính iKamer (chip "Người mới").
+  huy: {
+    id: 'person_huy',
+    personId: 'person_huy',
+    name: 'Phạm Gia Huy',
+    shortName: 'Huy',
+    role: 'Product Designer',
+    team: 'Product & Technology',
+    teamId: TEAM_PRODUCT,
+    perspective: 'ikamer',
+    availablePerspectives: ['ikamer'],
+    timezone: 'Asia/Ho_Chi_Minh',
+    roleKey: 'member',
+  },
   // COM Admin — chủ kênh truyền thông chính thức (góc nhìn quản trị nội dung).
   ngoc: {
     id: 'person_ngoc',
@@ -478,14 +492,14 @@ export const attentionItems: AttentionItem[] = [
   },
   {
     id: 'new-joiner',
-    title: 'Chuẩn bị chào đón thành viên mới',
-    people: 'Phạm Gia Huy · Bắt đầu 17/08',
-    reason: 'Còn 6 ngày',
-    source: 'HRIS · Cập nhật hôm qua',
-    freshness: 'Cập nhật hôm qua',
+    title: 'Đặt 1:1 mốc 30 ngày với thành viên mới',
+    people: 'Phạm Gia Huy · Ngày 32/60',
+    reason: 'Khảo sát 30 ngày chưa trả lời · manager tham gia → 3,4× thành công',
+    source: 'Onboarding · Cập nhật hôm nay',
+    freshness: 'Cập nhật hôm nay',
     severity: 'info',
     required: false,
-    action: 'Xem checklist',
+    action: 'Xem hành trình',
     teamId: TEAM_PRODUCT,
     state: 'open',
   },
@@ -513,11 +527,31 @@ export const teamMembers: TeamMember[] = [
   { id: 'member_ha', name: 'Hà Phạm', role: 'QA Engineer', teamId: TEAM_PRODUCT, attentionSummary: 'Chưa phản hồi iConnect tháng 8', status: 'ok', lastUpdated: '08:45' },
   { id: 'member_tuan', name: 'Tuấn Lê', role: 'Backend Developer', teamId: TEAM_PRODUCT, attentionSummary: 'EKS 38% · 1:1 gần nhất 4 tuần trước', status: 'needs_attention', lastUpdated: '08:45' },
   { id: 'member_ngocanh', name: 'Ngọc Anh', role: 'Business Analyst', teamId: TEAM_PRODUCT, attentionSummary: 'Chưa phản hồi iConnect tháng 8', status: 'ok', lastUpdated: '08:45' },
-  { id: 'member_giahuy', name: 'Gia Huy', role: 'Product Designer', teamId: TEAM_PRODUCT, attentionSummary: 'Sắp gia nhập · 17/08', status: 'no_data', lastUpdated: '17/08', momentType: 'new_joiner' },
+  // Người mới đang trong hành trình 60 ngày (khớp users.huy / onboarding-data: Ngày 32/60, 7/12 cột mốc).
+  { id: 'member_giahuy', name: 'Gia Huy', role: 'Product Designer', teamId: TEAM_PRODUCT, attentionSummary: 'Người mới · hành trình 60 ngày đang đúng nhịp', status: 'ok', lastUpdated: 'Hôm nay', momentType: 'new_joiner', personId: 'person_huy' },
   { id: 'member_binh_out_of_scope', name: 'Đỗ Quang Bình', role: 'Finance Analyst', teamId: TEAM_FINANCE, attentionSummary: 'Ngoài phạm vi quản lý', status: 'needs_attention', lastUpdated: '07:30' },
 ];
 
 export const initialNotifications: NotificationItem[] = [
+  {
+    // Bản tin sáng do notification engine gộp lúc 08:00 — seed tĩnh cho An; "Gửi lại" tạo bản động.
+    id: 'n0-digest',
+    // Khớp đúng 5 dòng đầu "Việc hôm nay" của An trên Home (buildDailyDigestItems, HOME_DIGEST_LIMIT).
+    title: 'Bản tin sáng 08:00 · 5 việc hôm nay',
+    body: '4 việc khẩn, còn lại theo lịch — mở Trang chủ để xử lý.',
+    time: '08:00 hôm nay',
+    priority: 'informational',
+    read: false,
+    href: '/home',
+    groupKey: 'digest',
+    lines: [
+      'Chấm công hôm nay · iCheck · chưa ghi nhận giờ vào',
+      'Xác nhận: Cập nhật chính sách bảo mật tài khoản nội bộ · Hạn 17:00 hôm nay',
+      'Gia hạn: Cam kết bảo mật thông tin (NDA) 2026 · Hết hạn 20/11/2026',
+      'Nộp bổ sung: Bằng tốt nghiệp đại học · HR đang chờ',
+      'Check-in OKR: Hoàn thiện design system Core DS 1.1 cho 5 module chính · Hạn check-in: hôm nay',
+    ],
+  },
   {
     id: 'n1',
     title: 'Bạn cần xác nhận một thông báo',

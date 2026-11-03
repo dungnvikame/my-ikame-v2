@@ -2,14 +2,18 @@ import { useEffect, useState } from 'react';
 import { ArrowRight, CheckCircle, ClipboardText, UsersThree, WarningCircle, XCircle } from '@phosphor-icons/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { teamMembers } from '../data/mockData';
+import { teamEngagement } from '../data/team-engagement';
 import { AttentionCard } from '../components/ContentCards';
 import { ICheckWidget } from '../components/icheck/ICheckWidget';
 import { Button, EmptyState, SectionHeader, StatusPill } from '../components/UI';
 import { useAppState } from '../AppState';
+import { checkInOnTime, earlySignals } from '../lib/engagement';
 import { rankCards } from '../lib/ranking';
 import type { RankableCard } from '../lib/ranking';
 import type { ApprovalItem, AttentionItem, TeamMember } from '../types';
 import { attentionHref, ManagerAiBrief } from './manager/ManagerAiBrief';
+import { NewJoinerCard } from './manager/NewJoinerCard';
+import { TeamPulse } from './manager/TeamPulse';
 
 type RankableAttention = RankableCard & { source: AttentionItem };
 
@@ -106,8 +110,11 @@ export function ManagerPage() {
   const rankedAttention = rankCards(scoped.map(toRankable)).map((ranked) => ranked.source);
   const queue = rankedAttention.slice(0, 5);
   const roster = teamMembers.filter((member) => member.teamId === user.teamId);
+  // Engagement chỉ của thành viên trong scope — cùng nguồn cho ô stat, Nhịp team và bản tin AI.
+  const engagement = teamEngagement.filter((row) => roster.some((member) => member.id === row.memberId));
+  const checkIn = checkInOnTime(engagement, 'thisWeek');
+  const signals = earlySignals(engagement, roster);
 
-  const okCount = roster.filter((member) => member.status === 'ok').length;
   const criticalCount = rankedAttention.filter((item) => item.severity === 'critical').length;
   const openApprovals = approvals.filter((item) => item.state === 'open').length;
   const moments = roster.filter((member) => member.momentType);
@@ -143,7 +150,7 @@ export function ManagerPage() {
         </Link>
         <Link to="/manager/team" role="listitem" className="manager-stat">
           <span className="manager-stat-icon manager-stat-icon--success"><CheckCircle size={20} weight="duotone" /></span>
-          <div><strong>{okCount}/{roster.length}</strong><span>Check-in tuần đã hoàn tất</span></div>
+          <div><strong>{checkIn.count}/{checkIn.total}</strong><span>Check-in OKR đúng hạn tuần này</span></div>
         </Link>
         <Link to="/manager/team" role="listitem" className="manager-stat">
           <span className="manager-stat-icon manager-stat-icon--info"><UsersThree size={20} weight="duotone" /></span>
@@ -154,10 +161,11 @@ export function ManagerPage() {
       {/* Manager cũng là iKamer: chấm công/phép của chính mình nằm ngay trên Tổng quan. */}
       <div className="section-block"><ICheckWidget compact /></div>
 
-      <ManagerAiBrief items={rankedAttention} />
+      <ManagerAiBrief items={rankedAttention} signals={signals} />
 
       <div className="manager-grid">
         <div className="manager-main">
+          <TeamPulse rows={engagement} roster={roster} />
           <ApprovalQueue />
 
           <section className="manager-attention section-block">
@@ -186,7 +194,9 @@ export function ManagerPage() {
           {moments.length === 0 ? (
             <p className="inline-guidance">Không có khoảnh khắc nào cần chú ý lúc này.</p>
           ) : (
-            moments.slice(0, 2).map((member) => (
+            moments.slice(0, 2).map((member) => member.momentType === 'new_joiner' && member.personId ? (
+              <NewJoinerCard key={member.id} member={member} />
+            ) : (
               <article className="moment-card" key={member.id}>
                 <span className="avatar avatar--large">{member.name.charAt(0)}</span>
                 <div>

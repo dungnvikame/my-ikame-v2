@@ -210,6 +210,8 @@ export type TeamMember = {
   status: TeamMemberStatus;
   lastUpdated: string;
   momentType?: 'new_joiner' | 'birthday' | 'anniversary';
+  /** Thành viên cũng là user demo (có hồ sơ HRIS + hành trình) → nối sang dữ liệu cá nhân. */
+  personId?: string;
 };
 
 export type NotificationItem = {
@@ -221,6 +223,16 @@ export type NotificationItem = {
   read: boolean;
   href: string;
   groupKey?: string;
+  /** Bản tin gộp (Bản tin sáng): các dòng việc hiển thị dưới body. */
+  lines?: string[];
+};
+
+/** Nhóm thông báo người dùng bật/tắt được — `official` khoá theo quy định COM. */
+export type NotificationGroup = 'official' | 'com' | 'feed' | 'events' | 'work' | 'onboarding' | 'manager';
+export type NotificationPreference = {
+  groups: Record<NotificationGroup, boolean>;
+  digestTime: string;
+  quietHours: string;
 };
 
 /** Shared AI citation shape — reused by the search-answer store. ai-scripts.ts keeps its
@@ -247,6 +259,8 @@ export type Post = {
   saved?: boolean;
   /** Bài ghi nhận đồng nghiệp (Kudos) — body là lý do ghi nhận. */
   kudos?: { toName: string; toShort: string };
+  /** Bài chính thức sinh tự động từ sự kiện vòng đời (HRIS/Onboarding) — không do người viết. */
+  autoSource?: 'HRIS' | 'Onboarding';
   reactions: Record<ReactionKind, number>;
   myReactions: ReactionKind[];
   comments: Comment[];
@@ -329,6 +343,28 @@ export type PersonalDocument = {
 /** Dữ liệu nhạy cảm — chỉ hiện sau khi xác thực lại (mock). */
 export type SensitiveInfo = { bankAccount: string; bankName: string; insuranceNumber: string; idNumber: string; salaryBand: string };
 export type SeniorityEntry = { id: string; dateLabel: string; title: string; note: string };
+
+/** Hành trình 60 ngày của người mới — 4 mốc, quest dạng checklist (không EXP/coin). */
+export type JourneyMilestoneKey = 'day0' | 'week1' | 'day30' | 'day60';
+export type JourneyQuest = {
+  id: string;
+  title: string;
+  milestone: JourneyMilestoneKey;
+  /** Ngày hành trình (1-based) cần xong — quá ngày mà chưa xong = trễ. */
+  dueDay: number;
+  source: 'My iKame' | 'iWiki' | 'iGoal' | 'HRIS' | 'Buddy' | 'Manager';
+  /** Route nội bộ (quest làm trong My iKame) hoặc platform gốc qua handoff. */
+  href?: string;
+  platform?: 'iWiki' | 'iGoal';
+};
+export type JourneyProgress = {
+  personId: string;
+  completedQuestIds: string[];
+  buddyMemberId: string;
+  managerPersonId: string;
+};
+/** Huy hiệu mốc vòng đời — nhận theo số ngày gắn bó (hoặc quest), hiện trên Hồ sơ + Feed. */
+export type LifecycleBadge = { id: string; title: string; description: string; dayRequired: number; emoji: string };
 
 /** Mục tiêu — iGoal-style OKR tree. */
 export type OkrLevel = 'company' | 'team' | 'personal';

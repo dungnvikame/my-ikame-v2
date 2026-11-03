@@ -2,16 +2,17 @@ import { useState } from 'react';
 import {
   ArrowLeft, BellRinging, CalendarPlus, ChatCircleText, EnvelopeSimple, Target,
 } from '@phosphor-icons/react';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { memberProfile, teamMembers } from '../data/mockData';
 import { PlatformHandoffButton } from '../components/PlatformHandoff';
 import { Tabs } from '../components/Tabs';
 import { Button, StatusPill } from '../components/UI';
 import { useAppState } from '../AppState';
+import { JourneyTimeline } from './onboarding/JourneyTimeline';
 import { CheckinPanel, GoalsPanel, GrowthPanel, HrPanel, OverviewPanel } from './team/member-tabs';
 import { initials, riskLabel, riskScore, STATUS_LABEL, STATUS_TONE } from './team/team-visuals';
 
-type TabKey = 'overview' | 'goals' | 'checkin' | 'growth' | 'hr';
+type TabKey = 'overview' | 'journey' | 'goals' | 'checkin' | 'growth' | 'hr';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'overview', label: 'Tổng quan' },
@@ -20,6 +21,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'growth', label: 'Ghi nhận & phát triển' },
   { key: 'hr', label: 'Hồ sơ nhân sự' },
 ];
+const JOURNEY_TAB: { key: TabKey; label: string } = { key: 'journey', label: 'Hành trình 60 ngày' };
 
 /**
  * Hồ sơ 360° của thành viên (góc nhìn manager) — pattern học từ Lattice/15Five:
@@ -28,19 +30,36 @@ const TABS: { key: TabKey; label: string }[] = [
  */
 export function MemberDetailPage() {
   const { memberId } = useParams();
-  const { user } = useAppState();
+  const [searchParams] = useSearchParams();
+  const { user, journeyFor } = useAppState();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<TabKey>('overview');
+  const [tab, setTab] = useState<TabKey>(searchParams.get('tab') === 'journey' ? 'journey' : 'overview');
 
   const member = teamMembers.find((item) => item.id === memberId);
   const profile = memberId ? memberProfile(memberId) : undefined;
+  // Người mới trong team: thêm tab Hành trình (read-only, cùng dữ liệu với trang của người mới).
+  const journey = member?.personId ? journeyFor(member.personId) : undefined;
+  const tabs = journey ? [TABS[0], JOURNEY_TAB, ...TABS.slice(1)] : TABS;
+  // ?tab=journey cho người không có hành trình → về Tổng quan (không để tablist không có tab nào được chọn).
+  const activeTab: TabKey = tab === 'journey' && !journey ? 'overview' : tab;
+  // Số liệu hành trình trong Tổng quan 360° lấy từ state sống (sau khi người mới tick quest vẫn khớp).
+  const liveProfile = profile && journey ? {
+    ...profile,
+    signals: profile.signals.map((signal) => signal.key === 'onboarding'
+      ? { ...signal, value: `${journey.completed}/${journey.total} cột mốc`, hint: `Ngày ${journey.day}/60 · ${journey.due.length > 0 ? `${journey.due.length} việc đến hạn` : 'đúng nhịp'} · buddy Lan Nguyễn` }
+      : signal),
+    aiInsight: {
+      ...profile.aiInsight,
+      bullets: [`${journey.completed}/${journey.total} cột mốc hành trình đã xong${journey.due.length > 0 ? `; còn ${journey.due.length} việc đến hạn hoặc trễ` : ', đúng nhịp'}.`, ...profile.aiInsight.bullets.slice(1)],
+    },
+  } : profile;
 
   if (!member) return <Navigate to="/not-found" replace />;
   // Scope boundary: manager chỉ xem được hồ sơ thành viên trong team mình.
   // Kiểm tra scope TRƯỚC hồ sơ — người ngoài phạm vi phải nhận "không có quyền",
   // không phải "không tìm thấy" (tránh lộ sự tồn tại của nhân sự team khác).
   if (member.teamId !== user.teamId) return <Navigate to="/forbidden" replace />;
-  if (!profile) return <Navigate to="/not-found" replace />;
+  if (!profile || !liveProfile) return <Navigate to="/not-found" replace />;
 
   const risk = riskLabel(riskScore(profile));
   const askAi = (prompt: string) => navigate(`/assistant?q=${encodeURIComponent(prompt)}`);
@@ -82,14 +101,31 @@ export function MemberDetailPage() {
 
       <Tabs
         className="neutral-tabs member-tabs"
-        tabs={TABS}
-        active={tab}
+        tabs={tabs}
+        active={activeTab}
         onChange={setTab}
         ariaLabel="Nội dung hồ sơ"
       />
 
       <div className="member-tab-panel" role="tabpanel">
-        {tab === 'overview' && <OverviewPanel profile={profile} />}
+        {activeTab === 'overview' && <OverviewPanel profile={liveProfile} />}
+        {activeTab === 'journey' && journey && (
+          <>
+            <JourneyTimeline journey={journey} title={`Hành trình 60 ngày · Ngày ${journey.day}`} />
+            <section className="section-block">
+              <h2 className="member-section-title">Việc còn lại ({journey.total - journey.completed})</h2>
+              <ul className="member-activity">
+                {journey.quests.filter((quest) => !quest.done).map((quest) => (
+                  <li key={quest.id}>
+                    <span className="member-activity-source">{quest.source}</span>
+                    <span className="member-activity-text">{quest.title}</span>
+                    <span className="member-activity-time">{quest.late ? `Trễ ${journey.day - quest.dueDay} ngày` : `Hạn ngày ${quest.dueDay}`}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </>
+        )}
         {tab === 'goals' && <GoalsPanel profile={profile} />}
         {tab === 'checkin' && <CheckinPanel profile={profile} />}
         {tab === 'growth' && <GrowthPanel profile={profile} />}
