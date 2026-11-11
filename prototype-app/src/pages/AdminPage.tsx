@@ -4,6 +4,7 @@ import { AdminMetrics } from './admin/AdminMetrics';
 import { AdminWaerBreakdown } from './admin/AdminWaerBreakdown';
 import { OfficialNewsTable } from './admin/OfficialNewsTable';
 import { PinManager } from './admin/PinManager';
+import { EffectivenessPanel } from './admin/EffectivenessPanel';
 
 /**
  * Tổng quan COM (góc nhìn COM Admin): đo lường + vận hành kênh truyền thông chính thức.
@@ -37,6 +38,7 @@ export function AdminPage() {
           <p>Chào {user.shortName} — kênh chính thức của iKame: ai đã đọc, ai chưa xác nhận, và bài nào đang được ghim.</p>
         </div>
       </header>
+      <EffectivenessPanel />
       <AdminMetrics news={news} />
       <AdminWaerBreakdown />
       <OfficialNewsTable news={news} onPush={handlePush} onRemind={handleRemind} />

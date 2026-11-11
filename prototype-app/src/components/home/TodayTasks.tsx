@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowSquareOutIcon as ArrowSquareOut, CheckCircleIcon as CheckCircle, XIcon as X } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import type { DigestItem } from '../../pages/assistant/daily-digest';
 import { ButtonLink, ChipButton, IconButton, TextButton } from '../UI';
+import { trackFlow } from '../../lib/metrics/metrics';
 
 /**
  * "Cần làm ngay" trên Trang chủ. Mỗi dòng: vạch màu theo nguồn, tên việc, nguồn + bối cảnh,
@@ -36,6 +37,8 @@ function metaOf(item: DigestItem): string {
 
 export function TodayTasks({ items, sourceNote, askHref }: { items: DigestItem[]; sourceNote: string; askHref: string }) {
   const [dismissed, setDismissed] = useState<string[]>([]);
+  // Có việc đang chờ = bắt đầu luồng; bấm vào một hành động = làm xong luồng.
+  useEffect(() => { if (items.length > 0) trackFlow('today', 'start'); }, [items.length]);
   const [expanded, setExpanded] = useState(false);
   const [onlyUrgent, setOnlyUrgent] = useState(false);
 
@@ -76,8 +79,8 @@ export function TodayTasks({ items, sourceNote, askHref }: { items: DigestItem[]
                 <span><b>{item.source}</b>{metaOf(item)}{item.urgent && <em>Gấp</em>}</span>
               </div>
               {item.href
-                ? <ButtonLink variant="dim" size="m" href={item.href}>{actionLabel(item)}<ArrowSquareOut size={14} aria-hidden="true" /></ButtonLink>
-                : <ButtonLink variant="dim" size="m" to={item.to}>{actionLabel(item)}</ButtonLink>}
+                ? <ButtonLink onClick={() => trackFlow('today', 'done')} variant="dim" size="m" href={item.href}>{actionLabel(item)}<ArrowSquareOut size={14} aria-hidden="true" /></ButtonLink>
+                : <ButtonLink onClick={() => trackFlow('today', 'done')} variant="dim" size="m" to={item.to}>{actionLabel(item)}</ButtonLink>}
               <IconButton label={`Để sau: ${item.label}`} onClick={() => setDismissed((ids) => [...ids, item.id])}>
                 <X size={15} />
               </IconButton>

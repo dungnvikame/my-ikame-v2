@@ -12,6 +12,7 @@ import { SearchPalette } from './search/SearchPalette';
 import { useLive } from '../lib/live/live-data';
 import { NotiBadge, Avatar, Drawer, DrawerBody, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerClose, SimpleSidebar, SegmentedControl } from '@coreds/react';
 import { avatarText } from '../lib/avatar-text';
+import { FeedbackWidgets } from './feedback/FeedbackWidgets';
 
 type NavEntry = { label: string; to: string; icon: typeof House };
 type NavGroup = { label: string; items: NavEntry[] };
@@ -331,6 +332,7 @@ export function AppShell({ children }: PropsWithChildren) {
       <NotificationsDrawer triggerRef={notificationTriggerRef} />
       <SearchPalette />
       <QuickAskPanel />
+      <FeedbackWidgets />
     </div>
   );
 }

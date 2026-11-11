@@ -6,6 +6,7 @@ import { leaveDeduction, parseRequest, REQUEST_KIND_LABEL, type DaySession, type
 import type { RequestType } from '../../types';
 import { Input, Select } from '@coreds/react';
 import { Button, ChipButton } from '../UI';
+import { trackFlow } from '../../lib/metrics/metrics';
 
 /**
  * Đề xuất bằng một câu: gõ câu tự nhiên → form điền sẵn ngay tại chỗ (loại, ngày, buổi, người
@@ -67,6 +68,7 @@ export function QuickRequest() {
   const read = (value: string) => {
     if (!value.trim()) return;
     setDraft(parseRequest(value));
+    trackFlow('request', 'start');
     setSentTitle(undefined);
   };
   const onRead = (event: FormEvent) => {
@@ -86,6 +88,7 @@ export function QuickRequest() {
     const title = titleOf(draft);
     addRequest({ type: meta.type, title, handlerLabel: meta.handler ?? `Người duyệt: ${approver}`, slaLabel: meta.sla });
     setSentTitle(title);
+    trackFlow('request', 'done');
     setDraft(undefined);
     setText('');
   };
@@ -221,7 +224,7 @@ export function QuickRequest() {
           <footer>
             <p>Bản demo: đơn chỉ được ghi trong My iKame, chưa gửi sang iCheck hay IT Platform.</p>
             <div>
-              <Button type="button" onClick={() => setDraft(undefined)}>Bỏ</Button>
+              <Button type="button" onClick={() => { setDraft(undefined); trackFlow('request', 'exit'); }}>Bỏ</Button>
               <Button variant="primary" type="submit" disabled={!meta} icon={<PaperPlaneTilt size={16} />}>Gửi đề xuất</Button>
             </div>
           </footer>

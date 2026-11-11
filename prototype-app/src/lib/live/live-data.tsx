@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type PropsWithChildren } from 'react';
 import type { AttendanceStatus, DailyCheckIn, WeekDayAttendance } from '../../types';
+import { trackFlow } from '../metrics/metrics';
 
 /**
  * Dữ liệu thật của người đang xem — chỉ có ở bản artifact (`__ARTIFACT__`). Trang gọi các
@@ -362,6 +363,7 @@ export function LiveDataProvider({ children }: PropsWithChildren) {
   const connect = useCallback(() => {
     if (!runtime) return;
     setStatus('loading');
+    trackFlow('live', 'start');
     setErrorKind(undefined);
     void (async () => {
       try {
@@ -369,6 +371,7 @@ export function LiveDataProvider({ children }: PropsWithChildren) {
         if (!mcp) {
           setErrorKind('unavailable');
           setStatus('error');
+          trackFlow('live', 'exit');
           return;
         }
         // Hỏi quyền mọi connector trong một hộp thoại, trước khi gọi song song.
@@ -381,13 +384,16 @@ export function LiveDataProvider({ children }: PropsWithChildren) {
           // Mọi nguồn đều hỏng: coi là lỗi cấp trang, một thông báo thay vì bốn.
           setErrorKind(failed.every((kind) => kind === failed[0]) ? failed[0] : 'other');
           setStatus('error');
+          trackFlow('live', 'exit');
           return;
         }
         setData(loaded);
+        trackFlow('live', 'done');
         setStatus('ready');
       } catch (error) {
         setErrorKind(toErrorKind(error));
         setStatus('error');
+        trackFlow('live', 'exit');
       }
     })();
   }, [runtime]);

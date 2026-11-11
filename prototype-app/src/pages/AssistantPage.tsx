@@ -14,6 +14,7 @@ import { documentReminders } from '../data/profile-data';
 import { journeyDigestQuests } from '../lib/onboarding';
 import { AgentMetricsCard } from '../components/assistant/AgentMetricsCard';
 import { Input, Button as DsButton, Popover } from '@coreds/react';
+import { trackFlow } from '../lib/metrics/metrics';
 
 /** Danh sách phiên cũ — dùng chung cho popover lịch sử và mục "Gần đây" ở màn chào. */
 function HistoryList({ sessions, onResume, onDelete }: {
@@ -174,6 +175,7 @@ export function AssistantPage() {
   const busy = messages.some((message) => message.processing || message.actionRunning);
 
   function ask(question: string) {
+    if (question.trim()) trackFlow('assistant', 'done');
     const trimmed = question.trim();
     if (!trimmed || busy) return;
     if (!activeSessionId) setActiveSessionId(`s-${Date.now().toString(36)}`);

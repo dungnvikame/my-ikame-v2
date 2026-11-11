@@ -33,7 +33,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 type ButtonLinkProps = PropsWithChildren<{ variant?: AppVariant; size?: DsSize; className?: string } & (
   | { to: string; href?: undefined }
   | { href: string; to?: undefined }
-)> & Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'aria-label' | 'title'>;
+)> & Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'aria-label' | 'title' | 'onClick'>;
 
 /**
  * Nút dạng liên kết: `to` = điều hướng trong app, `href` = mở công cụ ngoài ở tab mới.
