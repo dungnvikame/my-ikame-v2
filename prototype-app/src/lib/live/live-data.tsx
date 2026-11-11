@@ -278,7 +278,7 @@ function shapeMeetings(list: CalendarList): LiveMeeting[] {
   }).sort((a, b) => a.start.getTime() - b.start.getTime());
 }
 
-/** Tên gọi ngắn kiểu Việt: từ cuối của họ tên ("Nguyễn Việt Dũng" → "Dũng"). */
+/** Tên gọi ngắn kiểu Việt: từ cuối của họ tên ("Nguyễn Văn An" → "An"). */
 function shortNameOf(name: string): string {
   const parts = name.trim().split(/\s+/);
   return parts[parts.length - 1] || name;
