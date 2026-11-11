@@ -117,12 +117,6 @@
   margin-left: 6px;
 }
 
-.admin-pending-toggle {
-  display: block;
-  margin-top: 4px;
-  font-size: var(--body-xs-size);
-}
-
 .admin-pending-list {
   margin: 6px 0 0;
   padding-left: 16px;

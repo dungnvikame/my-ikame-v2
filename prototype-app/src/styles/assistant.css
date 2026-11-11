@@ -75,23 +75,6 @@
   border-top: 1px solid var(--border-primary);
 }
 
-.ai-chip {
-  padding: 7px 12px;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-round);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: var(--body-xs-size);
-  font-weight: var(--font-semibold);
-  cursor: pointer;
-}
-
-.ai-chip:hover {
-  border-color: var(--bg-accent-primary);
-  color: var(--fg-accent-primary);
-  background: var(--bg-accent-primary-subtle);
-}
-
 .ask-panel-input {
   display: flex;
   align-items: center;
@@ -114,9 +97,4 @@
   outline: none;
   border-color: var(--bg-accent-primary);
   box-shadow: 0 0 0 3px var(--bg-accent-primary-subtle);
-}
-
-.ask-panel-input .assistant-send:disabled {
-  opacity: 0.5;
-  cursor: default;
 }

@@ -264,7 +264,7 @@
   flex-wrap: wrap;
   padding: 12px 16px;
   border: 1px dashed var(--border-primary);
-  border-radius: 12px;
+  border-radius: var(--radius-12);
   background: var(--bg-primary);
   color: var(--text-primary);
 }
@@ -277,7 +277,7 @@
 
 /* Trang Cá nhân với dữ liệu thật (bản artifact) */
 .live-objectives { display: flex; flex-direction: column; gap: 16px; }
-.live-objective { padding: 14px; border: 1px solid var(--border-primary); border-radius: 12px; }
+.live-objective { padding: 14px; border: 1px solid var(--border-primary); border-radius: var(--radius-12); }
 .live-objective header { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; }
 .live-objective header > div { min-width: 0; }
 .live-objective h3 { margin: 2px 0 0; font-size: var(--body-s-size); line-height: 1.45; font-weight: 600; }
@@ -286,8 +286,6 @@
 .live-objective ul { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .live-objective li p { margin: 0 0 6px; color: var(--text-secondary); font-size: var(--body-s-size); line-height: 1.45; }
 .live-kr-meter { display: flex; align-items: center; gap: 10px; font-variant-numeric: tabular-nums; }
-.live-kr-track { flex: 1; height: 6px; border-radius: 999px; background: var(--bg-tertiary); overflow: hidden; }
-.live-kr-track span { display: block; height: 100%; background: var(--bg-accent-primary); }
 .live-facts { margin: 0; display: flex; flex-direction: column; gap: 10px; }
 .live-facts div { display: flex; justify-content: space-between; gap: 12px; }
 .live-facts dt { color: var(--text-secondary); }

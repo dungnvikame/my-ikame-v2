@@ -732,7 +732,7 @@
   position: relative;
   z-index: 1;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-round);
   background: rgba(255, 255, 255, 0.85);
   color: #1a1a1a;
   font-size: var(--body-xs-size);

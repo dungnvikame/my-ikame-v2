@@ -4,37 +4,6 @@
   min-height: 44px;
 }
 
-.goal-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.goal-card .button {
-  width: 100%;
-  margin-top: 14px;
-}
-
-.goal-progress {
-  height: 8px;
-  margin-top: 14px;
-  border-radius: var(--radius-round);
-  background: var(--bg-tertiary);
-  overflow: hidden;
-}
-
-.goal-progress-fill {
-  height: 100%;
-  border-radius: var(--radius-round);
-  background: var(--fg-blue-strong);
-  transition: width 0.2s ease;
-}
-
-.goal-progress-label {
-  margin-top: 6px;
-  color: var(--text-tertiary);
-  font-size: var(--body-xs-size);
-  line-height: var(--body-xs-line);
-}
-
 .goal-detail-card {
   max-width: 480px;
 }
@@ -136,12 +105,6 @@
   font-weight: var(--font-semibold);
   cursor: pointer;
 }
-
-.khub-chip--blue.is-active { border-color: var(--border-blue); background: var(--bg-blue-subtle); color: var(--fg-blue-strong); }
-.khub-chip--violet.is-active { border-color: var(--border-violet); background: var(--bg-violet-subtle); color: var(--fg-violet-strong); }
-.khub-chip--teal.is-active { border-color: var(--border-teal); background: var(--bg-teal-subtle); color: var(--fg-teal-strong); }
-.khub-chip--orange.is-active { border-color: var(--border-orange); background: var(--bg-orange-subtle); color: var(--fg-orange-strong); }
-.khub-chip--pink.is-active { border-color: var(--border-pink); background: var(--bg-pink-subtle); color: var(--fg-pink-strong); }
 
 .khub-section {
   margin-top: 40px;

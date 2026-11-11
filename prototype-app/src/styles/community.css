@@ -98,7 +98,7 @@
   gap: 4px;
   padding: 3px;
   border: 1px solid var(--border-primary);
-  border-radius: 999px;
+  border-radius: var(--radius-round);
   background: var(--bg-tertiary);
   align-self: flex-start;
 }
@@ -109,7 +109,7 @@
   gap: 6px;
   padding: 6px 12px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-round);
   background: transparent;
   color: var(--text-secondary);
   font: inherit;
@@ -370,25 +370,6 @@
 }
 
 /* Nút ghim trên card — chỉ render ở góc nhìn COM Admin. */
-.community-pin-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: 6px;
-  padding: 4px 10px;
-  border: 1px solid var(--border-primary);
-  border-radius: 999px;
-  background: var(--bg-primary);
-  color: var(--text-secondary);
-  font: inherit;
-  font-size: var(--body-xs-size);
-  cursor: pointer;
-}
-
-.community-pin-toggle.is-active {
-  border-color: var(--border-accent-primary);
-  color: var(--fg-accent-primary);
-}
 
 /* Khối Kudos — ghi nhận đồng nghiệp, nổi bật trên body bài. */
 .community-kudos {

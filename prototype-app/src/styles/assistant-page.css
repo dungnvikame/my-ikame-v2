@@ -39,23 +39,6 @@
   outline: none;
 }
 
-.assistant-send {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border: none;
-  border-radius: var(--radius-round);
-  background: var(--bg-accent-primary);
-  color: var(--fg-on-accent);
-  cursor: pointer;
-}
-
-.assistant-send:hover {
-  background: var(--fg-accent-primary);
-}
-
 /* ---------- Home hero launcher ---------- */
 .ai-hero {
   display: flex;
@@ -106,23 +89,6 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-}
-
-.ai-suggestion-chip {
-  padding: 7px 14px;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-round);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: var(--body-xs-size);
-  font-weight: var(--font-semibold);
-  cursor: pointer;
-}
-
-.ai-suggestion-chip:hover {
-  border-color: var(--bg-accent-primary);
-  color: var(--fg-accent-primary);
-  background: var(--bg-accent-primary-subtle);
 }
 
 /* ---------- Assistant page ---------- */
@@ -366,11 +332,6 @@
   border-top: 1px solid var(--border-secondary);
 }
 
-.assistant-history-list .icon-button {
-  flex-shrink: 0;
-  color: var(--text-tertiary);
-}
-
 .assistant-history-item {
   flex: 1;
   min-width: 0;
@@ -482,26 +443,6 @@
 .assistant-message--user .assistant-bubble {
   background: var(--bg-accent-primary);
   color: var(--fg-on-accent);
-}
-
-.assistant-detail-card {
-  margin: 10px 0 0;
-  padding: 12px 14px;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-8);
-  background: var(--bg-secondary);
-}
-
-.assistant-detail-card li {
-  font-size: var(--body-s-size);
-}
-
-.assistant-detail-card li:first-child {
-  font-weight: var(--font-semibold);
 }
 
 /* Khối AI steps trong bong bóng chat (staged reveal) */
@@ -623,10 +564,6 @@
 
 .assistant-chips::-webkit-scrollbar {
   display: none;
-}
-
-.assistant-chips .ai-suggestion-chip {
-  flex-shrink: 0;
 }
 
 /* ---------- Workspace (khung phải) ---------- */
@@ -764,28 +701,6 @@
 
 .workspace-form-field.is-half {
   flex: 1 1 calc(50% - 7px);
-}
-
-.workspace-input {
-  width: 100%;
-  padding: 9px 12px;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-8);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: var(--body-s-size);
-  line-height: var(--body-s-line);
-  font-family: inherit;
-}
-
-.workspace-input:focus-visible {
-  outline: none;
-  border-color: var(--bg-accent-primary);
-  box-shadow: 0 0 0 3px var(--bg-accent-primary-subtle);
-}
-
-textarea.workspace-input {
-  resize: vertical;
 }
 
 /* ---------- Workspace: trình soạn thảo iWiki ---------- */
@@ -1034,7 +949,7 @@ textarea.workspace-input {
   gap: 5px;
   padding: 3px 9px;
   border: 1px solid var(--border-primary);
-  border-radius: 999px;
+  border-radius: var(--radius-round);
   background: var(--bg-primary);
   color: var(--text-primary);
 }
@@ -1060,11 +975,10 @@ textarea.workspace-input {
 .assistant-sources span:not(.assistant-sources-label) {
   padding: 2px 8px;
   border: 1px solid var(--border-primary);
-  border-radius: 999px;
+  border-radius: var(--radius-round);
   background: var(--bg-secondary);
   color: var(--text-primary);
 }
-
 
 /* ===== MCP: tráº¡ng thÃ¡i connector, tool Ä‘Ã£ gá»i, tháº» Ä‘o lÆ°á»ng ===== */
 .assistant-connector.is-degraded::before { background: var(--fg-warning); }
@@ -1079,7 +993,7 @@ textarea.workspace-input {
 
 .assistant-toolcalls code {
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-4);
   background: var(--bg-tertiary);
   color: var(--text-secondary);
   font-size: var(--body-xs-size);
@@ -1089,7 +1003,7 @@ textarea.workspace-input {
   display: inline-block;
   margin-left: 8px;
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-4);
   background: var(--bg-tertiary);
   color: var(--text-secondary);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

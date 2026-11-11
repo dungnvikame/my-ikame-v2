@@ -479,26 +479,6 @@
   margin-bottom: 20px;
 }
 
-.eks-ai-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 8px 14px;
-  border: 1px solid var(--border-accent-secondary);
-  border-radius: var(--radius-round);
-  background: var(--bg-accent-secondary-subtle);
-  color: var(--fg-accent-secondary);
-  font-size: var(--body-xs-size);
-  font-weight: var(--font-semibold);
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.eks-ai-action:hover {
-  background: var(--bg-blue-medium);
-}
-
 /* --- "Tổng hợp báo cáo" split view --- */
 
 .eks-report-browser-block .section-header {
@@ -636,22 +616,6 @@
 .member-eks-reports.is-behind {
   color: var(--fg-warning);
   font-weight: var(--font-semibold);
-}
-
-.member-eks-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  justify-self: flex-end;
-  cursor: pointer;
-}
-
-.member-eks-toggle svg {
-  transition: transform 0.15s ease;
-}
-
-.member-eks-toggle svg.is-expanded {
-  transform: rotate(90deg);
 }
 
 .member-eks-expand {
