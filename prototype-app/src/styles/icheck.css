@@ -256,3 +256,46 @@
   .icheck-quick-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .icheck-leave-grid { grid-template-columns: 1fr; }
 }
+
+/* Thanh nguồn dữ liệu (bản artifact): dữ liệu mẫu ↔ dữ liệu thật từ iCheck */
+.live-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border: 1px dashed var(--border-primary);
+  border-radius: 12px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+.live-bar--on { border-style: solid; border-color: var(--bg-green-contrast); }
+.live-bar--error { border-color: var(--bg-amber-contrast); }
+.live-bar-copy { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 2px; }
+.live-bar-copy span { color: var(--text-secondary); font-size: var(--body-s-size); }
+.live-source { margin: 8px 0 0; color: var(--text-secondary); font-size: var(--body-s-size); }
+.live-bar-warning { color: var(--text-primary); }
+
+/* Trang Cá nhân với dữ liệu thật (bản artifact) */
+.live-objectives { display: flex; flex-direction: column; gap: 16px; }
+.live-objective { padding: 14px; border: 1px solid var(--border-primary); border-radius: 12px; }
+.live-objective header { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; }
+.live-objective header > div { min-width: 0; }
+.live-objective h3 { margin: 2px 0 0; font-size: var(--body-s-size); line-height: 1.45; font-weight: 600; }
+.live-objective small { color: var(--text-secondary); }
+.live-progress-value { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.live-objective ul { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.live-objective li p { margin: 0 0 6px; color: var(--text-secondary); font-size: var(--body-s-size); line-height: 1.45; }
+.live-kr-meter { display: flex; align-items: center; gap: 10px; font-variant-numeric: tabular-nums; }
+.live-kr-track { flex: 1; height: 6px; border-radius: 999px; background: var(--bg-tertiary); overflow: hidden; }
+.live-kr-track span { display: block; height: 100%; background: var(--bg-accent-primary); }
+.live-facts { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.live-facts div { display: flex; justify-content: space-between; gap: 12px; }
+.live-facts dt { color: var(--text-secondary); }
+.live-facts dd { margin: 0; text-align: right; font-weight: 600; }
+.live-fact { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.live-fact span { color: var(--text-secondary); }
+.live-licenses { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.live-licenses li { display: flex; align-items: center; gap: 8px; }
+.live-licenses small { margin-left: auto; color: var(--text-secondary); }
+.live-section-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }

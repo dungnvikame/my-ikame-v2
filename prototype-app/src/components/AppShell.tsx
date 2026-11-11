@@ -26,6 +26,7 @@ import { IconButton, StatusPill } from './UI';
 import { NotificationList } from '../pages/NotificationsPage';
 import { QuickAskPanel } from './assistant/QuickAskPanel';
 import { SearchPalette } from './search/SearchPalette';
+import { useLive } from '../lib/live/live-data';
 
 type NavEntry = { label: string; to: string; icon: typeof House };
 type NavGroup = { label: string; items: NavEntry[] };
@@ -226,6 +227,7 @@ function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLB
 
 export function AppShell({ children }: PropsWithChildren) {
   const { perspective, user, isNewJoiner, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
+  const livePerson = useLive().data?.person;
   const { groups: navGroups, bottom: bottomNav } = navFor(perspective, isNewJoiner);
   const unreadCount = notifications.filter((item) => !item.read).length;
   const notificationTriggerRef = useRef<HTMLButtonElement>(null);
@@ -274,8 +276,8 @@ export function AppShell({ children }: PropsWithChildren) {
         <div className="sidebar-account">
           <PerspectiveSwitch />
           <NavLink to="/profile" className="account-row">
-            <span className="avatar" aria-hidden="true">{user.shortName.slice(0, 1)}</span>
-            <span className="account-copy"><strong>{user.name}</strong><small>{user.role}</small></span>
+            <span className="avatar" aria-hidden="true">{(livePerson?.shortName ?? user.shortName).slice(0, 1)}</span>
+            <span className="account-copy"><strong>{livePerson?.name ?? user.name}</strong><small>{livePerson ? (livePerson.position || livePerson.team) : user.role}</small></span>
           </NavLink>
         </div>
       </aside>

@@ -52,7 +52,7 @@ export function WorkPage() {
         </section>
 
         <section aria-label="Đề xuất của tôi">
-          <SectionHeader title="Đề xuất của tôi" meta={`${requests.length} đơn`} href="/requests" actionLabel="Tất cả" />
+          <SectionHeader title="Đề xuất của tôi" meta={`${requests.length} đơn`} href="/requests" actionLabel="Tạo đề xuất" />
           {recentRequests.length === 0 ? (
             <EmptyState icon={<Ticket size={44} weight="duotone" />} title="Chưa có đề xuất" body="Đơn nghỉ, WFH, request IT tạo qua Trợ lý AI sẽ hiện ở đây." />
           ) : (

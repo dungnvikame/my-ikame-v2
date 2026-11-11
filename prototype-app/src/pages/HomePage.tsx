@@ -1,9 +1,12 @@
-import { ArrowRight, ChatsCircle, CheckCircle, Clock, ShieldWarning, SquaresFour, Users } from '@phosphor-icons/react';
+import { ArrowRight, ChatsCircle, CheckCircle, Clock, PaperPlaneTilt, ShieldWarning, SquaresFour, Users } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { AIAssistant } from '../components/AIAssistant';
 import { NewsCard } from '../components/ContentCards';
 import { ICheckWidget } from '../components/icheck/ICheckWidget';
+import { useLive } from '../lib/live/live-data';
+import { buildLiveDigestItems } from '../lib/live/live-digest';
+import { LiveDataBar } from '../components/live/LiveDataBar';
 import { JourneyCard } from '../components/onboarding/JourneyCard';
 import { buildDailyDigestItems, HOME_DIGEST_LIMIT } from './assistant/daily-digest';
 import { journeyDigestQuests } from '../lib/onboarding';
@@ -17,6 +20,8 @@ import type { EventItem, NewsPost } from '../types';
 type HomeCard = { kind: 'news'; post: NewsPost } | { kind: 'event'; event: EventItem };
 
 const HOUR_MS = 60 * 60 * 1000;
+/** Dữ liệu thật thường nhiều việc hơn kịch bản mẫu — cho phép dài hơn một chút. */
+const LIVE_DIGEST_LIMIT = 8;
 
 /** Vietnamese `dd/mm/yyyy` embedded in `dateLabel` + `HH:mm` from `time` — the only real timestamp mock events carry. */
 function parseEventStart(event: EventItem): Date | undefined {
@@ -77,6 +82,9 @@ function eventsFrom(cards: HomeCard[]): EventItem[] {
 export function HomePage() {
   const { user, news, events, goals, posts, dailyCheckIn, documents, isNewJoiner, journey } = useAppState();
   const now = new Date();
+  // Đã nối iCheck thật: "Chấm công hôm nay" trong Việc hôm nay theo bản ghi thật, không theo kịch bản mẫu.
+  const live = useLive().data;
+  const checkedIn = live?.icheck ? live.icheck.checkIn.done : dailyCheckIn.done;
   // Người mới: quest đến hạn/trễ của hành trình 60 ngày lên Việc hôm nay (tối đa 2).
   const journeyQuests = isNewJoiner ? journeyDigestQuests(journey) : undefined;
 
@@ -88,7 +96,13 @@ export function HomePage() {
   const hero = heroCard?.kind === 'news' ? heroCard.post : undefined;
 
   // "Việc hôm nay" — cùng nguồn với Trợ lý AI (Daily Work Hub), tối đa 5 mục trên Home.
-  const digest = buildDailyDigestItems({ news: eligibleNews, events: eligibleEvents, goals, checkedIn: dailyCheckIn.done, documentReminders: documentReminders(documents), journeyQuests }).slice(0, HOME_DIGEST_LIMIT);
+  const mockDigest = buildDailyDigestItems({ news: eligibleNews, events: eligibleEvents, goals, checkedIn, documentReminders: documentReminders(documents), journeyQuests });
+  // Đã nối dữ liệu thật: việc cá nhân lấy từ công cụ thật; chỉ giữ lại việc của chính My iKame
+  // (tin cần xác nhận, sự kiện đã đăng ký) từ dữ liệu mẫu — không trộn việc của nhân vật mẫu.
+  const fullDigest = live
+    ? [...buildLiveDigestItems(live, now), ...mockDigest.filter((item) => item.source === 'COM' || item.source === 'My iKame')]
+    : mockDigest;
+  const digest = fullDigest.slice(0, live ? LIVE_DIGEST_LIMIT : HOME_DIGEST_LIMIT);
   const urgentCount = digest.filter((item) => item.urgent).length;
 
   const newsPreviewCandidates = eligibleNews.filter((post) => post.id !== hero?.id).map((post): HomeCard => ({ kind: 'news', post }));
@@ -104,6 +118,8 @@ export function HomePage() {
   return (
     <div className="page overview-page">
       <AIAssistant subtitle={statusLine} />
+
+      <LiveDataBar />
 
       {hero && (
         <section className="priority-hero priority-hero--compact" aria-labelledby="priority-title">
@@ -127,7 +143,7 @@ export function HomePage() {
           <ICheckWidget compact />
 
           <section className="section-block">
-            <SectionHeader title="Việc hôm nay" meta="Gom từ iCheck, COM, iGoal, Asana và lịch của bạn" href="/assistant?q=Hôm nay tôi cần làm gì?" actionLabel="Hỏi Trợ lý AI" />
+            <SectionHeader title="Việc hôm nay" meta={live ? 'Từ iCheck, iHiring, iGoal và Lịch của bạn, cộng tin cần xác nhận trên My iKame' : 'Gom từ iCheck, COM, iGoal, Asana và lịch của bạn'} href="/assistant?q=Hôm nay tôi cần làm gì?" actionLabel="Hỏi Trợ lý AI" />
             <div className="active-items">
               {digest.length === 0 ? (
                 <div className="active-item">
@@ -138,7 +154,9 @@ export function HomePage() {
                 <article key={item.id} className={`active-item ${item.urgent ? 'is-urgent' : ''}`}>
                   <span className={`active-item-icon ${item.urgent ? '' : 'active-item-icon--time'}`}>{item.urgent ? <ShieldWarning size={20} /> : <Clock size={20} />}</span>
                   <div><strong>{item.label}</strong><span>{item.meta} · {item.source}</span></div>
-                  <Link className="text-link" to={item.to}>Xử lý<ArrowRight size={16} /></Link>
+                  {item.href
+                    ? <a className="text-link" href={item.href} target="_blank" rel="noreferrer">Mở<ArrowRight size={16} /></a>
+                    : <Link className="text-link" to={item.to}>Xử lý<ArrowRight size={16} /></Link>}
                 </article>
               ))}
             </div>
@@ -160,6 +178,11 @@ export function HomePage() {
           <section>
             <SectionHeader title="Lối tắt của bạn" />
             <div className="quick-actions">
+              <Link className="quick-action" to="/requests">
+                <span className="quick-action-icon"><PaperPlaneTilt size={20} /></span>
+                <span><strong>Tạo đề xuất</strong><small>Gõ một câu: xin nghỉ, làm từ xa, báo sự cố</small></span>
+                <ArrowRight size={16} />
+              </Link>
               <Link className="quick-action" to="/feed">
                 <span className="quick-action-icon"><ChatsCircle size={20} /></span>
                 <span><strong>iKame Feed</strong><small>{posts.length} bài viết từ đồng nghiệp</small></span>

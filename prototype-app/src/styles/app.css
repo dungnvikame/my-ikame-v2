@@ -2571,3 +2571,52 @@ p {
     transform: scale(0.97);
   }
 }
+
+/* Đề xuất bằng một câu */
+.quick-request { display: flex; flex-direction: column; gap: 12px; }
+.quick-request-input, .quick-request-form {
+  display: flex; flex-direction: column; gap: 12px; padding: 16px;
+  border: 1px solid var(--border-primary); border-radius: 12px; background: var(--bg-primary);
+}
+.quick-request-input > label { font-weight: 600; }
+.quick-request-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.quick-request-row input { flex: 1; min-width: 200px; }
+.quick-request input, .quick-request select {
+  height: 40px; padding: 0 12px; border: 1px solid var(--border-primary); border-radius: 8px;
+  background: var(--bg-secondary); color: var(--text-primary); font: inherit; min-width: 0;
+}
+.quick-request input:focus-visible, .quick-request select:focus-visible, .quick-request-examples button:focus-visible {
+  outline: 2px solid var(--bg-accent-primary); outline-offset: 1px;
+}
+.quick-request-examples { display: flex; gap: 8px; flex-wrap: wrap; }
+.quick-request-examples button {
+  padding: 6px 12px; border: 1px solid var(--border-primary); border-radius: 999px;
+  background: transparent; color: var(--text-secondary); font: inherit; font-size: var(--body-s-size); cursor: pointer;
+}
+.quick-request-examples button:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+.quick-request-form header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.quick-request-form h3 { margin: 0; font-size: var(--body-s-size); font-weight: 600; }
+.quick-request-hint { margin: 0; color: var(--text-secondary); }
+.quick-request-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.quick-request-fields label { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.quick-request-fields label > span { color: var(--text-secondary); font-size: var(--body-s-size); }
+.quick-request-wide { grid-column: 1 / -1; }
+.quick-request-facts { margin: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 8px; background: var(--bg-secondary); }
+.quick-request-facts div { display: flex; gap: 12px; flex-wrap: wrap; }
+.quick-request-facts dt { flex: 0 0 130px; color: var(--text-secondary); }
+.quick-request-facts dd { flex: 1; min-width: 180px; margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.quick-request-facts .quick-request-policy dd { font-weight: 400; }
+.quick-request-facts dd small { font-weight: 400; color: var(--text-secondary); }
+.quick-request-facts dd.is-over { color: var(--fg-error); }
+.quick-request-form footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.quick-request-form footer p { margin: 0; flex: 1; min-width: 200px; color: var(--text-secondary); font-size: var(--body-s-size); }
+.quick-request-form footer > div { display: flex; gap: 8px; }
+.quick-request-receipt {
+  margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 12px;
+  border: 1px solid var(--bg-green-contrast); border-radius: 8px; background: var(--bg-primary);
+}
+.quick-request-receipt svg { color: var(--bg-green-contrast); }
+.demo-badge {
+  padding: 2px 8px; border: 1px solid currentColor; border-radius: 4px;
+  color: var(--text-secondary); font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+}

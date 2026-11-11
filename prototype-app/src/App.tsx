@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType, useParams } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter, Navigate, Route, Routes, useLocation, useNavigationType, useParams } from 'react-router-dom';
+import { LiveDataProvider } from './lib/live/live-data';
 import { AppStateProvider, useAppState } from './AppState';
 import { AppShell } from './components/AppShell';
 import { ToastProvider } from './components/toast';
@@ -99,10 +100,16 @@ function AppRoutes() {
   );
 }
 
+/**
+ * Bản artifact chạy trong iframe không có đường dẫn thật (chỉ nhận `#tên` phẳng), nên dùng
+ * MemoryRouter; bản web giữ BrowserRouter để có URL chia sẻ được.
+ */
+const Router = __ARTIFACT__ ? MemoryRouter : BrowserRouter;
+
 export default function App() {
   return (
-    <BrowserRouter>
-      <AppStateProvider><ToastProvider><AppRoutes /></ToastProvider></AppStateProvider>
-    </BrowserRouter>
+    <Router>
+      <AppStateProvider><LiveDataProvider><ToastProvider><AppRoutes /></ToastProvider></LiveDataProvider></AppStateProvider>
+    </Router>
   );
 }

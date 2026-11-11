@@ -3,7 +3,8 @@ import { PlatformHandoffButton } from '../PlatformHandoff';
 import type { LeaveBalance } from '../../types';
 
 /** Ô "Ngày phép còn lại" — bố cục khớp iCheck: hiện có · năm nay/năm cũ · phép hỉ · phép hàng năm. */
-export function LeaveBalanceCard({ leaveBalance, compact = false }: { leaveBalance: LeaveBalance; compact?: boolean }) {
+/** `hideWedding`: dữ liệu thật từ iCheck chưa trả phép hỉ — ẩn thay vì hiện số mẫu. */
+export function LeaveBalanceCard({ leaveBalance, compact = false, hideWedding = false }: { leaveBalance: LeaveBalance; compact?: boolean; hideWedding?: boolean }) {
   const thisYear = leaveBalance.annualRemaining - leaveBalance.carriedOver;
   return (
     <section className={`icheck-leave ${compact ? 'is-compact' : ''}`} aria-label="Ngày phép còn lại">
@@ -21,7 +22,7 @@ export function LeaveBalanceCard({ leaveBalance, compact = false }: { leaveBalan
           </div>
         </div>
         <div className="icheck-leave-side">
-          <div><small>Phép hỉ</small><b>{leaveBalance.weddingLeave}</b></div>
+          {!hideWedding && <div><small>Phép hỉ</small><b>{leaveBalance.weddingLeave}</b></div>}
           <div><small>Phép hàng năm <Info size={13} aria-hidden="true" /></small><b>{leaveBalance.annualTotal}</b></div>
         </div>
       </div>

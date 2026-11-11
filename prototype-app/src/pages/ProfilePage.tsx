@@ -5,6 +5,8 @@ import { useAppState } from '../AppState';
 import { Button, StatusPill } from '../components/UI';
 import { ProfileActivity } from './profile/ProfileActivity';
 import { ProfileDocuments } from './profile/ProfileDocuments';
+import { useLive } from '../lib/live/live-data';
+import { LiveProfileGrid, LiveProfileHero } from './profile/LiveProfile';
 import { ProfileHrisCard } from './profile/ProfileHrisCard';
 import { ProfileEquipment, ProfileLeave, ProfilePay, ProfileTimeline } from './profile/ProfileHrSection';
 import { ProfileOrgSection } from './profile/ProfileOrgSection';
@@ -25,6 +27,8 @@ export function ProfilePage() {
   } = useAppState();
   // Huy hiệu mốc vòng đời theo số ngày gắn bó (HRIS joinedAt): onboarding cho người có hành trình, thâm niên lấy mốc cao nhất.
   const badges = earnedBadges(journeyDay, LIFECYCLE_BADGES, !!journey);
+  // Bản artifact đã nối dữ liệu thật: hồ sơ hiện dữ liệu của người xem, không hiện nhân vật mẫu.
+  const live = useLive().data;
   const [resetReceipt, setResetReceipt] = useState(false);
   const navigate = useNavigate();
 
@@ -42,6 +46,7 @@ export function ProfilePage() {
 
   return (
     <div className="page profile-page">
+      {live ? <LiveProfileHero live={live} /> : (
       <section className="profile-hero" aria-label="Thông tin cá nhân">
         <div className="profile-cover" aria-hidden="true" />
         <div className="profile-identity">
@@ -83,7 +88,9 @@ export function ProfilePage() {
           </div>
         </div>
       </section>
+      )}
 
+      {live ? <LiveProfileGrid live={live} /> : (
       <div className="profile-grid">
         <div className="profile-main">
           <ProfileHrisCard profile={hrProfile} sensitive={sensitive} unlocked={sensitiveUnlocked} />
@@ -98,6 +105,7 @@ export function ProfilePage() {
           <ProfileEquipment equipment={equipment} />
         </aside>
       </div>
+      )}
 
       <section className="profile-settings" aria-label="Cài đặt">
         <div className="side-info profile-section profile-setting-card">

@@ -1,6 +1,7 @@
 import { Buildings, Clock, DesktopTower, Sparkle, Ticket, UserCircle, Wrench } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
+import { QuickRequest } from '../components/requests/QuickRequest';
 import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
 import type { RequestItem, RequestStatus, RequestType } from '../types';
 
@@ -62,12 +63,14 @@ export function RequestsPage() {
         <div>
           <p className="eyebrow">CẦN HỖ TRỢ</p>
           <h1>iRequest</h1>
-          <p>Gửi và theo dõi mọi yêu cầu hỗ trợ — tạo nhanh qua Trợ lý AI, xử lý ở đúng bộ phận.</p>
+          <p>Gõ một câu để tạo đề xuất, theo dõi mọi yêu cầu ở một chỗ, xử lý ở đúng bộ phận.</p>
         </div>
       </header>
 
-      <section>
-        <SectionHeader title="Tạo request mới" meta="Trợ lý AI soạn sẵn form — bạn kiểm tra rồi gửi" />
+      <QuickRequest />
+
+      <section className="section-block">
+        <SectionHeader title="Hoặc tạo qua Trợ lý AI" meta="Trợ lý soạn sẵn form — bạn kiểm tra rồi gửi" />
         <div className="request-type-grid">
           {REQUEST_TYPES.map(({ type, icon: Icon, desc, prompt }) => (
             <button key={type} type="button" className="request-type-card" onClick={() => navigate(`/assistant?q=${encodeURIComponent(prompt)}`)}>

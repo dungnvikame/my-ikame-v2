@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { PaperPlaneTilt, Sparkle } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
+import { useLive } from '../lib/live/live-data';
 
 const CHIPS = [
   'Tôi có việc gì cần xác nhận?',
@@ -17,6 +18,8 @@ const CHIPS = [
  */
 export function AIAssistant({ subtitle }: { subtitle?: string }) {
   const { user } = useAppState();
+  // Đã nối dữ liệu thật: chào bằng tên thật của người xem thay cho nhân vật mẫu.
+  const livePerson = useLive().data?.person;
   const [input, setInput] = useState('');
   const navigate = useNavigate();
 
@@ -41,7 +44,7 @@ export function AIAssistant({ subtitle }: { subtitle?: string }) {
       <p className="eyebrow">{`${weekday}, ${dayMonth}`.toUpperCase()}</p>
       <h1 id="ai-hero-title">
         <Sparkle size={26} weight="fill" className="ai-hero-spark" />
-        {greeting} {user.shortName}, hôm nay mình giúp gì được?
+        {greeting} {livePerson?.shortName ?? user.shortName}, hôm nay mình giúp gì được?
       </h1>
       {subtitle && <p>{subtitle}</p>}
       <form className="assistant-input" onSubmit={handleSubmit}>
