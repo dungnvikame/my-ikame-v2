@@ -15,6 +15,7 @@ import { attentionHref, ManagerAiBrief } from './manager/ManagerAiBrief';
 import { NewJoinerCard } from './manager/NewJoinerCard';
 import { TeamPulse } from './manager/TeamPulse';
 import { Avatar } from '@coreds/react';
+import { avatarText } from '../lib/avatar-text';
 
 type RankableAttention = RankableCard & { source: AttentionItem };
 
@@ -67,7 +68,7 @@ function ApprovalQueue() {
         <div className="approval-list">
           {open.map((item) => (
             <article key={item.id} className="approval-row">
-              <Avatar type="text" size="m" fallback={item.memberShort.slice(0, 1)} alt="" aria-hidden="true" />
+              <Avatar type="text" size="m" fallback={avatarText(item.memberShort.slice(0, 1))} alt="" aria-hidden="true" />
               <div className="approval-copy">
                 <div className="approval-copy-head">
                   <strong>{item.title}</strong>
@@ -199,7 +200,7 @@ export function ManagerPage() {
               <NewJoinerCard key={member.id} member={member} />
             ) : (
               <article className="moment-card" key={member.id}>
-                <Avatar type="text" size="l" fallback={member.name.charAt(0)} alt="" aria-hidden="true" />
+                <Avatar type="text" size="l" fallback={avatarText(member.name.charAt(0))} alt="" aria-hidden="true" />
                 <div>
                   <StatusPill tone="info">{momentLabel(member.momentType)}</StatusPill>
                   <h3><Link to={`/manager/team/${member.id}`}>{member.name}</Link></h3>

@@ -1,6 +1,6 @@
 import { CheckCircleIcon as CheckCircle, ClipboardTextIcon as ClipboardText, StarIcon as Star } from '@coreds/react/icons';
 import { useState } from 'react';
-import { Button, StatusPill } from '../../components/UI';
+import { Button, StatusPill, ChipButton } from '../../components/UI';
 import type { EventItem } from '../../types';
 import { Select, Textarea } from '@coreds/react';
 
@@ -45,9 +45,9 @@ export function EventSurveyPanel({ survey, onComplete }: EventSurveyPanelProps) 
             <legend>1. Bạn đánh giá sự kiện thế nào?</legend>
             <div className="events-v2-survey-stars" role="radiogroup" aria-label="Điểm đánh giá">
               {[1, 2, 3, 4, 5].map((value) => (
-                <button key={value} type="button" role="radio" aria-checked={rating === value} aria-label={`${value} sao`} className={value <= rating ? 'is-active' : ''} onClick={() => setRating(value)}>
+                <ChipButton key={value} role="radio" aria-checked={rating === value} aria-label={`${value} sao`} onClick={() => setRating(value)}>
                   <Star size={22} variant={value <= rating ? 'fill' : 'line'} />
-                </button>
+                </ChipButton>
               ))}
             </div>
           </fieldset>

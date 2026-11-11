@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../../AppState';
 import { findSeedAnswer } from '../../data/search-answers';
 import { AiBadge } from '../AiBadge';
-import { IconButton } from '../UI';
+import { IconButton, ActionButton, ChipButton } from '../UI';
 import { useSearchResults } from './use-search-results';
 import { Input, Modal } from '@coreds/react';
 
@@ -102,7 +102,7 @@ export function SearchPalette() {
               <p className="nav-label">GỢI Ý TÌM KIẾM</p>
               <div>
                 {SUGGESTED_QUERIES.map((item) => (
-                  <button key={item} type="button" onClick={() => setQuery(item)}>{item}</button>
+                  <ChipButton key={item} onClick={() => setQuery(item)}>{item}</ChipButton>
                 ))}
               </div>
             </div>
@@ -114,7 +114,7 @@ export function SearchPalette() {
                   {answer.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
                   <div className="search-palette-citations">
                     {answer.citations.map((citation) => (
-                      <button key={citation.href} type="button" onClick={() => go(citation.href)}>{citation.title}</button>
+                      <ChipButton key={citation.href} onClick={() => go(citation.href)}>{citation.title}</ChipButton>
                     ))}
                   </div>
                 </div>
@@ -146,9 +146,9 @@ export function SearchPalette() {
                 </section>
               ))}
 
-              <button type="button" className="search-palette-viewall" onClick={submitQuery}>
+              <ActionButton onClick={submitQuery}>
                 Xem tất cả kết quả cho “{trimmed}” <kbd>↵</kbd>
-              </button>
+              </ActionButton>
             </>
           )}
         </div>

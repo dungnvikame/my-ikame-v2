@@ -7,6 +7,7 @@ import { Button, SourceLine, StatusPill } from '../components/UI';
 import { isEligible } from '../lib/audience';
 import type { NewsPost } from '../types';
 import { Avatar, Input, Button as DsButton } from '@coreds/react';
+import { avatarText } from '../lib/avatar-text';
 
 // MVP: danh sách Tin tức đã gộp vào iKame Feed (/feed) — file này chỉ còn trang đọc bài viết.
 
@@ -44,7 +45,7 @@ function ArticleComments({ post }: { post: NewsPost }) {
         <ul className="article-comment-list">
           {comments.map((comment) => (
             <li key={comment.id}>
-              <Avatar type="text" size="m" fallback={comment.authorShort.slice(0, 1)} alt="" aria-hidden="true" />
+              <Avatar type="text" size="m" fallback={avatarText(comment.authorShort.slice(0, 1))} alt="" aria-hidden="true" />
               <div className="article-comment-body">
                 <p className="article-comment-meta"><strong>{comment.authorName}</strong>{comment.role && <span> · {comment.role}</span>}<span> · {comment.time}</span></p>
                 <p>{comment.text}</p>
@@ -54,7 +55,7 @@ function ArticleComments({ post }: { post: NewsPost }) {
         </ul>
       )}
       <form className="article-comment-form" onSubmit={handleSubmit}>
-        <Avatar type="text" size="m" fallback={user.shortName.slice(0, 1)} alt="" aria-hidden="true" />
+        <Avatar type="text" size="m" fallback={avatarText(user.shortName.slice(0, 1))} alt="" aria-hidden="true" />
         <Input
           variant="borderless"
           size="l"

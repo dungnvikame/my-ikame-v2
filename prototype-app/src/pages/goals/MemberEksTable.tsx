@@ -1,9 +1,10 @@
 import { CaretRightIcon as CaretRight } from '@coreds/react/icons';
 import { useState } from 'react';
-import { SectionHeader, StatusPill } from '../../components/UI';
+import { SectionHeader, StatusPill, TextButton } from '../../components/UI';
 import type { MemberEksStat } from '../../types';
 import { STATUS_META } from './build-okr-tree';
 import { Avatar, Progress } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 /** Manager "Thành viên" tab — one row per `memberEksStats` entry, with a borderless
  * "Xem EKS" toggle that expands a small honest 2-3 line snapshot (no fabricated EKS tree —
@@ -29,7 +30,7 @@ export function MemberEksTable({ members }: { members: MemberEksStat[] }) {
           return (
             <div key={member.id} className="member-eks-item">
               <div className="member-eks-row">
-                <div className="person-cell"><Avatar type="text" size="m" fallback={member.shortName.charAt(0)} alt="" aria-hidden="true" /><span><strong>{member.name}</strong><small>{member.role}</small></span></div>
+                <div className="person-cell"><Avatar type="text" size="m" fallback={avatarText(member.shortName.charAt(0))} alt="" aria-hidden="true" /><span><strong>{member.name}</strong><small>{member.role}</small></span></div>
                 <div className="eks-progress">
                   <StatusPill tone={meta.tone}>{meta.label}</StatusPill>
                   <Progress className="okr-progress" size="md" value={member.eksProgress} aria-label={`Tiến độ EKS ${member.name}`} />
@@ -37,9 +38,9 @@ export function MemberEksTable({ members }: { members: MemberEksStat[] }) {
                 </div>
                 <span className={behind ? 'member-eks-reports is-behind' : 'member-eks-reports'}>Báo cáo: {member.reportsSubmitted}/{member.reportsExpected} kỳ</span>
                 <span className="muted-text">{member.lastCheckInLabel}</span>
-                <button type="button" className="text-link member-eks-toggle" aria-expanded={expanded} onClick={() => setExpandedId(expanded ? null : member.id)}>
+                <TextButton aria-expanded={expanded} onClick={() => setExpandedId(expanded ? null : member.id)}>
                   Xem EKS<CaretRight size={14} className={expanded ? 'is-expanded' : ''} />
-                </button>
+                </TextButton>
               </div>
               {expanded && (
                 <div className="member-eks-expand">

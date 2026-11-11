@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon as MagnifyingGlass } from '@coreds/react/icons';
 import { Input } from '@coreds/react';
+import { ChipButton } from '../../components/UI';
 
 const CHIP_COLORS = ['blue', 'violet', 'teal', 'orange', 'pink'] as const;
 
@@ -34,15 +35,13 @@ export function KnowledgeHero({ greetingName, term, onTermChange, topics, active
       {topics.length > 0 && (
         <div className="khub-chip-row" role="group" aria-label="Lọc theo chủ đề">
           {topics.map((topic, index) => (
-            <button
+            <ChipButton
               key={topic}
-              type="button"
-              className={`khub-chip khub-chip--${CHIP_COLORS[index % CHIP_COLORS.length]}${activeTopic === topic ? ' is-active' : ''}`}
               aria-pressed={activeTopic === topic}
               onClick={() => onToggleTopic(topic)}
             >
               {topic}
-            </button>
+            </ChipButton>
           ))}
         </div>
       )}

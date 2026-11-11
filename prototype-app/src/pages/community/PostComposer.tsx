@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { HandsClappingIcon as HandsClapping, PencilSimpleLineIcon as PencilSimpleLine, ShieldWarningIcon as ShieldWarning } from '@coreds/react/icons';
-import { Button } from '../../components/UI';
+import { Button, ChipButton } from '../../components/UI';
 import { checkContent, type ModerationResult } from '../../lib/moderation';
 import type { Post } from '../../types';
 import { Select, Avatar, Textarea } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 export type ComposerSubmit = { body: string; kudos?: Post['kudos'] };
 export type Colleague = { name: string; shortName: string; role: string };
@@ -51,12 +52,12 @@ export function PostComposer({ userShort, demoResetCount, colleagues, onSubmit, 
   return (
     <section className="community-composer" aria-label="Đăng bài mới">
       <div className="community-composer-modes" role="group" aria-label="Loại bài đăng">
-        <button type="button" aria-pressed={mode === 'share'} className={mode === 'share' ? 'is-active' : ''} onClick={() => setMode('share')}>
+        <ChipButton aria-pressed={mode === 'share'} onClick={() => setMode('share')}>
           <PencilSimpleLine size={15} /> Chia sẻ
-        </button>
-        <button type="button" aria-pressed={mode === 'kudos'} className={mode === 'kudos' ? 'is-active' : ''} onClick={() => setMode('kudos')}>
+        </ChipButton>
+        <ChipButton aria-pressed={mode === 'kudos'} onClick={() => setMode('kudos')}>
           <HandsClapping size={15} /> Ghi nhận đồng nghiệp
-        </button>
+        </ChipButton>
       </div>
       {mode === 'kudos' && (
         <label className="community-composer-recipient">
@@ -73,7 +74,7 @@ export function PostComposer({ userShort, demoResetCount, colleagues, onSubmit, 
         </label>
       )}
       <div className="community-composer-row">
-        <Avatar type="text" size="m" fallback={userShort} alt="" aria-hidden="true" />
+        <Avatar type="text" size="m" fallback={avatarText(userShort)} alt="" aria-hidden="true" />
         <Textarea variant="borderless" autosize minRows={2}
           value={body}
           onChange={(event) => { setBody(event.target.value); if (rejection) setRejection(null); }}

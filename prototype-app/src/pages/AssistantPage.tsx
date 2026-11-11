@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowRightIcon as ArrowRight, CheckCircleIcon as CheckCircle, ClockCounterClockwiseIcon as ClockCounterClockwise, NotePencilIcon as NotePencil, PaperPlaneTiltIcon as PaperPlaneTilt, SparkleIcon as Sparkle, TrashIcon as Trash } from '@coreds/react/icons';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
-import { Button, IconButton } from '../components/UI';
+import { Button, IconButton, ChipButton } from '../components/UI';
 import { buildAgentReply, type AgentAction } from './assistant/agent-replies';
 import {
   clearSessions, loadSessions, questionCount, sanitizeForStorage, saveSessions,
@@ -13,7 +13,7 @@ import { AssistantWorkspace, type OkrReportPayload } from './assistant/Assistant
 import { documentReminders } from '../data/profile-data';
 import { journeyDigestQuests } from '../lib/onboarding';
 import { AgentMetricsCard } from '../components/assistant/AgentMetricsCard';
-import { Input, Button as DsButton } from '@coreds/react';
+import { Input, Button as DsButton, Popover } from '@coreds/react';
 
 /** Danh sách phiên cũ — dùng chung cho popover lịch sử và mục "Gần đây" ở màn chào. */
 function HistoryList({ sessions, onResume, onDelete }: {
@@ -242,7 +242,7 @@ export function AssistantPage() {
     <div className="assistant-composer">
       <div className="assistant-chips">
         {chips.map((chip) => (
-          <button key={chip} type="button" className="ai-suggestion-chip" onClick={() => ask(chip)}>{chip}</button>
+          <ChipButton key={chip} onClick={() => ask(chip)}>{chip}</ChipButton>
         ))}
       </div>
       <form className="assistant-input" onSubmit={handleSubmit}>
@@ -322,13 +322,15 @@ export function AssistantPage() {
               <small>{messages.filter((message) => message.role === 'user').length} lượt hỏi</small>
             </div>
             <IconButton label="Cuộc trò chuyện mới" onClick={startNewChat}><NotePencil size={18} /></IconButton>
-            <IconButton label="Lịch sử trò chuyện" onClick={() => setHistoryOpen((open) => !open)}><ClockCounterClockwise size={18} /></IconButton>
-            {historyOpen && (
-              <div className="assistant-history-pop" role="dialog" aria-label="Lịch sử trò chuyện">
+            <Popover
+              side="bottom"
+              trigger={<IconButton label="Lịch sử trò chuyện"><ClockCounterClockwise size={18} /></IconButton>}
+            >
+              <div className="assistant-history-popover">
                 <p className="assistant-history-pop-title">Lịch sử trò chuyện</p>
                 <HistoryList sessions={sessions} onResume={resumeSession} onDelete={deleteSession} />
               </div>
-            )}
+            </Popover>
           </header>
           <div className="assistant-thread" role="log" aria-live="polite" ref={threadRef}>
             {messages.map((message) => (

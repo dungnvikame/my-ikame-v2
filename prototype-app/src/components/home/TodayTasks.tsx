@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowSquareOutIcon as ArrowSquareOut, CheckCircleIcon as CheckCircle, XIcon as X } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import type { DigestItem } from '../../pages/assistant/daily-digest';
-import { ButtonLink } from '../UI';
+import { ButtonLink, ChipButton, IconButton, TextButton } from '../UI';
 
 /**
  * "Cần làm ngay" trên Trang chủ. Mỗi dòng: vạch màu theo nguồn, tên việc, nguồn + bối cảnh,
@@ -57,8 +57,8 @@ export function TodayTasks({ items, sourceNote, askHref }: { items: DigestItem[]
 
       {urgent > 0 && urgent < open.length && (
         <div className="today-tasks-filter" role="group" aria-label="Lọc việc">
-          <button type="button" aria-pressed={!onlyUrgent} onClick={() => setOnlyUrgent(false)}>Tất cả <span>{open.length}</span></button>
-          <button type="button" aria-pressed={onlyUrgent} onClick={() => setOnlyUrgent(true)}>Gấp <span>{urgent}</span></button>
+          <ChipButton aria-pressed={!onlyUrgent} onClick={() => setOnlyUrgent(false)}>Tất cả <span>{open.length}</span></ChipButton>
+          <ChipButton aria-pressed={onlyUrgent} onClick={() => setOnlyUrgent(true)}>Gấp <span>{urgent}</span></ChipButton>
         </div>
       )}
 
@@ -78,9 +78,9 @@ export function TodayTasks({ items, sourceNote, askHref }: { items: DigestItem[]
               {item.href
                 ? <ButtonLink variant="dim" size="m" href={item.href}>{actionLabel(item)}<ArrowSquareOut size={14} aria-hidden="true" /></ButtonLink>
                 : <ButtonLink variant="dim" size="m" to={item.to}>{actionLabel(item)}</ButtonLink>}
-              <button type="button" className="today-task-dismiss" aria-label={`Để sau: ${item.label}`} title="Để sau" onClick={() => setDismissed((ids) => [...ids, item.id])}>
+              <IconButton label={`Để sau: ${item.label}`} onClick={() => setDismissed((ids) => [...ids, item.id])}>
                 <X size={15} />
-              </button>
+              </IconButton>
             </li>
           ))}
         </ul>
@@ -88,9 +88,9 @@ export function TodayTasks({ items, sourceNote, askHref }: { items: DigestItem[]
 
       <footer className="today-tasks-foot">
         <span>{sourceNote}</span>
-        {hidden > 0 && <button type="button" className="text-link" onClick={() => setExpanded(true)}>Xem thêm {hidden} việc</button>}
-        {expanded && filtered.length > VISIBLE && <button type="button" className="text-link" onClick={() => setExpanded(false)}>Thu gọn</button>}
-        {dismissed.length > 0 && <button type="button" className="text-link" onClick={() => setDismissed([])}>Hiện lại {dismissed.length} việc đã để sau</button>}
+        {hidden > 0 && <TextButton onClick={() => setExpanded(true)}>Xem thêm {hidden} việc</TextButton>}
+        {expanded && filtered.length > VISIBLE && <TextButton onClick={() => setExpanded(false)}>Thu gọn</TextButton>}
+        {dismissed.length > 0 && <TextButton onClick={() => setDismissed([])}>Hiện lại {dismissed.length} việc đã để sau</TextButton>}
       </footer>
     </section>
   );

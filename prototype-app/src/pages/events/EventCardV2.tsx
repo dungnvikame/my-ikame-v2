@@ -5,6 +5,7 @@ import { StatusPill } from '../../components/UI';
 import type { EventItem } from '../../types';
 import { eventCoverPalette, eventEmoji } from './event-visuals';
 import { Avatar } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 export type CapacityInfo = { registered: number; capacity: number; ratio: number; label: string };
 
@@ -24,8 +25,8 @@ export function ParticipantAvatars({ names, max = 5 }: { names?: string[]; max?:
   const extra = names.length - shown.length;
   return (
     <div className="events-v2-avatars" aria-label={`${names.length} người tham gia`}>
-      {shown.map((name, index) => <Avatar key={`${name}-${index}`} className="events-v2-avatar-ds" type="text" size="xs" fallback={name.charAt(0)} alt={name} />)}
-      {extra > 0 && <Avatar className="events-v2-avatar-ds" type="text" size="xs" fallback={`+${extra}`} alt={`và ${extra} người khác`} />}
+      {shown.map((name, index) => <Avatar key={`${name}-${index}`} className="events-v2-avatar-ds" type="text" size="xs" fallback={avatarText(name.charAt(0))} alt={name} />)}
+      {extra > 0 && <Avatar className="events-v2-avatar-ds" type="text" size="xs" fallback={avatarText(`+${extra}`)} alt={`và ${extra} người khác`} />}
     </div>
   );
 }

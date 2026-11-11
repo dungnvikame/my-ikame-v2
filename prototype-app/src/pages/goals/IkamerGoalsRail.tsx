@@ -1,6 +1,7 @@
 import { SectionHeader } from '../../components/UI';
 import type { User } from '../../types';
 import { Avatar } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 type IkamerGoalsRailProps = {
   user: User;
@@ -14,7 +15,7 @@ export function IkamerGoalsRail({ user, checkInCount, needsUpdateCount }: Ikamer
   return (
     <aside className="home-rail eks-rail">
       <section className="side-info profile-section profile-header">
-        <Avatar type="text" size="l" fallback={user.shortName.slice(0, 1)} alt="" aria-hidden="true" />
+        <Avatar type="text" size="l" fallback={avatarText(user.shortName.slice(0, 1))} alt="" aria-hidden="true" />
         <div className="profile-header-info">
           <h2>{user.name}</h2>
           <p>{user.role}</p>

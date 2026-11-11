@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { useLive } from '../lib/live/live-data';
 import { Input, Button as DsButton } from '@coreds/react';
+import { ChipButton } from './UI';
 
 const CHIPS = [
   'Tôi có việc gì cần xác nhận?',
@@ -65,9 +66,9 @@ export function AIAssistant({ subtitle, compact = false, children }: { subtitle?
       {children}
       {!compact && <div className="ai-hero-chips">
         {CHIPS.map((chip) => (
-          <button key={chip} type="button" className="ai-suggestion-chip" onClick={() => askAssistant(chip)}>
+          <ChipButton key={chip} onClick={() => askAssistant(chip)}>
             {chip}
-          </button>
+          </ChipButton>
         ))}
       </div>}
     </section>

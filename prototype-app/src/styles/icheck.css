@@ -33,7 +33,7 @@
 }
 
 .icheck-banner strong {
-  font-size: 22px;
+  font-size: var(--headline-xs-size);
 }
 
 .icheck-banner > div[role="status"] {
@@ -51,8 +51,8 @@
 .icheck-banner--pending .button { margin-top: 4px; }
 
 .icheck-quick-actions {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -68,7 +68,7 @@
   background: var(--bg-primary);
   color: var(--text-primary);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--body-s-size);
   cursor: pointer;
 }
 
@@ -96,7 +96,7 @@
 
 .icheck-leave-head h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--body-m-size);
 }
 
 .icheck-leave-grid {
@@ -121,7 +121,7 @@
 }
 
 .icheck-leave-main > strong {
-  font-size: 34px;
+  font-size: var(--headline-m-size);
   line-height: 1.1;
 }
 
@@ -131,7 +131,7 @@
   align-items: center;
   gap: 4px;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: var(--body-xs-size);
 }
 
 .icheck-leave-split {
@@ -154,10 +154,10 @@
 
 .icheck-leave-side b,
 .icheck-leave-split b {
-  font-size: 16px;
+  font-size: var(--body-m-size);
 }
 
-.is-compact .icheck-leave-main > strong { font-size: 26px; }
+.is-compact .icheck-leave-main > strong { font-size: var(--headline-s-size); }
 
 /* Dải tuần */
 .icheck-week-days {
@@ -177,7 +177,7 @@
   padding: 8px 4px;
   border-radius: var(--radius-8);
   background: var(--bg-secondary);
-  font-size: 12px;
+  font-size: var(--body-xs-size);
 }
 
 .icheck-day.is-today {
@@ -185,7 +185,7 @@
 }
 
 .icheck-day small { color: var(--text-secondary); }
-.icheck-day strong { font-size: 14px; }
+.icheck-day strong { font-size: var(--body-s-size); }
 
 .icheck-day-mark {
   display: grid;
@@ -193,7 +193,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  font-size: 11px;
+  font-size: var(--body-xs-size);
   font-weight: 700;
   color: var(--fg-on-contrast);
 }
@@ -213,7 +213,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   color: var(--text-secondary);
 }
 
@@ -245,7 +245,7 @@
   background: var(--bg-primary);
 }
 
-.work-request strong { display: block; font-size: 14px; }
+.work-request strong { display: block; font-size: var(--body-s-size); }
 .work-request small { color: var(--text-secondary); }
 
 @media (max-width: 900px) {
@@ -253,7 +253,6 @@
 }
 
 @media (max-width: 560px) {
-  .icheck-quick-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .icheck-leave-grid { grid-template-columns: 1fr; }
 }
 

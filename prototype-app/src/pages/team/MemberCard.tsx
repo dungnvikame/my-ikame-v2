@@ -4,6 +4,7 @@ import { StatusPill } from '../../components/UI';
 import type { MemberProfile360, TeamMember } from '../../types';
 import { initials, MiniProgress, riskLabel, riskScore, STATUS_LABEL, STATUS_TONE } from './team-visuals';
 import { Avatar } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 /**
  * Thẻ thành viên giàu tín hiệu (pattern roster của Lattice/BambooHR): thay vì
@@ -23,7 +24,7 @@ export function MemberCard({ member, profile }: { member: TeamMember; profile?: 
   return (
     <article className={`member-card member-card--${risk.tone}`}>
       <header className="member-card-head">
-        <Avatar type="text" size="l" fallback={initials(member.name)} alt="" aria-hidden="true" />
+        <Avatar type="text" size="l" fallback={avatarText(initials(member.name))} alt="" aria-hidden="true" />
         <div className="member-card-identity">
           <h3><Link to={`/manager/team/${member.id}`}>{member.name}</Link></h3>
           <small>{member.role}</small>

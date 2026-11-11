@@ -194,7 +194,7 @@ p {
 
 .perspective-switch--3 button {
   padding: 0 2px;
-  font-size: 11px;
+  font-size: var(--body-xs-size);
   white-space: nowrap;
 }
 
@@ -678,7 +678,7 @@ p {
   position: absolute;
   top: 8px;
   right: 12px;
-  font-size: 44px;
+  font-size: var(--headline-xl-size);
   opacity: 0.85;
   filter: drop-shadow(0 4px 10px rgb(0 0 0 / 0.18));
 }
@@ -1105,7 +1105,7 @@ p {
 }
 
 .handoff-emoji {
-  font-size: 34px;
+  font-size: var(--headline-m-size);
 }
 
 .handoff-spinner {
@@ -1358,7 +1358,7 @@ p {
   top: 50%;
   right: 32px;
   transform: translateY(-50%);
-  font-size: 120px;
+  font-size: var(--headline-xl-size);
   opacity: 0.28;
   filter: drop-shadow(0 8px 24px rgb(0 0 0 / 0.25));
   pointer-events: none;
@@ -2085,7 +2085,7 @@ p {
   input,
   select,
   textarea {
-    font-size: 16px !important;
+    font-size: var(--body-m-size) !important;
   }
 
   /* Touch target ≥44px cho các control nhỏ (chip lọc, action bài viết, gợi ý AI). */
@@ -2254,7 +2254,7 @@ p {
   border-radius: var(--radius-round);
   background: var(--bg-canvas-secondary);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -2266,7 +2266,7 @@ p {
   gap: 4px;
   padding: 2px 8px;
   border-radius: var(--radius-round);
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -2432,12 +2432,12 @@ p {
 .quick-request-receipt svg { color: var(--bg-green-contrast); }
 .demo-badge {
   padding: 2px 8px; border: 1px solid currentColor; border-radius: 4px;
-  color: var(--text-secondary); font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--text-secondary); font-size: var(--body-xs-size); font-weight: 700; letter-spacing: 0.06em;
 }
 
 /* ===== Trang chủ: phần đầu gọn + dải thời gian + Cần làm ngay ===== */
 .ai-hero.ai-hero--compact { align-items: stretch; gap: 10px; padding: 20px 24px; text-align: left; }
-.ai-hero.ai-hero--compact h1 { justify-content: flex-start; font-size: 24px; line-height: 32px; }
+.ai-hero.ai-hero--compact h1 { justify-content: flex-start; font-size: var(--headline-xs-size); line-height: 32px; }
 .ai-hero.ai-hero--compact > p { color: var(--text-secondary); }
 .ai-hero.ai-hero--compact .assistant-input { max-width: none; margin-top: 2px; }
 
@@ -2458,9 +2458,9 @@ p {
 .day-timeline-now { position: absolute; top: -14px; bottom: 0; width: 2px; background: var(--bg-error-contrast); transform: translateX(-1px); }
 .day-timeline-now span {
   position: absolute; top: 0; left: 50%; transform: translate(-50%, -2px); padding: 0 5px; border-radius: 4px;
-  background: var(--bg-error-contrast); color: #fff; font-size: 10px; font-weight: 700; line-height: 14px; font-variant-numeric: tabular-nums;
+  background: var(--bg-error-contrast); color: #fff; font-size: var(--body-xxs-size); font-weight: 700; line-height: 14px; font-variant-numeric: tabular-nums;
 }
-.day-timeline-ticks { position: relative; height: 16px; color: var(--text-tertiary); font-size: 11px; font-variant-numeric: tabular-nums; }
+.day-timeline-ticks { position: relative; height: 16px; color: var(--text-tertiary); font-size: var(--body-xs-size); font-variant-numeric: tabular-nums; }
 .day-timeline-ticks span { position: absolute; transform: translateX(-50%); }
 .day-timeline-ticks span:first-child { transform: none; }
 .day-timeline-ticks span:last-child { transform: translateX(-100%); }
@@ -2489,7 +2489,7 @@ p {
 .today-task-copy span { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; color: var(--text-secondary); font-size: var(--body-xs-size); }
 .today-task-copy b { display: inline-flex; align-items: center; gap: 5px; color: var(--text-primary); font-weight: 600; }
 .today-task-copy b::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--task-color); }
-.today-task-copy em { padding: 0 6px; border-radius: 4px; background: var(--bg-error-contrast); color: #fff; font-style: normal; font-weight: 700; font-size: 11px; line-height: 16px; }
+.today-task-copy em { padding: 0 6px; border-radius: 4px; background: var(--bg-error-contrast); color: #fff; font-style: normal; font-weight: 700; font-size: var(--body-xs-size); line-height: 16px; }
 .today-task-action { min-height: 34px; padding: 0 12px; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 .today-task-dismiss {
   width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 6px;
@@ -2563,7 +2563,7 @@ p {
 /* Điện thoại: tiêu đề chào nhỏ lại; khoảng trống ghi bằng chữ vì nhãn trong dải không đủ chỗ */
 .day-timeline-free-note { display: none; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
 @media (max-width: 720px) {
-  .ai-hero.ai-hero--compact h1 { font-size: 20px; line-height: 28px; align-items: flex-start; }
+  .ai-hero.ai-hero--compact h1 { font-size: var(--body-xl-size); line-height: 28px; align-items: flex-start; }
   .ai-hero.ai-hero--compact h1 .ai-hero-spark { flex: none; margin-top: 2px; }
   .day-timeline-free span { display: none; }
   .day-timeline-free-note { display: inline; }
@@ -2620,3 +2620,38 @@ p {
 .journey-progress--ds { position: relative; height: auto; background: none; }
 .journey-progress-bar { width: 100%; }
 .events-v2-avatar-ds + .events-v2-avatar-ds { margin-left: -6px; }
+
+/* ===== Thang chữ Core DS: giãn chữ theo bảng Typography của kit ===== */
+body { letter-spacing: 0.01em; }
+
+/* Hộp nổi dùng Popover/Modal của kit */
+.assistant-history-popover { min-width: 280px; max-width: 360px; }
+
+/* Hàng nút lọc/chip: khoảng cách đều, tự xuống dòng */
+.ai-hero-chips, .quick-request-examples, .today-tasks-filter, .khub-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Thanh bên: danh sách mục bám sát dưới logo (kit mặc định canh giữa theo chiều dọc) */
+.sidebar-nav-ds .my-auto { margin-top: 0; margin-bottom: auto; }
+.sidebar-account { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+.perspective-switch-ds { width: 100%; }
+.perspective-switch-ds > * { flex: 1 1 0; min-width: 0; padding-inline: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Hàng thao tác nhanh iCheck: nút của kit tự xuống dòng thay vì đè nhau */
+.icheck-quick-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.home-rail .icheck-quick-actions { display: flex; }
+/* Thẻ loại request: tự giảm số cột khi hẹp để chữ không bị bóp từng từ */
+.request-type-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+/* ===== Điện thoại: tab của kit cuộn ngang; nút dài được xuống dòng thay vì tràn ===== */
+.app-tabs { max-width: 100%; min-width: 0; }
+.app-tabs [role="tablist"] { max-width: 100%; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+.app-tabs [role="tablist"]::-webkit-scrollbar { display: none; }
+.app-tabs [role="tab"] { flex: none; }
+@media (max-width: 820px) {
+  #main-content button:not([role="tab"]):not([role="switch"]):not([role="checkbox"]), #main-content a[class*="inline-flex"] {
+    max-width: 100%; white-space: normal; height: auto; min-height: 32px; text-align: left;
+  }
+}
+.profile-setting-card, .profile-setting-actions { flex-wrap: wrap; min-width: 0; }
+.profile-setting-card > * { min-width: 0; }
+.profile-payslip-actions { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }

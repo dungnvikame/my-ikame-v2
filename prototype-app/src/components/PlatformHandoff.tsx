@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { ArrowSquareOutIcon as ArrowSquareOut, CheckCircleIcon as CheckCircle, CircleNotchIcon as CircleNotch, LockKeyIcon as LockKey } from '@coreds/react/icons';
 import { useToast } from './toast';
 import { Button } from './UI';
+import { Modal } from '@coreds/react';
 
 /**
  * Mô phỏng handoff sang platform gốc (slide "Một cửa vào, không phải một nơi
@@ -83,25 +84,18 @@ export function PlatformHandoffButton({
 
   return (
     <>
-      <button
-        ref={triggerRef}
-        type="button"
-        className={variant === 'link' ? 'handoff-link' : 'handoff-button'}
-        onClick={() => setPhase('sso')}
-      >
+      <Button ref={triggerRef} variant={variant === 'link' ? 'borderless' : 'dim'} size={variant === 'link' ? 's' : 'l'} onClick={() => setPhase('sso')}>
         {label ?? `Mở trên ${platform}`}
         <ArrowSquareOut size={15} />
-      </button>
+      </Button>
 
       {(phase === 'sso' || phase === 'working') && (
-        <div
-          ref={overlayRef}
-          className="handoff-layer"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Chuyển sang ${platform}`}
-          tabIndex={-1}
-          onKeyDown={onOverlayKeyDown}
+        <Modal
+          open
+          onOpenChange={(next) => { if (!next) closeAndRestoreFocus('closed'); }}
+          size="md"
+          title={`Chuyển sang ${platform}`}
+          description="Mô phỏng mở công cụ gốc bằng SSO chung của iKame."
         >
           {phase === 'sso' ? (
             <div className="handoff-card handoff-card--sso">
@@ -137,7 +131,7 @@ export function PlatformHandoffButton({
               </footer>
             </div>
           )}
-        </div>
+        </Modal>
       )}
 
     </>

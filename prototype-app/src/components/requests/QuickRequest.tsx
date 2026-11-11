@@ -5,7 +5,7 @@ import { useLive } from '../../lib/live/live-data';
 import { leaveDeduction, parseRequest, REQUEST_KIND_LABEL, type DaySession, type RequestDraft, type RequestKind } from '../../lib/request-parser';
 import type { RequestType } from '../../types';
 import { Input, Select } from '@coreds/react';
-import { Button } from '../UI';
+import { Button, ChipButton } from '../UI';
 
 /**
  * Đề xuất bằng một câu: gõ câu tự nhiên → form điền sẵn ngay tại chỗ (loại, ngày, buổi, người
@@ -109,7 +109,7 @@ export function QuickRequest() {
         </div>
         <div className="quick-request-examples" role="group" aria-label="Câu gợi ý">
           {EXAMPLES.map((example) => (
-            <button key={example} type="button" onClick={() => { setText(example); read(example); }}>{example}</button>
+            <ChipButton key={example} onClick={() => { setText(example); read(example); }}>{example}</ChipButton>
           ))}
         </div>
       </form>

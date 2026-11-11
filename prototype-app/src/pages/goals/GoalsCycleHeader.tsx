@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import { CYCLE_OPTIONS, type CycleOption } from './build-okr-tree';
+import { ChipButton } from '../../components/UI';
 
 type GoalsCycleHeaderProps = {
   eyebrow: string;
@@ -22,9 +23,9 @@ export function GoalsCycleHeader({ eyebrow, title, cycle, onCycleChange, childre
       <div className="okr-header-actions">
         <div className="okr-cycle-selector" role="group" aria-label="Chọn chu kỳ">
           {CYCLE_OPTIONS.map((option) => (
-            <button key={option} type="button" className={option === cycle ? 'is-active' : ''} aria-pressed={option === cycle} onClick={() => onCycleChange(option)}>
+            <ChipButton key={option} aria-pressed={option === cycle} onClick={() => onCycleChange(option)}>
               {option}
-            </button>
+            </ChipButton>
           ))}
         </div>
         <PlatformHandoffButton platform="iGoal" action="thiết lập cây mục tiêu và liên kết OKR" label="Cấu hình trên iGoal" />

@@ -2,7 +2,7 @@ import { CalendarCheckIcon as CalendarCheck, ClockIcon as Clock, HouseIcon as Ho
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../../AppState';
 import { useToast } from '../toast';
-import { Button } from '../UI';
+import { Button, ActionButton } from '../UI';
 import { ATTENDANCE_LEGEND, ICHECK_QUICK_ACTIONS, type ICheckQuickActionKey } from '../../data/icheck-data';
 import { useLive } from '../../lib/live/live-data';
 import { PlatformHandoffButton } from '../PlatformHandoff';
@@ -59,9 +59,9 @@ export function ICheckWidget({ compact = false }: { compact?: boolean }) {
           {ICHECK_QUICK_ACTIONS.map((action) => {
             const Icon = QUICK_ICONS[action.key as keyof typeof QUICK_ICONS];
             return (
-              <button key={action.key} type="button" className="icheck-quick-action" onClick={() => navigate(`/assistant?q=${encodeURIComponent(action.prompt)}`)}>
+              <ActionButton key={action.key} onClick={() => navigate(`/assistant?q=${encodeURIComponent(action.prompt)}`)}>
                 <Icon size={17} /> {action.label}
-              </button>
+              </ActionButton>
             );
           })}
         </div>

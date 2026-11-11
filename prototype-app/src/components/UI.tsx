@@ -1,5 +1,5 @@
 import { forwardRef, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type PropsWithChildren, type ReactNode } from 'react';
-import { Badge, Button as DsButton } from '@coreds/react';
+import { Badge, Button as DsButton, TabChip } from '@coreds/react';
 import { ArrowRightIcon as ArrowRight, CheckCircleIcon as CheckCircle, ClockIcon as Clock, WarningCircleIcon as WarningCircle } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 
@@ -94,4 +94,25 @@ export function EmptyState({ title, body, icon }: { title: string; body: string;
 export function PriorityIcon({ kind }: { kind: 'required' | 'time' | 'warning' }) {
   if (kind === 'time') return <Clock size={20} variant="duotone" />;
   return <WarningCircle size={20} variant="duotone" />;
+}
+
+type NativeButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'>;
+
+/**
+ * Chip bấm được (lọc, gợi ý, chuyển chế độ) — TabChip của Core DS. Trạng thái đang chọn lấy từ
+ * `aria-pressed` / `aria-checked` mà nơi gọi vẫn truyền cho trình đọc màn hình, nên không cần prop riêng.
+ */
+export function ChipButton({ children, className: _className, type: _type, icon, ...props }: NativeButtonProps & { icon?: ReactNode }) {
+  const active = props['aria-pressed'] === true || props['aria-checked'] === true;
+  return <TabChip size="s" pill active={active} icon={icon} type="button" {...props}>{children}</TabChip>;
+}
+
+/** Nút chữ cho hành động phụ trong dòng ("Xem thêm", "Thu gọn", "Xoá bộ lọc") — Button subtle của Core DS. */
+export function TextButton({ children, className: _className, type: _type, ...props }: NativeButtonProps) {
+  return <DsButton variant="subtle" size="s" type="button" {...props}>{children}</DsButton>;
+}
+
+/** Nút hành động nhỏ có icon và chữ (thả tim, bình luận, thao tác nhanh) — Button của Core DS. */
+export function ActionButton({ children, className: _className, type: _type, ...props }: NativeButtonProps) {
+  return <DsButton variant="subtle" size="s" type="button" {...props}>{children}</DsButton>;
 }

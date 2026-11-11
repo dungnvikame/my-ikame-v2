@@ -1,8 +1,9 @@
 import { useEffect, useState, type RefCallback } from 'react';
 import { BookmarkSimpleIcon as BookmarkSimple, ChatCircleIcon as ChatCircle, HandsClappingIcon as HandsClapping, HeartIcon as Heart, PushPinIcon as PushPin, RobotIcon as Robot, SealCheckIcon as SealCheck, ShareNetworkIcon as ShareNetwork } from '@coreds/react/icons';
 import type { Post, PostCover, ReactionKind } from '../../types';
-import { Button, StatusPill } from '../../components/UI';
+import { Button, StatusPill, ActionButton, ChipButton } from '../../components/UI';
 import { Avatar, Textarea } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 /** Cover render helper (reused by PinnedCarousel) — pure CSS gradient + emoji, never a real photo. */
 export function PostCoverBlock({ cover, compact = false }: { cover: PostCover; compact?: boolean }) {
@@ -57,7 +58,7 @@ export function PostCard({
   return (
     <article className="community-post-card" ref={registerRef}>
       <header className="community-post-header">
-        <Avatar type="text" size="m" fallback={post.authorShort} alt="" aria-hidden="true" />
+        <Avatar type="text" size="m" fallback={avatarText(post.authorShort)} alt="" aria-hidden="true" />
         <div className="community-post-heading-copy">
           <strong>{post.authorName}</strong>
           <span className="community-post-meta">{post.role} · {post.time}</span>
@@ -68,9 +69,9 @@ export function PostCard({
           ? <StatusPill tone="info"><Robot size={14} />Tự động từ {post.autoSource}</StatusPill>
           : post.official && <StatusPill tone="info"><SealCheck size={14} />Chính thức</StatusPill>}
         {onTogglePin && (
-          <button type="button" className={`community-pin-toggle ${post.pinned ? 'is-active' : ''}`} aria-pressed={!!post.pinned} onClick={() => onTogglePin(post.id)}>
+          <ActionButton aria-pressed={!!post.pinned} onClick={() => onTogglePin(post.id)}>
             <PushPin size={15} variant={post.pinned ? 'fill' : 'line'} /> {post.pinned ? 'Bỏ ghim' : 'Ghim'}
-          </button>
+          </ActionButton>
         )}
       </header>
 
@@ -87,36 +88,30 @@ export function PostCard({
       {post.cover && <PostCoverBlock cover={post.cover} />}
 
       <div className="community-reaction-row">
-        <button
-          type="button"
-          className={`community-reaction ${hasHeart ? 'is-active' : ''} ${bump === 'heart' ? 'is-bumping' : ''}`}
+        <ChipButton
           aria-pressed={hasHeart}
           onClick={() => react('heart')}
         >
           <Heart size={18} variant={hasHeart ? 'fill' : 'line'} /> {post.reactions.heart}
-        </button>
-        <button
-          type="button"
-          className={`community-reaction ${hasClap ? 'is-active' : ''} ${bump === 'clap' ? 'is-bumping' : ''}`}
+        </ChipButton>
+        <ChipButton
           aria-pressed={hasClap}
           onClick={() => react('clap')}
         >
           <HandsClapping size={18} variant={hasClap ? 'fill' : 'line'} /> {post.reactions.clap}
-        </button>
-        <button type="button" className="community-reaction" aria-expanded={expanded} onClick={() => onToggleExpanded(post.id)}>
+        </ChipButton>
+        <ActionButton aria-expanded={expanded} onClick={() => onToggleExpanded(post.id)}>
           <ChatCircle size={18} /> Bình luận ({post.comments.length})
-        </button>
-        <button type="button" className="community-reaction" onClick={() => onShare(post.id)}>
+        </ActionButton>
+        <ActionButton onClick={() => onShare(post.id)}>
           <ShareNetwork size={18} /> Chia sẻ
-        </button>
-        <button
-          type="button"
-          className={`community-reaction ${post.saved ? 'is-active' : ''}`}
+        </ActionButton>
+        <ChipButton
           aria-pressed={!!post.saved}
           onClick={() => onToggleSave(post.id)}
         >
           <BookmarkSimple size={18} variant={post.saved ? 'fill' : 'line'} /> {post.saved ? 'Đã lưu' : 'Lưu'}
-        </button>
+        </ChipButton>
       </div>
 
       {expanded && (
@@ -124,7 +119,7 @@ export function PostCard({
           <ul className="community-comment-list">
             {post.comments.map((comment) => (
               <li key={comment.id} className="community-comment">
-                <Avatar type="text" size="m" fallback={comment.authorShort} alt="" aria-hidden="true" />
+                <Avatar type="text" size="m" fallback={avatarText(comment.authorShort)} alt="" aria-hidden="true" />
                 <div>
                   <strong>{comment.authorName}</strong>{' '}
                   <span className="community-comment-meta">{comment.role ? `${comment.role} · ` : ''}{comment.time}</span>

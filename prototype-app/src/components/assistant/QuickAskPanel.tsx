@@ -7,7 +7,7 @@ import type { ThreadMessage } from '../../pages/assistant/assistant-history';
 import {
   AssistantSteps, capabilitiesFor, generateMessageId, generateReceiptId,
 } from '../../pages/assistant/assistant-shared';
-import { Button, IconButton } from '../UI';
+import { Button, IconButton, ChipButton } from '../UI';
 import { documentReminders } from '../../data/profile-data';
 import { journeyDigestQuests } from '../../lib/onboarding';
 import { Drawer, DrawerBody, DrawerContent, DrawerDescription, DrawerTitle, Input, Button as DsButton } from '@coreds/react';
@@ -210,9 +210,9 @@ export function QuickAskPanel() {
 
         <div className="ask-panel-chips">
           {capabilities.map((capability) => (
-            <button key={capability.prompt} type="button" className="ai-chip" onClick={() => ask(capability.prompt)}>
+            <ChipButton key={capability.prompt} onClick={() => ask(capability.prompt)}>
               {capability.title}
-            </button>
+            </ChipButton>
           ))}
         </div>
 

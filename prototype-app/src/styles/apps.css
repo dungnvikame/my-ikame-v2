@@ -25,7 +25,7 @@
 
 .app-card-head h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--body-m-size);
 }
 
 .app-card-icon {
@@ -33,7 +33,7 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  font-size: 24px;
+  font-size: var(--headline-xs-size);
   border-radius: var(--radius-12);
   background: var(--bg-tertiary);
   flex: none;
@@ -41,13 +41,13 @@
 
 .app-card-tagline {
   margin: 2px 0 0;
-  font-size: 13px;
+  font-size: var(--body-s-size);
   color: var(--text-secondary);
 }
 
 .app-card-description {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--body-s-size);
   line-height: 1.5;
   color: var(--text-secondary);
   flex: 1;
@@ -62,7 +62,7 @@
 }
 
 .app-card-category {
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--text-secondary);
@@ -73,7 +73,7 @@
 
 .app-access-note {
   margin: 14px 0 0;
-  font-size: 13px;
+  font-size: var(--body-s-size);
   color: var(--text-secondary);
 }
 
@@ -122,11 +122,11 @@
 }
 
 .app-launcher-emoji {
-  font-size: 24px;
+  font-size: var(--headline-xs-size);
 }
 
 .app-launcher-name {
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   font-weight: 600;
 }
 
@@ -135,7 +135,7 @@
   align-items: center;
   gap: 4px;
   margin-top: 10px;
-  font-size: 13px;
+  font-size: var(--body-s-size);
 }
 
 @media (max-width: 480px) {

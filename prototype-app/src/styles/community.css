@@ -113,7 +113,7 @@
   background: transparent;
   color: var(--text-secondary);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--body-s-size);
   cursor: pointer;
 }
 
@@ -127,7 +127,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 13px;
+  font-size: var(--body-s-size);
   color: var(--text-secondary);
 }
 
@@ -161,14 +161,14 @@
 .community-moderation p {
   margin: 4px 0 0;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--body-s-size);
 }
 
 .community-moderation small {
   display: block;
   margin-top: 6px;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: var(--body-xs-size);
 }
 
 /* Post cover blocks — pure CSS pattern + emoji, no real photos (F-fixtures). Also used by carousel. */
@@ -189,7 +189,7 @@
 }
 
 .post-cover-emoji {
-  font-size: 32px;
+  font-size: var(--headline-m-size);
   line-height: 1;
 }
 
@@ -381,7 +381,7 @@
   background: var(--bg-primary);
   color: var(--text-secondary);
   font: inherit;
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   cursor: pointer;
 }
 
@@ -403,16 +403,16 @@
 }
 
 .community-kudos-emoji {
-  font-size: 26px;
+  font-size: var(--headline-s-size);
 }
 
 .community-kudos small {
   display: block;
-  font-size: 12px;
+  font-size: var(--body-xs-size);
 }
 
 .community-kudos strong {
-  font-size: 15px;
+  font-size: var(--body-m-size);
   color: var(--text-primary);
 }
 

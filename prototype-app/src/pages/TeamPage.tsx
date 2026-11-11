@@ -2,11 +2,12 @@ import { useMemo, useState } from 'react';
 import { ArrowRightIcon as ArrowRight, MagnifyingGlassIcon as MagnifyingGlass, RowsIcon as Rows, SquaresFourIcon as SquaresFour } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { memberProfile, teamMembers } from '../data/mockData';
-import { Button, EmptyState, StatusPill } from '../components/UI';
+import { Button, EmptyState, StatusPill, ChipButton } from '../components/UI';
 import { useAppState } from '../AppState';
 import type { TeamMember, TeamMemberStatus } from '../types';
 import { MemberCard } from './team/MemberCard';
 import { Select, Input, Avatar } from '@coreds/react';
+import { avatarText } from '../lib/avatar-text';
 import {
   initials, MiniProgress, normalize, riskLabel, riskScore, STATUS_LABEL, STATUS_TONE,
 } from './team/team-visuals';
@@ -105,27 +106,25 @@ export function TeamPage() {
             />
           </label>
           <div className="team-view-toggle" role="group" aria-label="Kiểu hiển thị">
-            <button type="button" aria-pressed={view === 'cards'} className={view === 'cards' ? 'is-active' : ''} onClick={() => setView('cards')} title="Dạng thẻ">
+            <ChipButton aria-pressed={view === 'cards'} onClick={() => setView('cards')} title="Dạng thẻ">
               <SquaresFour size={17} />
-            </button>
-            <button type="button" aria-pressed={view === 'table'} className={view === 'table' ? 'is-active' : ''} onClick={() => setView('table')} title="Dạng bảng">
+            </ChipButton>
+            <ChipButton aria-pressed={view === 'table'} onClick={() => setView('table')} title="Dạng bảng">
               <Rows size={17} />
-            </button>
+            </ChipButton>
           </div>
         </div>
       </div>
 
       <div className="team-filter-chips" role="group" aria-label="Lọc theo trạng thái">
         {chips.map((chip) => (
-          <button
+          <ChipButton
             key={chip.key}
-            type="button"
-            className={`topic-chip ${statusFilter === chip.key ? 'is-active' : ''}`}
             aria-pressed={statusFilter === chip.key}
             onClick={() => setStatusFilter(chip.key)}
           >
             {chip.label} ({chip.count})
-          </button>
+          </ChipButton>
         ))}
       </div>
 
@@ -150,7 +149,7 @@ export function TeamPage() {
             return (
               <Link key={member.id} className="member-table-row" to={`/manager/team/${member.id}`}>
                 <span className="member-table-person">
-                  <Avatar type="text" size="m" fallback={initials(member.name)} alt="" aria-hidden="true" />
+                  <Avatar type="text" size="m" fallback={avatarText(initials(member.name))} alt="" aria-hidden="true" />
                   <span><strong>{member.name}</strong><small>{member.role}</small></span>
                 </span>
                 <span className="member-table-progress">

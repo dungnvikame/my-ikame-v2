@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { CheckCircleIcon as CheckCircle, CircleDashedIcon as CircleDashed, ListBulletsIcon as ListBullets, MonitorIcon as Monitor, SparkleIcon as Sparkle, TextBIcon as TextB, TextHTwoIcon as TextHTwo, TextItalicIcon as TextItalic } from '@coreds/react/icons';
-import { Button } from '../../components/UI';
+import { Button, IconButton } from '../../components/UI';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import type { AgentAction, AgentWorkspace, EditorBlock, FormFieldSpec } from './agent-replies';
 import { Select, Textarea, Input } from '@coreds/react';
@@ -87,10 +87,10 @@ function WorkspaceEditor({ docTitle, blocks }: { docTitle: string; blocks: Edito
   return (
     <div className="workspace-editor">
       <div className="workspace-editor-toolbar" role="toolbar" aria-label="Định dạng văn bản">
-        <button type="button" title="Tiêu đề mục" onClick={() => exec('formatBlock', '<h2>')}><TextHTwo size={16} /></button>
-        <button type="button" title="Đậm" onClick={() => exec('bold')}><TextB size={16} /></button>
-        <button type="button" title="Nghiêng" onClick={() => exec('italic')}><TextItalic size={16} /></button>
-        <button type="button" title="Danh sách" onClick={() => exec('insertUnorderedList')}><ListBullets size={16} /></button>
+        <IconButton label="Tiêu đề mục" onClick={() => exec('formatBlock', '<h2>')}><TextHTwo size={16} /></IconButton>
+        <IconButton label="Đậm" onClick={() => exec('bold')}><TextB size={16} /></IconButton>
+        <IconButton label="Nghiêng" onClick={() => exec('italic')}><TextItalic size={16} /></IconButton>
+        <IconButton label="Danh sách" onClick={() => exec('insertUnorderedList')}><ListBullets size={16} /></IconButton>
         <span className="workspace-editor-count">{wordCount} từ</span>
       </div>
       <div

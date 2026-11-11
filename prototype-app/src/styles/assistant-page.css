@@ -1024,7 +1024,7 @@ textarea.workspace-input {
   justify-content: center;
   gap: 6px 10px;
   margin-top: 14px;
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   color: var(--text-secondary);
 }
 
@@ -1053,7 +1053,7 @@ textarea.workspace-input {
   align-items: center;
   gap: 6px;
   margin-top: 10px;
-  font-size: 11px;
+  font-size: var(--body-xs-size);
   color: var(--text-secondary);
 }
 
@@ -1082,7 +1082,7 @@ textarea.workspace-input {
   border-radius: 4px;
   background: var(--bg-tertiary);
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: var(--body-xs-size);
 }
 
 .assistant-receipt-tool {
@@ -1093,7 +1093,7 @@ textarea.workspace-input {
   background: var(--bg-tertiary);
   color: var(--text-secondary);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
+  font-size: var(--body-xs-size);
 }
 
 .assistant-metrics {
@@ -1111,7 +1111,7 @@ textarea.workspace-input {
   align-items: center;
   gap: 6px;
   margin: 0 0 8px;
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   font-weight: 600;
   color: var(--text-secondary);
 }
@@ -1123,9 +1123,9 @@ textarea.workspace-input {
   margin: 0;
 }
 
-.assistant-metrics dt { font-size: 11px; color: var(--text-secondary); }
-.assistant-metrics dd { margin: 2px 0 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
-.assistant-metrics small { display: block; margin-top: 8px; font-size: 11px; color: var(--text-tertiary); }
+.assistant-metrics dt { font-size: var(--body-xs-size); color: var(--text-secondary); }
+.assistant-metrics dd { margin: 2px 0 0; font-size: var(--body-m-size); font-weight: 600; overflow-wrap: anywhere; }
+.assistant-metrics small { display: block; margin-top: 8px; font-size: var(--body-xs-size); color: var(--text-tertiary); }
 
 @media (max-width: 560px) {
   .assistant-metrics dl { grid-template-columns: 1fr; }

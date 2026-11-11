@@ -57,9 +57,9 @@
 }
 
 .journey-card-copy { flex: 1; min-width: 0; }
-.journey-card-copy h2 { margin: 2px 0; font-size: 18px; }
-.journey-card-copy p:not(.eyebrow) { margin: 0; color: var(--text-secondary); font-size: 13px; }
-.journey-card.is-compact .journey-card-copy h2 { font-size: 15px; }
+.journey-card-copy h2 { margin: 2px 0; font-size: var(--body-l-size); }
+.journey-card-copy p:not(.eyebrow) { margin: 0; color: var(--text-secondary); font-size: var(--body-s-size); }
+.journey-card.is-compact .journey-card-copy h2 { font-size: var(--body-m-size); }
 
 .journey-progress {
   position: relative;
@@ -106,7 +106,7 @@
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-8);
   background: var(--bg-secondary);
-  font-size: 13px;
+  font-size: var(--body-s-size);
 }
 
 .journey-milestone-chip small { color: var(--text-tertiary); }
@@ -147,11 +147,11 @@
 .journey-timeline-item--upcoming { opacity: 0.75; }
 .journey-timeline-head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
 .journey-timeline-head small { color: var(--text-tertiary); }
-.journey-timeline-item p { margin: 2px 0 0; color: var(--text-secondary); font-size: 13px; }
+.journey-timeline-item p { margin: 2px 0 0; color: var(--text-secondary); font-size: var(--body-s-size); }
 
 /* Checklist quest */
 .quest-group { margin-top: 12px; }
-.quest-group-title { margin: 0 0 6px; color: var(--text-tertiary); font-size: 12px; font-weight: var(--font-semibold); text-transform: uppercase; letter-spacing: 0.04em; }
+.quest-group-title { margin: 0 0 6px; color: var(--text-tertiary); font-size: var(--body-xs-size); font-weight: var(--font-semibold); text-transform: uppercase; letter-spacing: 0.04em; }
 .quest-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
 
 .quest-item {
@@ -188,7 +188,7 @@
   background: var(--bg-primary);
   color: var(--text-primary);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--body-s-size);
   cursor: pointer;
 }
 
@@ -199,7 +199,7 @@
 .buddy-row { display: flex; gap: 10px; align-items: flex-start; }
 .buddy-row strong { display: block; }
 .buddy-row small { color: var(--text-tertiary); }
-.buddy-next { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
+.buddy-next { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; color: var(--text-secondary); font-size: var(--body-s-size); }
 
 /* Huy hiệu */
 .badge-list { display: flex; flex-direction: column; gap: 10px; margin: 0 0 10px; padding: 0; list-style: none; }
@@ -216,7 +216,7 @@
   height: 36px;
   border-radius: var(--radius-8);
   background: var(--bg-tertiary);
-  font-size: 18px;
+  font-size: var(--body-l-size);
 }
 
 .profile-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }

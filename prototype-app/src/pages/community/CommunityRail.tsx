@@ -5,6 +5,7 @@ import { Button } from '../../components/UI';
 import { isEligible } from '../../lib/audience';
 import type { BirthdayPerson, EventItem, Milestone, TopFan, User } from '../../types';
 import { Avatar } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 /** Phase 3 owns its own copy of this helper in its own file — duplication accepted over cross-phase edits. */
 function daysUntil(startsAt: string): string {
@@ -43,7 +44,7 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
           <ul className="community-rail-list">
             {birthdays.map((person) => (
               <li key={person.id} className="community-rail-row">
-                <Avatar type="text" size="m" fallback={person.shortName} alt="" aria-hidden="true" />
+                <Avatar type="text" size="m" fallback={avatarText(person.shortName)} alt="" aria-hidden="true" />
                 <div className="community-rail-copy">
                   <strong>{person.name}</strong>
                   <small>{person.role} · {person.team}</small>
@@ -96,7 +97,7 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
           {topFans.map((fan, index) => (
             <li key={fan.id} className="community-rail-row">
               <span className="community-fan-rank" aria-label={`Hạng ${index + 1}`}>{FAN_MEDALS[index] ?? index + 1}</span>
-              <Avatar type="text" size="m" fallback={fan.shortName} alt="" aria-hidden="true" />
+              <Avatar type="text" size="m" fallback={avatarText(fan.shortName)} alt="" aria-hidden="true" />
               <div className="community-rail-copy">
                 <strong>{fan.name}</strong>
                 <small>{fan.note}</small>
@@ -115,7 +116,7 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
         <ul className="community-rail-list">
           {milestones.map((entry) => (
             <li key={entry.id} className="community-rail-row">
-              <Avatar type="text" size="m" fallback={entry.shortName} alt="" aria-hidden="true" />
+              <Avatar type="text" size="m" fallback={avatarText(entry.shortName)} alt="" aria-hidden="true" />
               <div className="community-rail-copy">
                 <strong>{entry.name}</strong>
                 <small>{entry.dateLabel} · {entry.note}</small>

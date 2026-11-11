@@ -3,6 +3,7 @@ import { memberProfiles, teamMembers, users } from '../../data/mockData';
 import { SectionHeader } from '../../components/UI';
 import type { JourneyView } from '../../lib/onboarding';
 import { Avatar } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 /** Buddy + manager của người mới — lấy từ roster team (không nhập tay), kèm việc kế tiếp với từng người. */
 export function BuddyCard({ journey }: { journey: JourneyView }) {
@@ -18,7 +19,7 @@ export function BuddyCard({ journey }: { journey: JourneyView }) {
       <ul className="buddy-list">
         {buddy && (
           <li className="buddy-row">
-            <Avatar type="text" size="m" fallback={buddy.name.charAt(0)} alt="" aria-hidden="true" />
+            <Avatar type="text" size="m" fallback={avatarText(buddy.name.charAt(0))} alt="" aria-hidden="true" />
             <div>
               <strong>{buddy.name}</strong>
               <small>Buddy · {buddy.role}{buddyProfile ? ` · ${buddyProfile.slack}` : ''}</small>
@@ -28,7 +29,7 @@ export function BuddyCard({ journey }: { journey: JourneyView }) {
         )}
         {manager && (
           <li className="buddy-row">
-            <Avatar type="text" size="m" fallback={manager.shortName.slice(0, 1)} alt="" aria-hidden="true" />
+            <Avatar type="text" size="m" fallback={avatarText(manager.shortName.slice(0, 1))} alt="" aria-hidden="true" />
             <div>
               <strong>{manager.name}</strong>
               <small>Quản lý trực tiếp · {manager.role}</small>

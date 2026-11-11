@@ -84,7 +84,7 @@ export function NotificationList({
                     <span className="notification-title">{item.title}</span>
                     <span>{item.body}</span>
                     {/* Bản tin gộp: các dòng việc ngay trong thông báo — không cần mở app mới biết hôm nay có gì. */}
-                    {/* Chỉ phrasing content trong <button> — các dòng là <span> xếp block. */}
+                    {/* Chỉ phrasing content trong thẻ button — các dòng là <span> xếp block. */}
                     {item.lines && item.lines.length > 0 && (
                       <span className="notification-lines">
                         {item.lines.map((line) => <span key={line}>{line}</span>)}

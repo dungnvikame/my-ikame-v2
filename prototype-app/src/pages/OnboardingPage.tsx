@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { useToast } from '../components/toast';
-import { Button, EmptyState, SectionHeader } from '../components/UI';
+import { Button, EmptyState, SectionHeader, ChipButton } from '../components/UI';
 import { LIFECYCLE_BADGES } from '../data/onboarding-data';
 import { earnedBadges, JOURNEY_LENGTH_DAYS } from '../lib/onboarding';
 import { BuddyCard } from './onboarding/BuddyCard';
@@ -31,9 +31,9 @@ function SurveyPanel({ done, onSubmit }: { done: boolean; onSubmit: () => void }
           <p id="survey-title">Sau 30 ngày, bạn đang cảm thấy thế nào ở iKame?</p>
           <div className="journey-mood-row" role="radiogroup" aria-label="Mức độ hài lòng">
             {MOODS.map((item) => (
-              <button key={item.key} type="button" role="radio" aria-checked={mood === item.key} className={`journey-mood ${mood === item.key ? 'is-active' : ''}`} onClick={() => setMood(item.key)}>
+              <ChipButton key={item.key} role="radio" aria-checked={mood === item.key} onClick={() => setMood(item.key)}>
                 <span aria-hidden="true">{item.emoji}</span>{item.label}
-              </button>
+              </ChipButton>
             ))}
           </div>
           <Button variant="primary" disabled={!mood} onClick={onSubmit}>Gửi khảo sát</Button>

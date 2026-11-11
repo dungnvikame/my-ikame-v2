@@ -7,6 +7,7 @@ import { teamMembers } from '../../data/mockData';
 import { JOURNEY_LENGTH_DAYS } from '../../lib/onboarding';
 import type { TeamMember } from '../../types';
 import { Avatar, Progress } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 /**
  * Người mới trong team (Tổng quan Manager): tiến độ hành trình 60 ngày + việc của manager tuần này.
@@ -32,7 +33,7 @@ export function NewJoinerCard({ member }: { member: TeamMember }) {
 
   return (
     <article className="moment-card newjoiner-card">
-      <Avatar type="text" size="l" fallback={member.name.charAt(0)} alt="" aria-hidden="true" />
+      <Avatar type="text" size="l" fallback={avatarText(member.name.charAt(0))} alt="" aria-hidden="true" />
       <div className="newjoiner-card-body">
         <StatusPill tone="info">NGƯỜI MỚI · NGÀY {journey.day}/{JOURNEY_LENGTH_DAYS}</StatusPill>
         <h3><Link to={`/manager/team/${member.id}`}>{member.name}</Link></h3>

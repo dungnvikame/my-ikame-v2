@@ -2,7 +2,7 @@ import { ArrowRightIcon as ArrowRight, MagnifyingGlassIcon as MagnifyingGlass } 
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PlatformHandoffButton } from '../components/PlatformHandoff';
-import { EmptyState, SectionHeader } from '../components/UI';
+import { EmptyState, SectionHeader, ChipButton, TextButton } from '../components/UI';
 import { useAppState } from '../AppState';
 import { APP_CATEGORIES, filterApps, visibleApps, type AppCategory, type InternalApp } from '../data/apps-data';
 import { Input } from '@coreds/react';
@@ -53,9 +53,9 @@ export function AppsPage() {
 
       <div className="collection-toolbar">
         <div className="topic-chips" role="group" aria-label="Lọc theo nhóm ứng dụng">
-          <button type="button" aria-pressed={category === 'all'} className={`topic-chip ${category === 'all' ? 'is-active' : ''}`} onClick={() => setCategory('all')}>Tất cả</button>
+          <ChipButton aria-pressed={category === 'all'} onClick={() => setCategory('all')}>Tất cả</ChipButton>
           {APP_CATEGORIES.map((item) => (
-            <button key={item} type="button" aria-pressed={category === item} className={`topic-chip ${category === item ? 'is-active' : ''}`} onClick={() => setCategory(item)}>{item}</button>
+            <ChipButton key={item} aria-pressed={category === item} onClick={() => setCategory(item)}>{item}</ChipButton>
           ))}
         </div>
         <Input className="filter-field" variant="fill" leftIcon={<MagnifyingGlass size={17} />} value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Tìm ứng dụng" placeholder="Tìm ứng dụng" />
@@ -74,7 +74,7 @@ export function AppsPage() {
       ) : (
         <div className="empty-state">
           <EmptyState title="Không tìm thấy ứng dụng" body="Thử từ khóa khác hoặc xóa bộ lọc hiện tại." />
-          <button type="button" className="text-link" onClick={resetFilters}>Xóa bộ lọc</button>
+          <TextButton onClick={resetFilters}>Xóa bộ lọc</TextButton>
         </div>
       )}
     </div>

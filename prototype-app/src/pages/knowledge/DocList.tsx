@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { EmptyState, StatusPill } from '../../components/UI';
+import { EmptyState, StatusPill, TextButton } from '../../components/UI';
 import type { KnowledgeDoc } from '../../types';
 
 export function RecentlyViewed({ docs }: { docs: KnowledgeDoc[] }) {
@@ -52,7 +52,7 @@ export function ResultsGrid({ docs, count, onClear }: ResultsGridProps) {
           <h2>Kết quả</h2>
           <p>{count} tài liệu phù hợp</p>
         </div>
-        <button type="button" className="text-link" onClick={onClear}>Xoá bộ lọc</button>
+        <TextButton onClick={onClear}>Xoá bộ lọc</TextButton>
       </div>
 
       {docs.length === 0 ? (

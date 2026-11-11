@@ -795,7 +795,8 @@
   --body-l-size: 18px; --body-l-line: 26px;
   --body-m-size: 16px; --body-m-line: 24px;
   --body-s-size: 14px; --body-s-line: 22px;
-  --body-xs-size: 12px; --body-xs-line: 18px;
+  --body-xs-size: 12px; --body-xs-line: 19px;
+  --body-xxs-size: 10px; --body-xxs-line: 16px;
   --body-xxs-size: 10px; --body-xxs-line: 16px;
   --font-regular: 400; --font-semibold: 600;
 

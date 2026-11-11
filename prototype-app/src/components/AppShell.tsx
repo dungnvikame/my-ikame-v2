@@ -5,12 +5,13 @@ import { useAppState } from '../AppState';
 import type { Perspective } from '../types';
 import { AppLauncher } from './AppLauncher';
 import { BrandLogo } from './BrandLogo';
-import { IconButton, StatusPill } from './UI';
+import { IconButton, StatusPill, ChipButton, TextButton } from './UI';
 import { NotificationList } from '../pages/NotificationsPage';
 import { QuickAskPanel } from './assistant/QuickAskPanel';
 import { SearchPalette } from './search/SearchPalette';
 import { useLive } from '../lib/live/live-data';
-import { NotiBadge, Avatar, Drawer, DrawerBody, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerClose, SimpleSidebar } from '@coreds/react';
+import { NotiBadge, Avatar, Drawer, DrawerBody, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerClose, SimpleSidebar, SegmentedControl } from '@coreds/react';
+import { avatarText } from '../lib/avatar-text';
 
 type NavEntry = { label: string; to: string; icon: typeof House };
 type NavGroup = { label: string; items: NavEntry[] };
@@ -135,17 +136,19 @@ function PerspectiveSwitch() {
 
   return (
     <>
-      <div className="perspective-switch perspective-switch--3" role="group" aria-label="Chọn góc nhìn">
-        {PERSPECTIVE_ORDER.map((key) => (
-          <button key={key} type="button" aria-pressed={perspective === key} className={perspective === key ? 'is-active' : ''} onClick={() => select(key)}>
-            {NAV_BY_PERSPECTIVE[key].label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        className="perspective-switch-ds"
+        aria-label="Chọn góc nhìn"
+        size="xs"
+        // Nhãn ngắn để ba lựa chọn vừa bề rộng thanh bên.
+        options={PERSPECTIVE_ORDER.map((key) => ({ value: key, label: key === 'admin' ? 'COM' : NAV_BY_PERSPECTIVE[key].label }))}
+        value={perspective}
+        onValueChange={(value) => select(value as Perspective)}
+      />
       {perspective === 'ikamer' && (
-        <button type="button" className={`newjoiner-chip ${demoNewJoiner ? 'is-active' : ''}`} aria-pressed={demoNewJoiner} onClick={toggleNewJoiner}>
-          <Compass size={14} /> Người mới · Gia Huy
-        </button>
+        <ChipButton icon={<Compass size={14} />} aria-pressed={demoNewJoiner} onClick={toggleNewJoiner}>
+          Người mới · Gia Huy
+        </ChipButton>
       )}
     </>
   );
@@ -173,7 +176,7 @@ function NotificationsDrawer(_props: { triggerRef: React.RefObject<HTMLButtonEle
         </DrawerHeader>
         <DrawerBody>
           <div className="drawer-toolbar">
-            <button type="button" className="text-link" onClick={markAllNotificationsRead}>Đánh dấu tất cả đã đọc</button>
+            <TextButton onClick={markAllNotificationsRead}>Đánh dấu tất cả đã đọc</TextButton>
             <NavLink className="text-link" to="/notifications" onClick={close}>Xem tất cả</NavLink>
           </div>
           <NotificationList items={notifications} compact onItemOpen={close} />
@@ -261,7 +264,7 @@ export function AppShell({ children }: PropsWithChildren) {
         <div className="sidebar-account">
           <PerspectiveSwitch />
           <NavLink to="/profile" className="account-row">
-            <Avatar type="text" size="m" fallback={(livePerson?.shortName ?? user.shortName).slice(0, 1)} alt="" aria-hidden="true" />
+            <Avatar type="text" size="m" fallback={avatarText((livePerson?.shortName ?? user.shortName).slice(0, 1))} alt="" aria-hidden="true" />
             <span className="account-copy"><strong>{livePerson?.name ?? user.name}</strong><small>{livePerson ? (livePerson.position || livePerson.team) : user.role}</small></span>
           </NavLink>
         </div>

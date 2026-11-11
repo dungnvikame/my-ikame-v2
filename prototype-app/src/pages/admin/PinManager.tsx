@@ -2,13 +2,14 @@ import { PushPinIcon as PushPin, PushPinSlashIcon as PushPinSlash } from '@cored
 import { Button, EmptyState, SectionHeader } from '../../components/UI';
 import type { Post } from '../../types';
 import { Avatar } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 type PinManagerProps = { posts: Post[]; onTogglePin: (id: string) => void };
 
 function PostRow({ post, onTogglePin }: { post: Post; onTogglePin: (id: string) => void }) {
   return (
     <li className="admin-pin-row">
-      <Avatar type="text" size="m" fallback={post.authorShort} alt="" aria-hidden="true" />
+      <Avatar type="text" size="m" fallback={avatarText(post.authorShort)} alt="" aria-hidden="true" />
       <div className="admin-pin-copy">
         <strong>{post.authorName} <small>· {post.time}</small></strong>
         <p>{post.kudos ? `Ghi nhận ${post.kudos.toName}: ` : ''}{post.body}</p>
