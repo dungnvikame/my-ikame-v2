@@ -1,4 +1,4 @@
-import { BellRinging, PaperPlaneTilt } from '@phosphor-icons/react';
+import { BellRingingIcon as BellRinging, PaperPlaneTiltIcon as PaperPlaneTilt } from '@coreds/react/icons';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, SectionHeader, StatusPill } from '../../components/UI';

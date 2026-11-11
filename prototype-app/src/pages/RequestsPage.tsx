@@ -1,4 +1,4 @@
-import { Buildings, Clock, DesktopTower, Sparkle, Ticket, UserCircle, Wrench } from '@phosphor-icons/react';
+import { BuildingsIcon as Buildings, ClockIcon as Clock, DesktopTowerIcon as DesktopTower, SparkleIcon as Sparkle, TicketIcon as Ticket, UserCircleIcon as UserCircle, WrenchIcon as Wrench } from '@coreds/react/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { QuickRequest } from '../components/requests/QuickRequest';
@@ -61,8 +61,8 @@ export function RequestsPage() {
     <div className="page requests-page">
       <header className="page-heading">
         <div>
-          <p className="eyebrow">CẦN HỖ TRỢ</p>
-          <h1>iRequest</h1>
+          <p className="eyebrow">XIN NGHỈ · LÀM TỪ XA · HỖ TRỢ</p>
+          <h1>Đề xuất</h1>
           <p>Gõ một câu để tạo đề xuất, theo dõi mọi yêu cầu ở một chỗ, xử lý ở đúng bộ phận.</p>
         </div>
       </header>
@@ -76,7 +76,7 @@ export function RequestsPage() {
             <button key={type} type="button" className="request-type-card" onClick={() => navigate(`/assistant?q=${encodeURIComponent(prompt)}`)}>
               <span className="request-icon" aria-hidden="true"><Icon size={20} /></span>
               <span className="request-type-copy"><strong>{type}</strong><small>{desc}</small></span>
-              <span className="request-type-ai"><Sparkle size={14} weight="fill" />AI</span>
+              <span className="request-type-ai"><Sparkle size={14} variant="fill" />AI</span>
             </button>
           ))}
         </div>
@@ -85,7 +85,7 @@ export function RequestsPage() {
       <section className="section-block">
         <SectionHeader title="Đang theo dõi" meta={`${open.length} request`} />
         {open.length === 0 ? (
-          <EmptyState icon={<Ticket size={44} weight="duotone" />} title="Không có request nào đang mở" body="Tạo request mới bằng một trong các loại phía trên." />
+          <EmptyState icon={<Ticket size={44} variant="duotone" />} title="Không có request nào đang mở" body="Tạo request mới bằng một trong các loại phía trên." />
         ) : (
           <div className="request-list">{open.map((request) => <RequestRow key={request.id} request={request} />)}</div>
         )}

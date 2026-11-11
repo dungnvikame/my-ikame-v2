@@ -1,4 +1,4 @@
-import { CheckCircle, Info, SealCheck, Sun, WarningCircle } from '@phosphor-icons/react';
+import { CheckCircleIcon as CheckCircle, InfoIcon as Info, SealCheckIcon as SealCheck, SunIcon as Sun, WarningCircleIcon as WarningCircle } from '@coreds/react/icons';
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
@@ -74,11 +74,11 @@ export function NotificationList({
                 <button key={item.id} className={`notification-item ${item.read ? '' : 'is-unread'}`} onClick={() => openItem(item)}>
                   {/* Icon theo mức ưu tiên (không chỉ dựa vào màu chấm) + vẫn báo trạng thái đọc cho SR. */}
                   <span className={`notification-icon notification-icon--${item.groupKey === 'digest' ? 'digest' : item.priority}`} aria-label={item.read ? 'Đã đọc' : 'Chưa đọc'}>
-                    {item.groupKey === 'digest' ? <Sun size={18} weight="fill" />
-                      : item.priority === 'critical' ? <WarningCircle size={18} weight="fill" />
-                        : item.priority === 'required' ? <SealCheck size={18} weight="fill" />
-                          : item.priority === 'transactional' ? <CheckCircle size={18} weight="fill" />
-                            : <Info size={18} weight="fill" />}
+                    {item.groupKey === 'digest' ? <Sun size={18} variant="fill" />
+                      : item.priority === 'critical' ? <WarningCircle size={18} variant="fill" />
+                        : item.priority === 'required' ? <SealCheck size={18} variant="fill" />
+                          : item.priority === 'transactional' ? <CheckCircle size={18} variant="fill" />
+                            : <Info size={18} variant="fill" />}
                   </span>
                   <span className="notification-copy">
                     <span className="notification-title">{item.title}</span>

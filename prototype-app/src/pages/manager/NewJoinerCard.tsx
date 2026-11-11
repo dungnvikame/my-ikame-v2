@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarPlus, CheckCircle } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, CalendarPlusIcon as CalendarPlus, CheckCircleIcon as CheckCircle } from '@coreds/react/icons';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppState } from '../../AppState';
@@ -6,6 +6,7 @@ import { Button, StatusPill } from '../../components/UI';
 import { teamMembers } from '../../data/mockData';
 import { JOURNEY_LENGTH_DAYS } from '../../lib/onboarding';
 import type { TeamMember } from '../../types';
+import { Avatar, Progress } from '@coreds/react';
 
 /**
  * Người mới trong team (Tổng quan Manager): tiến độ hành trình 60 ngày + việc của manager tuần này.
@@ -31,14 +32,12 @@ export function NewJoinerCard({ member }: { member: TeamMember }) {
 
   return (
     <article className="moment-card newjoiner-card">
-      <span className="avatar avatar--large">{member.name.charAt(0)}</span>
+      <Avatar type="text" size="l" fallback={member.name.charAt(0)} alt="" aria-hidden="true" />
       <div className="newjoiner-card-body">
         <StatusPill tone="info">NGƯỜI MỚI · NGÀY {journey.day}/{JOURNEY_LENGTH_DAYS}</StatusPill>
         <h3><Link to={`/manager/team/${member.id}`}>{member.name}</Link></h3>
         <p>{journey.completed}/{journey.total} cột mốc · {journey.due.length > 0 ? `${journey.due.length} việc đến hạn` : 'đúng nhịp'} · buddy {buddyName}</p>
-        <div className="journey-progress" role="progressbar" aria-valuemin={0} aria-valuemax={JOURNEY_LENGTH_DAYS} aria-valuenow={journey.day} aria-label={`Ngày ${journey.day} trên ${JOURNEY_LENGTH_DAYS}`}>
-          <div className="journey-progress-fill" style={{ width: `${journey.percent}%` }} />
-        </div>
+        <Progress className="journey-progress-ds" size="md" value={journey.percent} aria-label={`Ngày ${journey.day} trên ${JOURNEY_LENGTH_DAYS}`} />
         <p className="newjoiner-card-task">
           <strong>Việc của bạn tuần này:</strong> {oneOnOneOpen ? '1:1 mốc 30 ngày (chưa đặt)' : '1:1 mốc 30 ngày đã đặt'}{managerQuest ? ` · ${managerQuest.title}` : ''}
         </p>

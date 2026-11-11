@@ -1,9 +1,10 @@
-import { CalendarDots, Clock, MapPin } from '@phosphor-icons/react';
+import { CalendarDotsIcon as CalendarDots, ClockIcon as Clock, MapPinIcon as MapPin } from '@coreds/react/icons';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { StatusPill } from '../../components/UI';
 import type { EventItem } from '../../types';
 import { eventCoverPalette, eventEmoji } from './event-visuals';
+import { Avatar } from '@coreds/react';
 
 export type CapacityInfo = { registered: number; capacity: number; ratio: number; label: string };
 
@@ -23,8 +24,8 @@ export function ParticipantAvatars({ names, max = 5 }: { names?: string[]; max?:
   const extra = names.length - shown.length;
   return (
     <div className="events-v2-avatars" aria-label={`${names.length} người tham gia`}>
-      {shown.map((name, index) => <span key={`${name}-${index}`} className="avatar events-v2-avatar">{name.charAt(0)}</span>)}
-      {extra > 0 && <span className="avatar events-v2-avatar events-v2-avatar--more">+{extra}</span>}
+      {shown.map((name, index) => <Avatar key={`${name}-${index}`} className="events-v2-avatar-ds" type="text" size="xs" fallback={name.charAt(0)} alt={name} />)}
+      {extra > 0 && <Avatar className="events-v2-avatar-ds" type="text" size="xs" fallback={`+${extra}`} alt={`và ${extra} người khác`} />}
     </div>
   );
 }

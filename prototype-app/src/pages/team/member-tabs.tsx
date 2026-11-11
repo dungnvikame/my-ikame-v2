@@ -1,4 +1,4 @@
-import { CheckCircle, Circle, CircleHalf, Medal, Quotes, Sparkle } from '@phosphor-icons/react';
+import { CheckCircleIcon as CheckCircle, CircleIcon as Circle, CircleHalfIcon as CircleHalf, MedalIcon as Medal, QuotesIcon as Quotes, SparkleIcon as Sparkle } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { StatusPill } from '../../components/UI';
 import type { MemberProfile360 } from '../../types';
@@ -23,7 +23,7 @@ export function OverviewPanel({ profile }: { profile: MemberProfile360 }) {
     <>
       <section className="member-insight">
         <div className="member-insight-head">
-          <span className="member-insight-icon" aria-hidden="true"><Sparkle size={18} weight="fill" /></span>
+          <span className="member-insight-icon" aria-hidden="true"><Sparkle size={18} variant="fill" /></span>
           <div>
             <p className="eyebrow">TRỢ LÝ AI · TỔNG HỢP ĐA NGUỒN</p>
             <h2>{profile.aiInsight.headline}</h2>
@@ -143,7 +143,7 @@ export function GrowthPanel({ profile }: { profile: MemberProfile360 }) {
             {profile.recognitions.map((item) => (
               <article key={item.id} className={`member-recognition ${item.kind === 'award' ? 'is-award' : ''}`}>
                 <span className="member-recognition-icon" aria-hidden="true">
-                  {item.kind === 'award' ? <Medal size={16} weight="fill" /> : <Quotes size={16} weight="fill" />}
+                  {item.kind === 'award' ? <Medal size={16} variant="fill" /> : <Quotes size={16} variant="fill" />}
                 </span>
                 <div>
                   <p>{item.message}</p>
@@ -183,7 +183,7 @@ export function GrowthPanel({ profile }: { profile: MemberProfile360 }) {
             const Icon = meta.icon;
             return (
               <li key={course.id}>
-                <Icon size={17} weight={course.status === 'done' ? 'fill' : 'regular'} />
+                <Icon size={17} variant={course.status === 'done' ? 'fill' : 'line'} />
                 <div className="member-learning-copy">
                   <strong>{course.title}</strong>
                   <small>{meta.label}{course.dueLabel ? ` · ${course.dueLabel}` : ''}</small>

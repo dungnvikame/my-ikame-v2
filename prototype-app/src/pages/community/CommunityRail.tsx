@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import { Cake, CalendarDots, Medal, Trophy } from '@phosphor-icons/react';
+import { CakeIcon as Cake, CalendarDotsIcon as CalendarDots, MedalIcon as Medal, TrophyIcon as Trophy } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/UI';
 import { isEligible } from '../../lib/audience';
 import type { BirthdayPerson, EventItem, Milestone, TopFan, User } from '../../types';
+import { Avatar } from '@coreds/react';
 
 /** Phase 3 owns its own copy of this helper in its own file — duplication accepted over cross-phase edits. */
 function daysUntil(startsAt: string): string {
@@ -36,13 +37,13 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
       {birthdays.length > 0 && (
         <section className="community-widget community-widget--birthday">
           <header className="community-widget-head">
-            <span className="community-widget-icon" aria-hidden="true"><Cake size={16} weight="duotone" /></span>
+            <span className="community-widget-icon" aria-hidden="true"><Cake size={16} variant="duotone" /></span>
             <h2>Sinh nhật hôm nay</h2>
           </header>
           <ul className="community-rail-list">
             {birthdays.map((person) => (
               <li key={person.id} className="community-rail-row">
-                <span className="avatar" aria-hidden="true">{person.shortName}</span>
+                <Avatar type="text" size="m" fallback={person.shortName} alt="" aria-hidden="true" />
                 <div className="community-rail-copy">
                   <strong>{person.name}</strong>
                   <small>{person.role} · {person.team}</small>
@@ -62,7 +63,7 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
 
       <section className="community-widget">
         <header className="community-widget-head">
-          <span className="community-widget-icon" aria-hidden="true"><CalendarDots size={16} weight="duotone" /></span>
+          <span className="community-widget-icon" aria-hidden="true"><CalendarDots size={16} variant="duotone" /></span>
           <h2>Sự kiện sắp tới</h2>
           <Link className="community-widget-link" to="/events">Tất cả</Link>
         </header>
@@ -88,14 +89,14 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
 
       <section className="community-widget">
         <header className="community-widget-head">
-          <span className="community-widget-icon" aria-hidden="true"><Trophy size={16} weight="duotone" /></span>
+          <span className="community-widget-icon" aria-hidden="true"><Trophy size={16} variant="duotone" /></span>
           <h2>Fan iKame tuần</h2>
         </header>
         <ul className="community-rail-list">
           {topFans.map((fan, index) => (
             <li key={fan.id} className="community-rail-row">
               <span className="community-fan-rank" aria-label={`Hạng ${index + 1}`}>{FAN_MEDALS[index] ?? index + 1}</span>
-              <span className="avatar" aria-hidden="true">{fan.shortName}</span>
+              <Avatar type="text" size="m" fallback={fan.shortName} alt="" aria-hidden="true" />
               <div className="community-rail-copy">
                 <strong>{fan.name}</strong>
                 <small>{fan.note}</small>
@@ -108,13 +109,13 @@ export function CommunityRail({ user, events, topFans, birthdays, milestones, on
 
       <section className="community-widget">
         <header className="community-widget-head">
-          <span className="community-widget-icon" aria-hidden="true"><Medal size={16} weight="duotone" /></span>
+          <span className="community-widget-icon" aria-hidden="true"><Medal size={16} variant="duotone" /></span>
           <h2>Cột mốc thâm niên</h2>
         </header>
         <ul className="community-rail-list">
           {milestones.map((entry) => (
             <li key={entry.id} className="community-rail-row">
-              <span className="avatar" aria-hidden="true">{entry.shortName}</span>
+              <Avatar type="text" size="m" fallback={entry.shortName} alt="" aria-hidden="true" />
               <div className="community-rail-copy">
                 <strong>{entry.name}</strong>
                 <small>{entry.dateLabel} · {entry.note}</small>

@@ -1,23 +1,6 @@
-import {
-  Bell,
-  Briefcase,
-  CalendarDots,
-  ChatsCircle,
-  Compass,
-  Gauge,
-  House,
-  MagnifyingGlass,
-  Moon,
-  SidebarSimple,
-  Sparkle,
-  SquaresFour,
-  Sun,
-  Target,
-  UsersThree,
-  X,
-} from '@phosphor-icons/react';
+import { BellIcon as Bell, BriefcaseIcon as Briefcase, CalendarDotsIcon as CalendarDots, ChatsCircleIcon as ChatsCircle, CompassIcon as Compass, GaugeIcon as Gauge, HouseIcon as House, MagnifyingGlassIcon as MagnifyingGlass, MoonIcon as Moon, SidebarSimpleIcon as SidebarSimple, SparkleIcon as Sparkle, SquaresFourIcon as SquaresFour, SunIcon as Sun, TargetIcon as Target, UsersThreeIcon as UsersThree, XIcon as X, PaperPlaneTiltIcon as PaperPlaneTilt, UserCircleIcon as UserCircle, ArrowsClockwiseIcon as ArrowsClockwise, EyeIcon as Eye, EyeSlashIcon as EyeSlash, PlugsConnectedIcon as PlugsConnected, DatabaseIcon as Database } from '@coreds/react/icons';
 import { useEffect, useRef, useState, type KeyboardEvent, type PropsWithChildren } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import type { Perspective } from '../types';
 import { AppLauncher } from './AppLauncher';
@@ -27,6 +10,7 @@ import { NotificationList } from '../pages/NotificationsPage';
 import { QuickAskPanel } from './assistant/QuickAskPanel';
 import { SearchPalette } from './search/SearchPalette';
 import { useLive } from '../lib/live/live-data';
+import { NotiBadge, Avatar, Drawer, DrawerBody, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerClose, SimpleSidebar } from '@coreds/react';
 
 type NavEntry = { label: string; to: string; icon: typeof House };
 type NavGroup = { label: string; items: NavEntry[] };
@@ -38,6 +22,8 @@ const iKamerNavGroups: NavGroup[] = [
   { label: 'KHÔNG GIAN CỦA BẠN', items: [
     { label: 'Trang chủ', to: '/home', icon: House },
     { label: 'Công việc', to: '/work', icon: Briefcase },
+    { label: 'Đề xuất', to: '/requests', icon: PaperPlaneTilt },
+    { label: 'Cá nhân', to: '/profile', icon: UserCircle },
     { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
     { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
@@ -54,6 +40,8 @@ const managerNavGroups: NavGroup[] = [
   ] },
   { label: 'KHÔNG GIAN CHUNG', items: [
     { label: 'Công việc', to: '/work', icon: Briefcase },
+    { label: 'Đề xuất', to: '/requests', icon: PaperPlaneTilt },
+    { label: 'Cá nhân', to: '/profile', icon: UserCircle },
     { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
     { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
@@ -163,72 +151,64 @@ function PerspectiveSwitch() {
   );
 }
 
-function NotificationsDrawer({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement | null> }) {
-  const {
-    notifications,
-    notificationOpen,
-    setNotificationOpen,
-    markAllNotificationsRead,
-  } = useAppState();
-  const drawerRef = useRef<HTMLElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const close = () => {
-    setNotificationOpen(false);
-    requestAnimationFrame(() => triggerRef.current?.focus());
-  };
-
-  useEffect(() => {
-    if (notificationOpen) closeButtonRef.current?.focus();
-  }, [notificationOpen]);
-
-  if (!notificationOpen) return null;
-
-  const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      close();
-      return;
-    }
-    if (event.key !== 'Tab') return;
-    const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
-    );
-    if (!focusable?.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  };
+/**
+ * Ngăn kéo thông báo — Drawer của Core DS lo lớp phủ, bẫy focus, phím Esc và trả focus về
+ * nút chuông khi đóng (trước đây app tự viết các phần này).
+ */
+function NotificationsDrawer(_props: { triggerRef: React.RefObject<HTMLButtonElement | null> }) {
+  const { notifications, notificationOpen, setNotificationOpen, markAllNotificationsRead } = useAppState();
+  const close = () => setNotificationOpen(false);
 
   return (
-    <div className="drawer-layer" role="presentation" onMouseDown={close}>
-      <aside ref={drawerRef} className="notification-drawer" role="dialog" aria-modal="true" aria-label="Thông báo" onKeyDown={onKeyDown} onMouseDown={(event) => event.stopPropagation()}>
-        <div className="drawer-header">
+    <Drawer open={notificationOpen} onOpenChange={setNotificationOpen}>
+      <DrawerContent side="right" className="notification-drawer-ds">
+        <DrawerHeader>
           <div>
-            <h2>Thông báo</h2>
-            <p>Ưu tiên những việc cần bạn hành động.</p>
+            <DrawerTitle>Thông báo</DrawerTitle>
+            <DrawerDescription>Ưu tiên những việc cần bạn hành động.</DrawerDescription>
           </div>
-          <IconButton ref={closeButtonRef} label="Đóng thông báo" onClick={close}><X size={20} /></IconButton>
-        </div>
-        <div className="drawer-toolbar">
-          <button className="text-link" onClick={markAllNotificationsRead}>Đánh dấu tất cả đã đọc</button>
-          <NavLink className="text-link" to="/notifications" onClick={close}>Xem tất cả</NavLink>
-        </div>
-        <NotificationList items={notifications} compact onItemOpen={close} />
-      </aside>
-    </div>
+          <DrawerClose asChild>
+            <IconButton label="Đóng thông báo"><X size={20} /></IconButton>
+          </DrawerClose>
+        </DrawerHeader>
+        <DrawerBody>
+          <div className="drawer-toolbar">
+            <button type="button" className="text-link" onClick={markAllNotificationsRead}>Đánh dấu tất cả đã đọc</button>
+            <NavLink className="text-link" to="/notifications" onClick={close}>Xem tất cả</NavLink>
+          </div>
+          <NotificationList items={notifications} compact onItemOpen={close} />
+        </DrawerBody>
+      </DrawerContent>
+    </Drawer>
   );
 }
 
 export function AppShell({ children }: PropsWithChildren) {
   const { perspective, user, isNewJoiner, notifications, theme, setTheme, setNotificationOpen, setAskOpen, setSearchOpen } = useAppState();
-  const livePerson = useLive().data?.person;
+  const liveCtx = useLive();
+  const livePerson = liveCtx.data?.person;
+  const { requests, goals } = useAppState();
+  // Số đếm trên menu: việc đang chờ ở từng mục, để biết cần vào đâu mà không phải mở từng trang.
+  const navBadges: Record<string, number> = {
+    '/requests': requests.filter((request) => request.status !== 'done').length,
+    '/work': liveCtx.data ? (liveCtx.data.candidates?.length ?? 0) : goals.filter((goal) => goal.status === 'needs_update').length,
+  };
+  // Che số nhạy cảm (công, phép, tiến độ) khi chia sẻ màn hình; nhớ lựa chọn trên máy này.
+  const [privacy, setPrivacy] = useState(() => {
+    try { return localStorage.getItem('my-ikame-privacy') === 'on'; } catch { return false; }
+  });
+  const togglePrivacy = () => setPrivacy((on) => {
+    try { localStorage.setItem('my-ikame-privacy', on ? 'off' : 'on'); } catch { /* không lưu được thì vẫn đổi trong phiên */ }
+    return !on;
+  });
+  const liveTime = liveCtx.data?.loadedAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  const navigate = useNavigate();
+  const location = useLocation();
   const { groups: navGroups, bottom: bottomNav } = navFor(perspective, isNewJoiner);
+  // Mục menu đang mở: đường dẫn khớp dài nhất (ví dụ /manager/team/abc thuộc mục /manager/team).
+  const activeNavId = navGroups.flatMap((group) => group.items.map((item) => item.to))
+    .filter((to) => location.pathname === to || location.pathname.startsWith(`${to}/`))
+    .sort((left, right) => right.length - left.length)[0];
   const unreadCount = notifications.filter((item) => !item.read).length;
   const notificationTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -254,29 +234,34 @@ export function AppShell({ children }: PropsWithChildren) {
   }, [setSearchOpen]);
 
   return (
-    <div className={`app-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} data-theme={theme}>
+    <div className={`app-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${privacy ? 'privacy-on' : ''}`} data-theme={theme}>
       <a className="skip-link" href="#main-content">Đi tới nội dung chính</a>
-      <aside className="sidebar">
-        <div className="sidebar-top">
-          <Logo />
-          <nav className="primary-nav" aria-label="Điều hướng chính">
-            {navGroups.map((group) => (
-              <div key={group.label} className="nav-group">
-                <p className="nav-label">{group.label}</p>
-                {group.items.map(({ label, to, icon: Icon }) => (
-                  <NavLink key={to} to={to} end title={label} className={({ isActive }) => `nav-item ${isActive ? 'is-active' : ''}`}>
-                    <Icon size={18} />
-                    <span>{label}</span>
-                  </NavLink>
-                ))}
-              </div>
-            ))}
-          </nav>
+      <aside className="sidebar sidebar--ds">
+        <Logo />
+        {/* Danh sách mục: SimpleSidebar của Core DS; logo và ô tài khoản nằm ngoài vì khe header/footer của kit chỉ vừa một icon. */}
+        <div className="sidebar-nav-ds">
+          <SimpleSidebar
+            aria-label="Điều hướng chính"
+            alwaysExpanded={!sidebarCollapsed}
+            expandedWidth={248}
+            groups={navGroups.map((group) => ({
+              id: group.label,
+              label: group.label,
+              items: group.items.map(({ label, to, icon: Icon }) => ({
+                id: to,
+                // Số việc đang chờ đi kèm tên mục để thấy ngay trên menu.
+                label: navBadges[to] > 0 ? `${label} · ${navBadges[to]}` : label,
+                icon: <Icon size={18} />,
+              })),
+            }))}
+            activeId={activeNavId}
+            onNavigate={(id) => navigate(id)}
+          />
         </div>
         <div className="sidebar-account">
           <PerspectiveSwitch />
           <NavLink to="/profile" className="account-row">
-            <span className="avatar" aria-hidden="true">{(livePerson?.shortName ?? user.shortName).slice(0, 1)}</span>
+            <Avatar type="text" size="m" fallback={(livePerson?.shortName ?? user.shortName).slice(0, 1)} alt="" aria-hidden="true" />
             <span className="account-copy"><strong>{livePerson?.name ?? user.name}</strong><small>{livePerson ? (livePerson.position || livePerson.team) : user.role}</small></span>
           </NavLink>
         </div>
@@ -300,6 +285,22 @@ export function AppShell({ children }: PropsWithChildren) {
             <kbd>⌘ K</kbd>
           </button>
           <div className="topbar-actions">
+            {liveCtx.status !== 'unavailable' && (
+              <button
+                type="button"
+                className={`live-chip live-chip--${liveCtx.status}`}
+                onClick={liveCtx.connect}
+                disabled={liveCtx.status === 'loading'}
+                title={liveCtx.data ? 'Tải lại dữ liệu thật' : 'Dùng dữ liệu thật của tôi'}
+              >
+                {liveCtx.status === 'loading' ? <ArrowsClockwise size={15} className="live-chip-spin" /> : liveCtx.data ? <PlugsConnected size={15} /> : <Database size={15} />}
+                <span>{liveCtx.status === 'loading' ? 'Đang đọc dữ liệu…' : liveCtx.data ? `Dữ liệu thật · ${liveTime}` : liveCtx.status === 'error' ? 'Chưa đọc được · thử lại' : 'Dữ liệu mẫu'}</span>
+                {liveCtx.data && <ArrowsClockwise size={14} aria-hidden="true" />}
+              </button>
+            )}
+            <IconButton label={privacy ? 'Hiện số liệu' : 'Che số liệu nhạy cảm'} aria-pressed={privacy} onClick={togglePrivacy}>
+              {privacy ? <EyeSlash size={20} /> : <Eye size={20} />}
+            </IconButton>
             <AppLauncher />
             <IconButton label="Hỏi iKame" onClick={() => setAskOpen(true)}>
               <Sparkle size={20} />
@@ -309,9 +310,9 @@ export function AppShell({ children }: PropsWithChildren) {
             </IconButton>
             <div className="notification-trigger-wrap">
               <IconButton ref={notificationTriggerRef} label="Mở thông báo" onClick={() => setNotificationOpen(true)}><Bell size={20} /></IconButton>
-              {unreadCount > 0 && <span className="notification-count">{unreadCount}</span>}
+              {unreadCount > 0 && <NotiBadge className="notification-count-pos" size="s" count={unreadCount} aria-label={`${unreadCount} thông báo chưa đọc`} />}
             </div>
-            <StatusPill tone="neutral">H2 Prototype</StatusPill>
+            <span className="topbar-env"><StatusPill tone="neutral">H2 Prototype</StatusPill></span>
           </div>
         </header>
         <main id="main-content" className="main-content">{children}</main>

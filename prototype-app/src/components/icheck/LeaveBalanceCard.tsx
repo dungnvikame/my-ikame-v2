@@ -1,4 +1,4 @@
-import { Info } from '@phosphor-icons/react';
+import { InfoIcon as Info } from '@coreds/react/icons';
 import { PlatformHandoffButton } from '../PlatformHandoff';
 import type { LeaveBalance } from '../../types';
 

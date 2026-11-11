@@ -1,10 +1,11 @@
-import { ArrowRight, MagnifyingGlass } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, MagnifyingGlassIcon as MagnifyingGlass } from '@coreds/react/icons';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PlatformHandoffButton } from '../components/PlatformHandoff';
 import { EmptyState, SectionHeader } from '../components/UI';
 import { useAppState } from '../AppState';
 import { APP_CATEGORIES, filterApps, visibleApps, type AppCategory, type InternalApp } from '../data/apps-data';
+import { Input } from '@coreds/react';
 
 function AppCard({ app }: { app: InternalApp }) {
   return (
@@ -57,7 +58,7 @@ export function AppsPage() {
             <button key={item} type="button" aria-pressed={category === item} className={`topic-chip ${category === item ? 'is-active' : ''}`} onClick={() => setCategory(item)}>{item}</button>
           ))}
         </div>
-        <label className="filter-input"><MagnifyingGlass size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Tìm ứng dụng" placeholder="Tìm ứng dụng" /></label>
+        <Input className="filter-field" variant="fill" leftIcon={<MagnifyingGlass size={17} />} value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Tìm ứng dụng" placeholder="Tìm ứng dụng" />
       </div>
 
       {filtered.length > 0 ? (

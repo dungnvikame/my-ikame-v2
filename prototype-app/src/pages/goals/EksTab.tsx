@@ -1,4 +1,4 @@
-import { Sparkle } from '@phosphor-icons/react';
+import { SparkleIcon as Sparkle } from '@coreds/react/icons';
 import { AiBadge } from '../../components/AiBadge';
 import { useAppState } from '../../AppState';
 import type { CheckInReport, EksObjective, Goal } from '../../types';

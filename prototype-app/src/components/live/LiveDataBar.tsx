@@ -1,4 +1,4 @@
-import { Database, PlugsConnected, WarningCircle } from '@phosphor-icons/react';
+import { DatabaseIcon as Database, PlugsConnectedIcon as PlugsConnected, WarningCircleIcon as WarningCircle } from '@coreds/react/icons';
 import { LIVE_SOURCES, useLive, type LiveErrorKind, type LiveSourceId } from '../../lib/live/live-data';
 import { Button } from '../UI';
 
@@ -33,7 +33,7 @@ export function LiveDataBar() {
     const failed = ids.filter((id) => data.errors[id]);
     return (
       <section className="live-bar live-bar--on" aria-label="Nguồn dữ liệu">
-        <PlugsConnected size={20} weight="duotone" aria-hidden="true" />
+        <PlugsConnected size={20} variant="duotone" aria-hidden="true" />
         <div className="live-bar-copy">
           <strong>Dữ liệu thật: {data.person.name}</strong>
           <span>Đọc từ {ok.join(', ')} lúc {time}. Bảng tin, sự kiện và các phần khác vẫn là dữ liệu mẫu.</span>
@@ -49,7 +49,7 @@ export function LiveDataBar() {
 
   return (
     <section className={`live-bar ${status === 'error' ? 'live-bar--error' : ''}`} aria-label="Nguồn dữ liệu">
-      {status === 'error' ? <WarningCircle size={20} weight="duotone" aria-hidden="true" /> : <Database size={20} weight="duotone" aria-hidden="true" />}
+      {status === 'error' ? <WarningCircle size={20} variant="duotone" aria-hidden="true" /> : <Database size={20} variant="duotone" aria-hidden="true" />}
       <div className="live-bar-copy">
         <strong>{status === 'error' ? 'Chưa đọc được dữ liệu thật' : 'Bạn đang xem dữ liệu mẫu'}</strong>
         <span role="status">

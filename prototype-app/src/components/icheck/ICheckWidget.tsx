@@ -1,4 +1,4 @@
-import { CalendarCheck, Clock, House, Question } from '@phosphor-icons/react';
+import { CalendarCheckIcon as CalendarCheck, ClockIcon as Clock, HouseIcon as House, QuestionIcon as Question } from '@coreds/react/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../../AppState';
 import { useToast } from '../toast';

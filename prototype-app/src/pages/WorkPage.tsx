@@ -1,9 +1,11 @@
-import { ArrowRight, Target, Ticket } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, TargetIcon as Target, TicketIcon as Ticket } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { ICheckWidget } from '../components/icheck/ICheckWidget';
 import { PlatformHandoffButton } from '../components/PlatformHandoff';
 import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
+import { useLive } from '../lib/live/live-data';
+import { LiveWorkSections } from './work/LiveWorkSections';
 import { fullDateLabel } from '../data/icheck-data';
 import type { RequestItem } from '../types';
 
@@ -20,6 +22,8 @@ const REQUEST_STATUS: Record<RequestItem['status'], { label: string; tone: 'warn
 export function WorkPage() {
   const { user, goals, requests } = useAppState();
   const needsCheckIn = goals.filter((goal) => goal.status === 'needs_update');
+  // Đã nối dữ liệu thật: cột việc lấy từ iHiring, iGoal, Lịch thay cho mục tiêu của nhân vật mẫu.
+  const live = useLive().data;
   const recentRequests = requests.slice(0, 4);
 
   return (
@@ -27,7 +31,7 @@ export function WorkPage() {
       <header className="page-heading">
         <div>
           <p className="eyebrow">{fullDateLabel(new Date()).toUpperCase()}</p>
-          <h1>Công việc của {user.shortName}</h1>
+          <h1>Công việc của {live?.person.shortName ?? user.shortName}</h1>
           <p>Chấm công, ngày phép, mục tiêu và đề xuất — những việc bạn chạm mỗi ngày, ở một chỗ.</p>
         </div>
         <PlatformHandoffButton platform="iCheck" action="xem lịch chấm công cả tháng và lịch sử nghỉ phép" label="Mở iCheck đầy đủ" />
@@ -36,11 +40,12 @@ export function WorkPage() {
       <ICheckWidget />
 
       <div className="work-grid">
+        {live ? <LiveWorkSections live={live} /> : (
         <section aria-label="Mục tiêu của tôi">
           <SectionHeader title="Mục tiêu của tôi" meta={needsCheckIn.length ? `${needsCheckIn.length} mục tiêu cần check-in` : 'Tất cả đã cập nhật'} href="/goals" actionLabel="Mở iGoal" />
           <div className="active-items">
             {needsCheckIn.length === 0 ? (
-              <EmptyState icon={<Target size={44} weight="duotone" />} title="Không có mục tiêu trễ check-in" body="iGoal sẽ nhắc khi tới kỳ check-in tiếp theo." />
+              <EmptyState icon={<Target size={44} variant="duotone" />} title="Không có mục tiêu trễ check-in" body="iGoal sẽ nhắc khi tới kỳ check-in tiếp theo." />
             ) : needsCheckIn.map((goal) => (
               <article key={goal.id} className="active-item">
                 <span className="active-item-icon"><Target size={20} /></span>
@@ -50,11 +55,12 @@ export function WorkPage() {
             ))}
           </div>
         </section>
+        )}
 
         <section aria-label="Đề xuất của tôi">
           <SectionHeader title="Đề xuất của tôi" meta={`${requests.length} đơn`} href="/requests" actionLabel="Tạo đề xuất" />
           {recentRequests.length === 0 ? (
-            <EmptyState icon={<Ticket size={44} weight="duotone" />} title="Chưa có đề xuất" body="Đơn nghỉ, WFH, request IT tạo qua Trợ lý AI sẽ hiện ở đây." />
+            <EmptyState icon={<Ticket size={44} variant="duotone" />} title="Chưa có đề xuất" body="Đơn nghỉ, WFH, request IT tạo qua Trợ lý AI sẽ hiện ở đây." />
           ) : (
             <div className="work-request-list">
               {recentRequests.map((request) => (

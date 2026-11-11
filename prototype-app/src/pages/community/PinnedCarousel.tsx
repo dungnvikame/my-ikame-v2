@@ -1,4 +1,4 @@
-import { SealCheck } from '@phosphor-icons/react';
+import { SealCheckIcon as SealCheck } from '@coreds/react/icons';
 import { StatusPill } from '../../components/UI';
 import type { Post } from '../../types';
 import { PostCoverBlock } from './PostCard';

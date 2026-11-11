@@ -253,6 +253,11 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const [suppressedByPerson, setSuppressedByPerson] = useState<Record<string, number>>({});
 
   useEffect(() => { writeStored(THEME_STORAGE_KEY, theme); }, [theme]);
+  // Core DS đổi token sáng/tối theo class `dark` trên <html> — giữ đồng bộ với theme của app.
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
   // MVP: tạm không persist perspective để không ghi đè 'manager' đã lưu (xem comment ở khởi tạo).
   // useEffect(() => { writeStored(PERSPECTIVE_STORAGE_KEY, perspective); }, [perspective]);
 

@@ -1,4 +1,4 @@
-import { ArrowRight, FileText, IdentificationCard, GraduationCap, ShieldCheck, FirstAidKit } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, FileTextIcon as FileText, IdentificationCardIcon as IdentificationCard, GraduationCapIcon as GraduationCap, ShieldCheckIcon as ShieldCheck, FirstAidKitIcon as FirstAidKit } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import { SectionHeader, StatusPill } from '../../components/UI';

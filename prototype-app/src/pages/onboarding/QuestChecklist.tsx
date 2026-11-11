@@ -1,9 +1,10 @@
-import { ArrowRight } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import { SectionHeader, StatusPill } from '../../components/UI';
 import type { JourneyView } from '../../lib/onboarding';
 import { JOURNEY_MILESTONES } from '../../lib/onboarding';
+import { Checkbox } from '@coreds/react';
 
 /**
  * Checklist quest theo mốc — checkbox thật (không EXP/coin). Quest ở platform gốc có nút handoff;
@@ -21,10 +22,9 @@ export function QuestChecklist({ journey, onComplete }: { journey: JourneyView; 
             <ul className="quest-list">
               {quests.map((quest) => (
                 <li key={quest.id} className={`quest-item ${quest.done ? 'is-done' : ''} ${quest.late ? 'is-late' : ''}`}>
-                  <label className="quest-check">
-                    <input type="checkbox" checked={quest.done} disabled={quest.done} onChange={() => onComplete(quest.id)} />
-                    <span className="quest-title">{quest.title}</span>
-                  </label>
+                  <div className="quest-check">
+                    <Checkbox checked={quest.done} disabled={quest.done} onCheckedChange={() => onComplete(quest.id)} label={quest.title} />
+                  </div>
                   <div className="quest-meta">
                     {quest.late && <StatusPill tone="warning">Trễ {journey.day - quest.dueDay} ngày</StatusPill>}
                     {!quest.done && !quest.late && quest.dueDay === journey.day && <StatusPill tone="info">Hạn hôm nay</StatusPill>}

@@ -1,8 +1,8 @@
-import { ArrowCounterClockwise, BellRinging, Clock, Compass, EnvelopeSimple, Moon, SlackLogo, Sun } from '@phosphor-icons/react';
+import { ArrowCounterClockwiseIcon as ArrowCounterClockwise, BellRingingIcon as BellRinging, ClockIcon as Clock, CompassIcon as Compass, EnvelopeSimpleIcon as EnvelopeSimple, MoonIcon as Moon, SlackLogoIcon as SlackLogo, SunIcon as Sun } from '@coreds/react/icons';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
-import { Button, StatusPill } from '../components/UI';
+import { Button, StatusPill, ButtonLink } from '../components/UI';
 import { ProfileActivity } from './profile/ProfileActivity';
 import { ProfileDocuments } from './profile/ProfileDocuments';
 import { useLive } from '../lib/live/live-data';
@@ -113,7 +113,7 @@ export function ProfilePage() {
             <strong>Thông báo</strong>
             <p>Chọn nhóm thông báo muốn nhận; Bản tin sáng gộp việc hôm nay lúc {preference.digestTime}.</p>
           </div>
-          <Link className="button" to="/notifications?tab=settings"><BellRinging size={18} />Cài đặt thông báo</Link>
+          <ButtonLink variant="dim" to="/notifications?tab=settings"><BellRinging size={18} />Cài đặt thông báo</ButtonLink>
         </div>
         <div className="side-info profile-section profile-setting-card">
           <div>

@@ -47,7 +47,7 @@ export type LiveObjective = { id: string; title: string; scope: string; progress
 export type LiveDevice = { id: string; code: string; name: string; category: string; allocatedLabel: string; health?: number };
 export type LiveLicense = { id: string; name: string; kind: string };
 export type LiveCandidate = { id: string; name: string; roundName: string; waitingDays: number; url: string };
-export type LiveMeeting = { id: string; title: string; startLabel: string; endLabel: string; allDay: boolean; guests: number; url?: string; start: Date };
+export type LiveMeeting = { id: string; title: string; startLabel: string; endLabel: string; allDay: boolean; guests: number; url?: string; start: Date; end: Date };
 
 export type LiveData = {
   person: { name: string; shortName: string; team: string; position: string };
@@ -272,6 +272,7 @@ function shapeMeetings(list: CalendarList): LiveMeeting[] {
       guests: event.attendees?.length ?? 0,
       url: event.htmlLink,
       start,
+      end,
     }];
   }).sort((a, b) => a.start.getTime() - b.start.getTime());
 }

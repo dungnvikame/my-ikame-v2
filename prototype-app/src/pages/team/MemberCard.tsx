@@ -1,8 +1,9 @@
-import { ArrowRight, CalendarCheck, ChartLineUp, Clock } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, CalendarCheckIcon as CalendarCheck, ChartLineUpIcon as ChartLineUp, ClockIcon as Clock } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { StatusPill } from '../../components/UI';
 import type { MemberProfile360, TeamMember } from '../../types';
 import { initials, MiniProgress, riskLabel, riskScore, STATUS_LABEL, STATUS_TONE } from './team-visuals';
+import { Avatar } from '@coreds/react';
 
 /**
  * Thẻ thành viên giàu tín hiệu (pattern roster của Lattice/BambooHR): thay vì
@@ -22,7 +23,7 @@ export function MemberCard({ member, profile }: { member: TeamMember; profile?: 
   return (
     <article className={`member-card member-card--${risk.tone}`}>
       <header className="member-card-head">
-        <span className="avatar avatar--large" aria-hidden="true">{initials(member.name)}</span>
+        <Avatar type="text" size="l" fallback={initials(member.name)} alt="" aria-hidden="true" />
         <div className="member-card-identity">
           <h3><Link to={`/manager/team/${member.id}`}>{member.name}</Link></h3>
           <small>{member.role}</small>

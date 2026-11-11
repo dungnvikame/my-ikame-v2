@@ -1,4 +1,4 @@
-import { ArrowLeft, ChatCircleText, CheckCircle, PaperPlaneTilt, SealCheck, ShareNetwork, WarningCircle } from '@phosphor-icons/react';
+import { ArrowLeftIcon as ArrowLeft, ChatCircleTextIcon as ChatCircleText, CheckCircleIcon as CheckCircle, PaperPlaneTiltIcon as PaperPlaneTilt, SealCheckIcon as SealCheck, ShareNetworkIcon as ShareNetwork, WarningCircleIcon as WarningCircle } from '@coreds/react/icons';
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
@@ -6,6 +6,7 @@ import { newsTopicVisual } from '../components/ContentCards';
 import { Button, SourceLine, StatusPill } from '../components/UI';
 import { isEligible } from '../lib/audience';
 import type { NewsPost } from '../types';
+import { Avatar, Input, Button as DsButton } from '@coreds/react';
 
 // MVP: danh sách Tin tức đã gộp vào iKame Feed (/feed) — file này chỉ còn trang đọc bài viết.
 
@@ -43,7 +44,7 @@ function ArticleComments({ post }: { post: NewsPost }) {
         <ul className="article-comment-list">
           {comments.map((comment) => (
             <li key={comment.id}>
-              <span className="avatar" aria-hidden="true">{comment.authorShort.slice(0, 1)}</span>
+              <Avatar type="text" size="m" fallback={comment.authorShort.slice(0, 1)} alt="" aria-hidden="true" />
               <div className="article-comment-body">
                 <p className="article-comment-meta"><strong>{comment.authorName}</strong>{comment.role && <span> · {comment.role}</span>}<span> · {comment.time}</span></p>
                 <p>{comment.text}</p>
@@ -53,17 +54,19 @@ function ArticleComments({ post }: { post: NewsPost }) {
         </ul>
       )}
       <form className="article-comment-form" onSubmit={handleSubmit}>
-        <span className="avatar" aria-hidden="true">{user.shortName.slice(0, 1)}</span>
-        <input
+        <Avatar type="text" size="m" fallback={user.shortName.slice(0, 1)} alt="" aria-hidden="true" />
+        <Input
+          variant="borderless"
+          size="l"
           type="text"
           value={text}
           onChange={(event) => setText(event.target.value)}
           placeholder="Viết bình luận..."
           aria-label="Viết bình luận"
         />
-        <button type="submit" className="assistant-send" aria-label="Gửi bình luận" disabled={!text.trim()}>
-          <PaperPlaneTilt size={16} weight="fill" />
-        </button>
+        <DsButton type="submit" variant="primary" size="icon-l" className="send-button" aria-label="Gửi bình luận" disabled={!text.trim()}>
+          <PaperPlaneTilt size={16} variant="fill" />
+        </DsButton>
       </form>
     </section>
   );
@@ -127,7 +130,7 @@ function ArticleDetail({ post }: { post: NewsPost }) {
             </div>
           ) : post.mandatory ? (
             <div className={`ack-panel ${post.acknowledged ? 'is-complete' : ''}`} role="status">
-              {post.acknowledged ? <CheckCircle size={28} weight="duotone" /> : <WarningCircle size={28} weight="duotone" />}
+              {post.acknowledged ? <CheckCircle size={28} variant="duotone" /> : <WarningCircle size={28} variant="duotone" />}
               <h2>{post.acknowledged ? 'Đã xác nhận' : 'Xác nhận bắt buộc'}</h2>
               <p>{post.acknowledged ? 'Trạng thái của bạn đã được ghi nhận.' : (post.mandatoryReason ?? `Hãy đọc kỹ và xác nhận trước ${post.dueLabel?.replace('Hạn ', '')}.`)}</p>
               {!post.acknowledged && <Button variant="primary" onClick={acknowledge}>Xác nhận đã đọc</Button>}

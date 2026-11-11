@@ -1,11 +1,9 @@
 import { useRef, useState } from 'react';
-import {
-  CheckCircle, CircleDashed, ListBullets, Monitor, Sparkle,
-  TextB, TextHTwo, TextItalic,
-} from '@phosphor-icons/react';
+import { CheckCircleIcon as CheckCircle, CircleDashedIcon as CircleDashed, ListBulletsIcon as ListBullets, MonitorIcon as Monitor, SparkleIcon as Sparkle, TextBIcon as TextB, TextHTwoIcon as TextHTwo, TextItalicIcon as TextItalic } from '@coreds/react/icons';
 import { Button } from '../../components/UI';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import type { AgentAction, AgentWorkspace, EditorBlock, FormFieldSpec } from './agent-replies';
+import { Select, Textarea, Input } from '@coreds/react';
 
 /** Payload gửi kèm khi duyệt báo cáo OKR — AssistantPage bổ sung author/source rồi submitReport thật. */
 export type OkrReportPayload = {
@@ -30,15 +28,18 @@ type WorkspaceProps = {
 function FormFieldControl({ field }: { field: FormFieldSpec }) {
   if (field.type === 'select') {
     return (
-      <select className="workspace-input" defaultValue={field.value} aria-label={field.label}>
-        {(field.options ?? [field.value]).map((option) => <option key={option} value={option}>{option}</option>)}
-      </select>
+      <Select
+        variant="fill"
+        aria-label={field.label}
+        options={(field.options ?? [field.value]).map((option) => ({ value: option, label: option }))}
+        defaultValue={field.value}
+      />
     );
   }
   if (field.type === 'textarea') {
-    return <textarea className="workspace-input" rows={4} defaultValue={field.value} aria-label={field.label} />;
+    return <Textarea variant="fill" rows={4} defaultValue={field.value} aria-label={field.label} />;
   }
-  return <input className="workspace-input" type={field.type ?? 'text'} defaultValue={field.value} aria-label={field.label} />;
+  return <Input variant="fill" type={field.type ?? 'text'} defaultValue={field.value} aria-label={field.label} />;
 }
 
 /** Form nghiệp vụ chỉnh sửa được (đặt phòng họp, ticket IT). */
@@ -131,7 +132,7 @@ function WorkspaceOkr({
       <div className="workspace-form">
         <label className="workspace-form-field is-half">
           <span className="workspace-field-label">Kỳ báo cáo</span>
-          <input className="workspace-input" value={periodLabel} onChange={(event) => setPeriodLabel(event.target.value)} />
+          <Input variant="fill" value={periodLabel} onChange={(event) => setPeriodLabel(event.target.value)} />
         </label>
         <label className="workspace-form-field is-half">
           <span className="workspace-field-label">Tiến độ mới: {progressAfter}%</span>
@@ -146,11 +147,11 @@ function WorkspaceOkr({
         </label>
         <label className="workspace-form-field">
           <span className="workspace-field-label">Nội dung cập nhật (AI soạn nháp — bạn hiệu chỉnh)</span>
-          <textarea className="workspace-input" rows={5} value={content} onChange={(event) => setContent(event.target.value)} />
+          <Textarea variant="fill" rows={5} value={content} onChange={(event) => setContent(event.target.value)} />
         </label>
         <label className="workspace-form-field">
           <span className="workspace-field-label">Vướng mắc (nếu có)</span>
-          <textarea className="workspace-input" rows={2} value={blockers} placeholder="Không có vướng mắc" onChange={(event) => setBlockers(event.target.value)} />
+          <Textarea variant="fill" rows={2} value={blockers} placeholder="Không có vướng mắc" onChange={(event) => setBlockers(event.target.value)} />
         </label>
       </div>
       {onSubmit && (
@@ -202,7 +203,7 @@ export function AssistantWorkspace({ workspace, action, actionDone, actionRunnin
           <h2>{workspace.title}</h2>
         </div>
         {workspace.badge && !actionDone && <span className="workspace-badge">{workspace.badge}</span>}
-        {actionDone && <span className="workspace-badge workspace-badge--done"><CheckCircle size={14} weight="fill" />Hoàn tất</span>}
+        {actionDone && <span className="workspace-badge workspace-badge--done"><CheckCircle size={14} variant="fill" />Hoàn tất</span>}
       </header>
 
       <div className="workspace-body">
@@ -231,7 +232,7 @@ export function AssistantWorkspace({ workspace, action, actionDone, actionRunnin
           )}
           {action && actionDone && (
             <p className="assistant-receipt">
-              <CheckCircle size={16} weight="fill" />{action.receipt} <span>#RCPT-{receiptId}</span>
+              <CheckCircle size={16} variant="fill" />{action.receipt} <span>#RCPT-{receiptId}</span>
               {action.tool && <span className="assistant-receipt-tool">via MCP · {action.tool}</span>}
             </p>
           )}
@@ -249,14 +250,14 @@ export function AssistantWorkspace({ workspace, action, actionDone, actionRunnin
         </div>
 
         <div className="workspace-steps" aria-label="AI steps">
-          <p className="workspace-steps-title"><Sparkle size={14} weight="fill" />AI steps</p>
+          <p className="workspace-steps-title"><Sparkle size={14} variant="fill" />AI steps</p>
           <ul>
             {workspace.steps.map((step, index) => {
               const isLast = index === workspace.steps.length - 1;
               const pending = isLast && !!action && !actionDone;
               return (
                 <li key={step} className={pending ? 'is-pending' : ''}>
-                  {pending ? <CircleDashed size={15} /> : <CheckCircle size={15} weight="fill" />}
+                  {pending ? <CircleDashed size={15} /> : <CheckCircle size={15} variant="fill" />}
                   <span>{step}</span>
                 </li>
               );

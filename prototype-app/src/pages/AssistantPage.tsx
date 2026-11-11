@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import {
-  ArrowRight, CheckCircle, ClockCounterClockwise, NotePencil, PaperPlaneTilt, Sparkle, Trash,
-} from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, CheckCircleIcon as CheckCircle, ClockCounterClockwiseIcon as ClockCounterClockwise, NotePencilIcon as NotePencil, PaperPlaneTiltIcon as PaperPlaneTilt, SparkleIcon as Sparkle, TrashIcon as Trash } from '@coreds/react/icons';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { Button, IconButton } from '../components/UI';
@@ -15,6 +13,7 @@ import { AssistantWorkspace, type OkrReportPayload } from './assistant/Assistant
 import { documentReminders } from '../data/profile-data';
 import { journeyDigestQuests } from '../lib/onboarding';
 import { AgentMetricsCard } from '../components/assistant/AgentMetricsCard';
+import { Input, Button as DsButton } from '@coreds/react';
 
 /** Danh sách phiên cũ — dùng chung cho popover lịch sử và mục "Gần đây" ở màn chào. */
 function HistoryList({ sessions, onResume, onDelete }: {
@@ -247,15 +246,17 @@ export function AssistantPage() {
         ))}
       </div>
       <form className="assistant-input" onSubmit={handleSubmit}>
-        <Sparkle size={20} weight="fill" className="assistant-input-spark" />
-        <input
+        <Sparkle size={20} variant="fill" className="assistant-input-spark" />
+        <Input
+          variant="borderless"
+          size="l"
           type="text"
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Nhắn cho Trợ lý AI..."
           aria-label="Hỏi Trợ lý AI"
         />
-        <button type="submit" className="assistant-send" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} weight="fill" /></button>
+        <DsButton type="submit" variant="primary" size="icon-l" className="send-button" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} variant="fill" /></DsButton>
       </form>
     </div>
   );
@@ -264,7 +265,7 @@ export function AssistantPage() {
     return (
       <div className="page assistant-page assistant-page--empty">
         <div className="assistant-welcome">
-          <span className="assistant-welcome-icon"><Sparkle size={26} weight="fill" /></span>
+          <span className="assistant-welcome-icon"><Sparkle size={26} variant="fill" /></span>
           <h1>Chào {user.shortName}, mình có thể giúp gì?</h1>
           <p>Hỏi đáp và nhờ Agent xử lý nghiệp vụ tại iKame — bạn duyệt, Agent thực thi.</p>
           <div className="assistant-connectors" aria-label="Nguồn đang kết nối">
@@ -277,8 +278,10 @@ export function AssistantPage() {
           </div>
           <AgentMetricsCard />
           <form className="assistant-input assistant-input--hero" onSubmit={handleSubmit}>
-            <Sparkle size={20} weight="fill" className="assistant-input-spark" />
-            <input
+            <Sparkle size={20} variant="fill" className="assistant-input-spark" />
+            <Input
+              variant="borderless"
+              size="l"
               type="text"
               value={input}
               onChange={(event) => setInput(event.target.value)}
@@ -286,7 +289,7 @@ export function AssistantPage() {
               aria-label="Hỏi Trợ lý AI"
               autoFocus
             />
-            <button type="submit" className="assistant-send" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} weight="fill" /></button>
+            <DsButton type="submit" variant="primary" size="icon-l" className="send-button" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} variant="fill" /></DsButton>
           </form>
           <div className="assistant-capabilities">
             {capabilities.map(({ icon: Icon, title, prompt }) => (
@@ -331,7 +334,7 @@ export function AssistantPage() {
             {messages.map((message) => (
               <div key={message.id} className={`assistant-message assistant-message--${message.role}`}>
                 {message.role === 'assistant' && (
-                  <span className="assistant-avatar" aria-hidden="true"><Sparkle size={14} weight="fill" /></span>
+                  <span className="assistant-avatar" aria-hidden="true"><Sparkle size={14} variant="fill" /></span>
                 )}
                 <div className="assistant-bubble">
                   {message.role === 'assistant' && <AssistantSteps message={message} />}
@@ -361,12 +364,12 @@ export function AssistantPage() {
                       )}
                       {message.action && !message.workspace && message.actionDone && (
                         <p className="assistant-receipt">
-                          <CheckCircle size={16} weight="fill" />{message.action.receipt} <span>#RCPT-{message.receiptId}</span>
+                          <CheckCircle size={16} variant="fill" />{message.action.receipt} <span>#RCPT-{message.receiptId}</span>
                           {message.action.tool && <span className="assistant-receipt-tool">via MCP · {message.action.tool}</span>}
                         </p>
                       )}
                       {message.action && message.workspace && message.actionDone && (
-                        <p className="assistant-receipt"><CheckCircle size={16} weight="fill" />{message.action.receipt}</p>
+                        <p className="assistant-receipt"><CheckCircle size={16} variant="fill" />{message.action.receipt}</p>
                       )}
                       {!!message.toolCalls?.length && (
                         <p className="assistant-toolcalls" aria-label="Tool MCP đã gọi">

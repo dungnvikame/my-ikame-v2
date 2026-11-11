@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react';
-import { ArrowRight, CheckCircle, PaperPlaneTilt } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, CheckCircleIcon as CheckCircle, PaperPlaneTiltIcon as PaperPlaneTilt } from '@coreds/react/icons';
 import { useAppState } from '../../AppState';
 import { useLive } from '../../lib/live/live-data';
 import { leaveDeduction, parseRequest, REQUEST_KIND_LABEL, type DaySession, type RequestDraft, type RequestKind } from '../../lib/request-parser';
 import type { RequestType } from '../../types';
+import { Input, Select } from '@coreds/react';
 import { Button } from '../UI';
 
 /**
@@ -94,8 +95,10 @@ export function QuickRequest() {
       <form className="quick-request-input" onSubmit={onRead}>
         <label htmlFor="quick-request-text">Bạn cần đề xuất gì? Gõ một câu như đang nhắn cho quản lý.</label>
         <div className="quick-request-row">
-          <input
+          <Input
             id="quick-request-text"
+            size="l"
+            variant="fill"
             type="text"
             value={text}
             onChange={(event) => setText(event.target.value)}
@@ -113,7 +116,7 @@ export function QuickRequest() {
 
       {sentTitle && (
         <p className="quick-request-receipt" role="status">
-          <CheckCircle size={18} weight="fill" aria-hidden="true" />
+          <CheckCircle size={18} variant="fill" aria-hidden="true" />
           <span>Đã thêm vào "Đang theo dõi": <strong>{sentTitle}</strong></span>
           <span className="demo-badge">DEMO</span>
         </p>
@@ -132,50 +135,63 @@ export function QuickRequest() {
           <div className="quick-request-fields">
             <label>
               <span>Loại đề xuất</span>
-              <select id="quick-request-kind" value={draft.kind} onChange={(event) => patch({ kind: event.target.value as RequestKind })}>
-                {draft.kind === 'unknown' && <option value="unknown">Chọn loại…</option>}
-                {KIND_OPTIONS.map((kind) => <option key={kind} value={kind}>{REQUEST_KIND_LABEL[kind]}</option>)}
-              </select>
+              <Select
+                id="quick-request-kind"
+                variant="fill"
+                placeholder="Chọn loại…"
+                options={KIND_OPTIONS.map((kind) => ({ value: kind, label: REQUEST_KIND_LABEL[kind] }))}
+                value={draft.kind === 'unknown' ? '' : draft.kind}
+                onValueChange={(value) => patch({ kind: String(value) as RequestKind })}
+              />
             </label>
             {usesDate && (
               <label>
                 <span>Ngày</span>
-                <input id="quick-request-date" type="date" value={draft.date} onChange={(event) => patch({ date: event.target.value })} required />
+                <Input id="quick-request-date" size="l" variant="fill" type="date" value={draft.date} onChange={(event) => patch({ date: event.target.value })} required />
               </label>
             )}
             {(draft.kind === 'leave' || draft.kind === 'wfh') && (
               <label>
                 <span>Buổi</span>
-                <select id="quick-request-session" value={draft.session} onChange={(event) => patch({ session: event.target.value as DaySession })}>
-                  {(Object.keys(SESSION_LABEL) as DaySession[]).map((session) => <option key={session} value={session}>{SESSION_LABEL[session]}</option>)}
-                </select>
+                <Select
+                  id="quick-request-session"
+                  variant="fill"
+                  options={(Object.keys(SESSION_LABEL) as DaySession[]).map((session) => ({ value: session, label: SESSION_LABEL[session] }))}
+                  value={draft.session}
+                  onValueChange={(value) => patch({ session: String(value) as DaySession })}
+                />
               </label>
             )}
             {draft.kind === 'leave' && draft.session === 'full' && (
               <label>
                 <span>Số ngày</span>
-                <input id="quick-request-days" type="number" min={1} max={30} step={1} value={draft.days} onChange={(event) => patch({ days: Math.max(1, Number(event.target.value) || 1) })} />
+                <Input id="quick-request-days" size="l" variant="fill" type="number" min={1} max={30} step={1} value={draft.days} onChange={(event) => patch({ days: Math.max(1, Number(event.target.value) || 1) })} />
               </label>
             )}
             {draft.kind === 'late' && (
               <>
                 <label>
                   <span>Hình thức</span>
-                  <select id="quick-request-direction" value={draft.direction ?? 'late'} onChange={(event) => patch({ direction: event.target.value as 'late' | 'early' })}>
-                    <option value="late">Đi muộn</option>
-                    <option value="early">Về sớm</option>
-                  </select>
+                  <Select
+                    id="quick-request-direction"
+                    variant="fill"
+                    options={[{ value: 'late', label: 'Đi muộn' }, { value: 'early', label: 'Về sớm' }]}
+                    value={draft.direction ?? 'late'}
+                    onValueChange={(value) => patch({ direction: String(value) as 'late' | 'early' })}
+                  />
                 </label>
                 <label>
                   <span>Số phút</span>
-                  <input id="quick-request-minutes" type="number" min={5} max={240} step={5} value={draft.minutes ?? 30} onChange={(event) => patch({ minutes: Number(event.target.value) || 30 })} />
+                  <Input id="quick-request-minutes" size="l" variant="fill" type="number" min={5} max={240} step={5} value={draft.minutes ?? 30} onChange={(event) => patch({ minutes: Number(event.target.value) || 30 })} />
                 </label>
               </>
             )}
             <label className="quick-request-wide">
               <span>{usesDate ? 'Lý do' : 'Mô tả'}</span>
-              <input
+              <Input
                 id="quick-request-reason"
+                size="l"
+                variant="fill"
                 type="text"
                 value={usesDate ? draft.reason : draft.source}
                 onChange={(event) => patch(usesDate ? { reason: event.target.value } : { source: event.target.value })}

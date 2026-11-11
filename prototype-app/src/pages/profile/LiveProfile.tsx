@@ -1,7 +1,10 @@
-import { Desktop, Key, Target } from '@phosphor-icons/react';
+import { useState } from 'react';
+import { DesktopIcon as Desktop, KeyIcon as Key, TargetIcon as Target } from '@coreds/react/icons';
+import { Tabs, type TabDef } from '../../components/Tabs';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import { EmptyState, SectionHeader, StatusPill } from '../../components/UI';
 import { LIVE_SOURCES, type LiveData, type LiveSourceId } from '../../lib/live/live-data';
+import { Progress } from '@coreds/react';
 
 /**
  * Trang Cá nhân khi đã nối dữ liệu thật (bản artifact). Nguyên tắc: chỉ hiện thứ đọc được từ
@@ -69,7 +72,7 @@ function GoalsSection({ live }: { live: LiveData }) {
     <section className="side-info profile-section" aria-label="Mục tiêu của tôi">
       <SectionHeader title="Mục tiêu của tôi" meta={`${objectives.length} mục tiêu · kỳ ${live.igoal?.period ?? ''}`} />
       {objectives.length === 0 ? (
-        <EmptyState icon={<Target size={44} weight="duotone" />} title="Chưa có mục tiêu trong kỳ này" body="Mục tiêu bạn sở hữu trên iGoal sẽ hiện ở đây." />
+        <EmptyState icon={<Target size={44} variant="duotone" />} title="Chưa có mục tiêu trong kỳ này" body="Mục tiêu bạn sở hữu trên iGoal sẽ hiện ở đây." />
       ) : (
         <div className="live-objectives">
           {objectives.map((objective) => (
@@ -88,7 +91,7 @@ function GoalsSection({ live }: { live: LiveData }) {
                     <li key={kr.id}>
                       <p>{kr.title}</p>
                       <div className="live-kr-meter">
-                        <div className="live-kr-track" role="img" aria-label={`Tiến độ ${percent}%`}><span style={{ width: `${percent}%` }} /></div>
+                        <Progress className="live-kr-progress" size="sm" value={percent} aria-label={`Tiến độ ${percent}%`} />
                         <span>{percent}%</span>
                         {kr.weight > 0 && <small>Trọng số {kr.weight}%</small>}
                       </div>
@@ -195,25 +198,44 @@ function DevicesSection({ live }: { live: LiveData }) {
   );
 }
 
+type ProfileTab = 'goals' | 'attendance' | 'devices' | 'record';
+const PROFILE_TABS: TabDef<ProfileTab>[] = [
+  { key: 'goals', label: 'Mục tiêu' },
+  { key: 'attendance', label: 'Chấm công và phép' },
+  { key: 'devices', label: 'Thiết bị và license' },
+  { key: 'record', label: 'Hồ sơ' },
+];
+
+/** Một tab một chủ đề thay cho một trang dài — tìm thấy thứ cần xem mà không phải cuộn. */
 export function LiveProfileGrid({ live }: { live: LiveData }) {
+  const [tab, setTab] = useState<ProfileTab>('goals');
   return (
-    <div className="profile-grid">
-      <div className="profile-main">
-        <GoalsSection live={live} />
-        <ReportSection live={live} />
-        <section className="side-info profile-section" aria-label="Hồ sơ nhân sự">
-          <SectionHeader title="Hồ sơ nhân sự" />
-          <p className="live-source">
-            Ngày vào làm, hợp đồng, lương, giấy tờ và cột mốc thâm niên lấy từ HRIS. My iKame chưa nối HRIS nên phần này để trống,
-            không hiển thị số liệu mẫu.
-          </p>
-        </section>
+    <div className="live-profile">
+      <Tabs tabs={PROFILE_TABS} active={tab} onChange={setTab} ariaLabel="Nội dung trang Cá nhân" />
+      <div className="live-profile-panel" role="tabpanel">
+        {tab === 'goals' && (
+          <div className="profile-grid">
+            <div className="profile-main"><GoalsSection live={live} /></div>
+            <aside className="profile-rail"><ReportSection live={live} /><OrgSection live={live} /></aside>
+          </div>
+        )}
+        {tab === 'attendance' && <AttendanceSection live={live} />}
+        {tab === 'devices' && <DevicesSection live={live} />}
+        {tab === 'record' && (
+          <div className="profile-grid">
+            <div className="profile-main">
+              <section className="side-info profile-section" aria-label="Hồ sơ nhân sự">
+                <SectionHeader title="Hồ sơ nhân sự" />
+                <p className="live-source">
+                  Ngày vào làm, hợp đồng, lương, giấy tờ và cột mốc thâm niên lấy từ HRIS. My iKame chưa nối HRIS nên phần này để trống,
+                  không hiển thị số liệu mẫu.
+                </p>
+              </section>
+            </div>
+            <aside className="profile-rail"><OrgSection live={live} /></aside>
+          </div>
+        )}
       </div>
-      <aside className="profile-rail">
-        <OrgSection live={live} />
-        <AttendanceSection live={live} />
-        <DevicesSection live={live} />
-      </aside>
     </div>
   );
 }

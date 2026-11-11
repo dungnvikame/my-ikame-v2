@@ -380,43 +380,8 @@ p {
   padding: 0;
 }
 
-.icon-button {
-  width: var(--touch-target-min);
-  height: var(--touch-target-min);
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--radius-6);
-  background: var(--bg-primary);
-  color: var(--icon-primary);
-  cursor: pointer;
-}
-
-.icon-button:hover,
-.icon-button:active {
-  background: var(--state-neutral-soft);
-}
-
 .notification-trigger-wrap {
   position: relative;
-}
-
-.notification-count {
-  position: absolute;
-  top: 2px;
-  right: 1px;
-  min-width: 17px;
-  height: 17px;
-  display: grid;
-  place-items: center;
-  padding: 0 4px;
-  border: 2px solid var(--bg-primary);
-  border-radius: var(--radius-round);
-  background: var(--text-primary);
-  color: var(--fg-on-contrast);
-  font-size: var(--body-xxs-size);
-  line-height: var(--body-xxs-line);
-  font-weight: var(--font-semibold);
 }
 
 .main-content {
@@ -561,53 +526,6 @@ p {
 .priority-complete span,
 .calm-note span {
   color: var(--text-secondary);
-}
-
-.button {
-  min-height: var(--button-l-height);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border: 1px solid var(--border-button);
-  border-radius: var(--radius-6);
-  cursor: pointer;
-  font-size: var(--body-s-size);
-  line-height: var(--body-s-line);
-  font-weight: var(--font-semibold);
-}
-
-.button--primary {
-  border-color: var(--bg-button-primary);
-  background: var(--bg-button-primary);
-  color: var(--fg-on-accent);
-}
-
-.button--primary:hover {
-  background: color-mix(in oklab, var(--bg-button-primary) 100%, var(--state-mix) var(--mix-medium));
-}
-
-.button--dim {
-  background: var(--bg-button-tertiary);
-  color: var(--text-primary);
-}
-
-.button--dim:hover,
-.button--borderless:hover {
-  background: var(--state-neutral-soft);
-}
-
-.button--borderless {
-  border-color: var(--border-input-opacity);
-  background: var(--bg-primary);
-  color: var(--fg-link);
-}
-
-.button--danger {
-  border-color: var(--border-error-button);
-  background: var(--bg-error);
-  color: var(--fg-error);
 }
 
 .home-grid {
@@ -782,45 +700,6 @@ p {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-}
-
-.status-pill {
-  min-height: 22px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-round);
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  font-size: var(--body-xs-size);
-  line-height: var(--body-xs-line);
-  font-weight: var(--font-semibold);
-}
-
-.status-pill--success {
-  border-color: var(--border-success);
-  background: var(--bg-success);
-  color: var(--fg-success);
-}
-
-.status-pill--warning {
-  border-color: var(--border-yellow);
-  background: var(--bg-warning);
-  color: var(--fg-warning);
-}
-
-.status-pill--error {
-  border-color: var(--border-error);
-  background: var(--bg-error);
-  color: var(--fg-error);
-}
-
-.status-pill--info {
-  border-color: var(--border-blue);
-  background: var(--bg-info);
-  color: var(--fg-info);
 }
 
 .content-card h3,
@@ -1063,38 +942,6 @@ p {
   margin-bottom: 28px;
 }
 
-.neutral-tabs {
-  display: flex;
-  align-items: stretch;
-  gap: 24px;
-  min-height: 42px;
-  border-bottom: 1px solid var(--border-primary);
-}
-
-.neutral-tabs button {
-  position: relative;
-  border: 0;
-  background: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.neutral-tabs button.is-active {
-  color: var(--text-primary);
-  font-weight: var(--font-semibold);
-}
-
-.neutral-tabs button.is-active::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  bottom: -1px;
-  left: 0;
-  height: 2px;
-  border-radius: var(--radius-round);
-  background: var(--text-primary);
-}
-
 .filter-input {
   height: var(--input-height-s);
   display: flex;
@@ -1308,36 +1155,7 @@ p {
   display: flex;
   justify-content: flex-end;
   padding: 0 20px 20px;
-}
-
-/* Toast toàn cục duy nhất (ToastProvider) — mọi xác nhận ngắn đi qua đây. */
-.app-toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 80;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  max-width: min(480px, calc(100vw - 32px));
-  padding: 10px 16px;
-  border-radius: var(--radius-8);
-  background: var(--bg-inverse);
-  color: var(--bg-primary);
-  font-size: var(--body-s-size);
-  box-shadow: var(--shadow-m);
-}
-
-.app-toast button {
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-weight: var(--font-semibold);
-  text-decoration: underline;
-  cursor: pointer;
-}
+}/* Toast toàn cục duy nhất (ToastProvider) — mọi xác nhận ngắn đi qua đây. */
 
 /* ---------- iRequest ---------- */
 .request-type-grid {
@@ -2580,12 +2398,8 @@ p {
 }
 .quick-request-input > label { font-weight: 600; }
 .quick-request-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.quick-request-row input { flex: 1; min-width: 200px; }
-.quick-request input, .quick-request select {
-  height: 40px; padding: 0 12px; border: 1px solid var(--border-primary); border-radius: 8px;
-  background: var(--bg-secondary); color: var(--text-primary); font: inherit; min-width: 0;
-}
-.quick-request input:focus-visible, .quick-request select:focus-visible, .quick-request-examples button:focus-visible {
+.quick-request-row > :first-child { flex: 1; min-width: 200px; }
+.quick-request-examples button:focus-visible {
   outline: 2px solid var(--bg-accent-primary); outline-offset: 1px;
 }
 .quick-request-examples { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -2620,3 +2434,189 @@ p {
   padding: 2px 8px; border: 1px solid currentColor; border-radius: 4px;
   color: var(--text-secondary); font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
 }
+
+/* ===== Trang chủ: phần đầu gọn + dải thời gian + Cần làm ngay ===== */
+.ai-hero.ai-hero--compact { align-items: stretch; gap: 10px; padding: 20px 24px; text-align: left; }
+.ai-hero.ai-hero--compact h1 { justify-content: flex-start; font-size: 24px; line-height: 32px; }
+.ai-hero.ai-hero--compact > p { color: var(--text-secondary); }
+.ai-hero.ai-hero--compact .assistant-input { max-width: none; margin-top: 2px; }
+
+.day-timeline { align-self: stretch; width: 100%; display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.day-timeline-summary { margin: 0; color: var(--text-secondary); font-size: var(--body-s-size); }
+.day-timeline-track {
+  position: relative; height: 34px; margin-top: 14px; border-radius: 8px;
+  background: repeating-linear-gradient(135deg, var(--bg-tertiary) 0 6px, var(--bg-secondary) 6px 12px);
+}
+.day-timeline-free, .day-timeline-meeting {
+  position: absolute; top: 0; bottom: 0; display: flex; align-items: center; min-width: 0; overflow: hidden; border-radius: 8px;
+}
+.day-timeline-free { justify-content: center; border: 1px dashed var(--bg-green-contrast); background: var(--bg-primary); }
+.day-timeline-free span { padding: 0 8px; color: var(--text-primary); font-size: var(--body-xs-size); font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.day-timeline-meeting { padding: 0 8px; background: var(--bg-accent-secondary); color: #fff; }
+.day-timeline-meeting span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--body-xs-size); font-weight: 600; }
+.day-timeline-meeting.is-past { opacity: 0.45; }
+.day-timeline-now { position: absolute; top: -14px; bottom: 0; width: 2px; background: var(--bg-error-contrast); transform: translateX(-1px); }
+.day-timeline-now span {
+  position: absolute; top: 0; left: 50%; transform: translate(-50%, -2px); padding: 0 5px; border-radius: 4px;
+  background: var(--bg-error-contrast); color: #fff; font-size: 10px; font-weight: 700; line-height: 14px; font-variant-numeric: tabular-nums;
+}
+.day-timeline-ticks { position: relative; height: 16px; color: var(--text-tertiary); font-size: 11px; font-variant-numeric: tabular-nums; }
+.day-timeline-ticks span { position: absolute; transform: translateX(-50%); }
+.day-timeline-ticks span:first-child { transform: none; }
+.day-timeline-ticks span:last-child { transform: translateX(-100%); }
+
+.today-tasks { border: 1px solid var(--border-primary); border-radius: var(--radius-12); background: var(--bg-primary); }
+.today-tasks-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 16px 10px; }
+.today-tasks-head h2 { margin: 0; font-size: var(--body-l-size, 18px); line-height: 1.3; font-weight: 600; }
+.today-tasks-head p { margin: 2px 0 0; color: var(--text-secondary); font-size: var(--body-s-size); }
+.today-tasks-list { list-style: none; margin: 0; padding: 0; }
+.today-task {
+  --task-color: var(--text-tertiary);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px;
+  padding: 12px 12px 12px 16px; border-top: 1px solid var(--border-primary); box-shadow: inset 3px 0 0 var(--task-color);
+}
+.today-task[data-source="iHiring"] { --task-color: var(--bg-emerald-contrast); }
+.today-task[data-source="iCheck"] { --task-color: var(--bg-amber-contrast); }
+.today-task[data-source="COM"] { --task-color: var(--bg-error-contrast); }
+.today-task[data-source="iGoal"] { --task-color: var(--bg-indigo-contrast); }
+.today-task[data-source="Google Calendar"] { --task-color: var(--bg-blue-contrast); }
+.today-task[data-source="Asana"] { --task-color: var(--bg-pink-contrast); }
+.today-task[data-source="HRIS"] { --task-color: var(--bg-purple-contrast); }
+.today-task[data-source="Onboarding"] { --task-color: var(--bg-cyan-contrast); }
+.today-task[data-source="My iKame"] { --task-color: var(--bg-orange-contrast); }
+.today-task-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.today-task-copy strong { font-weight: 600; overflow-wrap: anywhere; }
+.today-task-copy span { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; color: var(--text-secondary); font-size: var(--body-xs-size); }
+.today-task-copy b { display: inline-flex; align-items: center; gap: 5px; color: var(--text-primary); font-weight: 600; }
+.today-task-copy b::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--task-color); }
+.today-task-copy em { padding: 0 6px; border-radius: 4px; background: var(--bg-error-contrast); color: #fff; font-style: normal; font-weight: 700; font-size: 11px; line-height: 16px; }
+.today-task-action { min-height: 34px; padding: 0 12px; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.today-task-dismiss {
+  width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 6px;
+  background: transparent; color: var(--text-tertiary); cursor: pointer;
+}
+.today-task-dismiss:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.today-task-dismiss:focus-visible, .today-task-action:focus-visible { outline: 2px solid var(--bg-accent-primary); outline-offset: 1px; }
+.today-tasks-empty { display: flex; align-items: center; gap: 12px; padding: 16px; border-top: 1px solid var(--border-primary); color: var(--bg-green-contrast); }
+.today-tasks-empty div { display: flex; flex-direction: column; color: var(--text-primary); }
+.today-tasks-empty span { color: var(--text-secondary); font-size: var(--body-xs-size); }
+.today-tasks-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 10px 16px 12px; border-top: 1px solid var(--border-primary); color: var(--text-tertiary); font-size: var(--body-xs-size); }
+.today-tasks-foot span { flex: 1; min-width: 200px; }
+.today-tasks-foot button { border: 0; background: none; font: inherit; font-weight: 600; cursor: pointer; padding: 0; }
+
+/* Chấm công trong cột phụ: thanh trạng thái mảnh thay cho băng màu lớn */
+.home-rail .icheck-widget { gap: 12px; }
+.home-rail .icheck-banner { min-height: 0; padding: 12px 14px; border-radius: 10px; text-align: left; align-items: flex-start; }
+.home-rail .icheck-banner strong { font-size: var(--body-m-size); }
+.home-rail .icheck-quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.home-rail .icheck-quick-action { justify-content: flex-start; min-width: 0; }
+.home-grid { margin-top: 20px; }
+
+.live-profile { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+.live-profile-panel > .profile-grid { margin-top: 0; }
+
+@media (max-width: 720px) {
+  .ai-hero.ai-hero--compact { padding: 16px; }
+  .today-task { grid-template-columns: minmax(0, 1fr) auto; }
+  .today-task-dismiss { display: none; }
+}
+
+/* ===== Thanh trên: trạng thái dữ liệu + che số ===== */
+.live-chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid var(--border-primary);
+  border-radius: 999px; background: var(--bg-primary); color: var(--text-secondary); font: inherit; font-size: var(--body-xs-size);
+  font-weight: 600; white-space: nowrap; cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.live-chip:hover:not(:disabled) { color: var(--text-primary); background: var(--bg-tertiary); }
+.live-chip:focus-visible { outline: 2px solid var(--bg-accent-primary); outline-offset: 1px; }
+.live-chip--ready { border-color: var(--bg-green-contrast); color: var(--text-primary); }
+.live-chip--error { border-color: var(--bg-amber-contrast); }
+.live-chip-spin { animation: live-chip-spin 0.9s linear infinite; }
+@keyframes live-chip-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .live-chip-spin { animation: none; } }
+@media (max-width: 900px) { .live-chip span { display: none; } }
+
+.privacy-on .icheck-leave-grid strong, .privacy-on .icheck-leave-grid b, .privacy-on .icheck-banner strong,
+.privacy-on .icheck-banner span, .privacy-on .live-source, .privacy-on .profile-stats strong, .privacy-on .live-facts dd,
+.privacy-on .quick-request-facts dd, .privacy-on .profile-leave-summary, .privacy-on .live-progress-value,
+.privacy-on .live-kr-meter > span, .privacy-on .live-fact {
+  filter: blur(6px); user-select: none;
+}/* Số đếm trên menu */
+.app-shell.sidebar-collapsed .nav-badge { display: none; }
+
+/* Lọc việc */
+.today-tasks-filter { display: flex; gap: 6px; padding: 0 16px 10px; }
+.today-tasks-filter button {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid var(--border-primary);
+  border-radius: 999px; background: transparent; color: var(--text-secondary); font: inherit; font-size: var(--body-xs-size); font-weight: 600; cursor: pointer;
+}
+.today-tasks-filter button[aria-pressed="true"] { border-color: var(--bg-accent-primary); color: var(--text-primary); background: var(--bg-secondary); }
+.today-tasks-filter button span { color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
+.today-tasks-filter button:focus-visible { outline: 2px solid var(--bg-accent-primary); outline-offset: 1px; }
+
+/* Trang Công việc với dữ liệu thật */
+.live-work { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.live-work-list { border: 1px solid var(--border-primary); border-radius: var(--radius-12); background: var(--bg-primary); overflow: hidden; }
+.live-work-list .today-task:first-child { border-top: 0; }
+.live-work-list .today-task { grid-template-columns: minmax(0, 1fr) auto; }
+
+/* Điện thoại: tiêu đề chào nhỏ lại; khoảng trống ghi bằng chữ vì nhãn trong dải không đủ chỗ */
+.day-timeline-free-note { display: none; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+@media (max-width: 720px) {
+  .ai-hero.ai-hero--compact h1 { font-size: 20px; line-height: 28px; align-items: flex-start; }
+  .ai-hero.ai-hero--compact h1 .ai-hero-spark { flex: none; margin-top: 2px; }
+  .day-timeline-free span { display: none; }
+  .day-timeline-free-note { display: inline; }
+}
+
+/* ===== Component Core DS: phần CSS còn lại chỉ lo bố cục, không ghi đè style của kit ===== */
+.nav-count { margin-left: auto; }
+.app-shell.sidebar-collapsed .nav-count { display: none; }
+.app-tabs { margin-bottom: 4px; }
+
+/* Thanh trên với component Core DS: cột giữa co giãn, nhóm nút bên phải giữ nguyên cỡ */
+@media (min-width: 821px) {
+  .topbar { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .search-trigger { width: min(440px, 100%); }
+}
+.topbar-actions > * { flex: none; white-space: nowrap; }
+/* Điện thoại: bỏ nhãn môi trường và nút đổi nhanh ứng dụng để thanh trên không tràn ngang */
+@media (max-width: 820px) {
+  .topbar-env { display: none; }
+  .topbar-actions { gap: 2px; }
+}
+
+/* Ô chọn/ô nhập của Core DS trong form Đề xuất: bỏ style cũ áp lên thẻ gốc */
+.quick-request .quick-request-fields button[role="combobox"] { width: 100%; }
+
+/* Ô tìm kiếm dùng Input của Core DS: chỉ còn lo chiều rộng */
+.filter-field { width: min(320px, 100%); }
+.search-field-ds { width: 100%; }
+.khub-hero-search-ds { width: min(560px, 100%); }
+.notification-count-pos { position: absolute; top: 2px; right: 2px; pointer-events: none; }
+
+/* Avatar/Modal/Drawer/Progress của Core DS: chỉ còn CSS bố cục */
+.live-kr-progress { flex: 1; min-width: 0; }
+.sensitive-form { display: flex; flex-direction: column; gap: 12px; }
+.sensitive-form label { display: flex; flex-direction: column; gap: 4px; }
+.sensitive-form small { color: var(--text-tertiary); }
+.notification-drawer-ds .drawer-toolbar { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+
+/* Thanh tiến độ Core DS: chỉ còn CSS chiều rộng */
+.journey-progress-ds, .mini-progress-ds { width: 100%; min-width: 0; }
+/* Độ rộng thanh mục tiêu/KR giữ như thiết kế cũ để cột % mọi hàng thẳng nhau */
+.okr-progress { width: 140px; flex: none; }
+.okr-progress.okr-progress--kr { width: 100px; }
+
+/* ===== Khung điều hướng và bảng nổi dùng component Core DS ===== */
+.sidebar-nav-ds { position: relative; flex: 1; min-height: 0; margin: 8px 0; }
+.sidebar-nav-ds > aside { width: 100% !important; }
+.sidebar--ds .sidebar-account { width: 100%; }
+.search-palette-ds { display: flex; flex-direction: column; gap: 12px; }
+.search-palette-ds .search-palette-body { max-height: min(60vh, 520px); overflow-y: auto; }
+.ask-panel-inner { display: flex; flex-direction: column; gap: 12px; min-height: 100%; }
+.send-button { flex: none; border-radius: 999px; }
+.assistant-input > :not(svg):not(.send-button), .ask-panel-input > :not(.send-button), .article-comment-form > :not(.send-button):not(span) { flex: 1; min-width: 0; }
+.journey-progress--ds { position: relative; height: auto; background: none; }
+.journey-progress-bar { width: 100%; }
+.events-v2-avatar-ds + .events-v2-avatar-ds { margin-left: -6px; }

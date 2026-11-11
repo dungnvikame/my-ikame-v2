@@ -1,13 +1,14 @@
-import { PushPin, PushPinSlash } from '@phosphor-icons/react';
+import { PushPinIcon as PushPin, PushPinSlashIcon as PushPinSlash } from '@coreds/react/icons';
 import { Button, EmptyState, SectionHeader } from '../../components/UI';
 import type { Post } from '../../types';
+import { Avatar } from '@coreds/react';
 
 type PinManagerProps = { posts: Post[]; onTogglePin: (id: string) => void };
 
 function PostRow({ post, onTogglePin }: { post: Post; onTogglePin: (id: string) => void }) {
   return (
     <li className="admin-pin-row">
-      <span className="avatar" aria-hidden="true">{post.authorShort}</span>
+      <Avatar type="text" size="m" fallback={post.authorShort} alt="" aria-hidden="true" />
       <div className="admin-pin-copy">
         <strong>{post.authorName} <small>· {post.time}</small></strong>
         <p>{post.kudos ? `Ghi nhận ${post.kudos.toName}: ` : ''}{post.body}</p>

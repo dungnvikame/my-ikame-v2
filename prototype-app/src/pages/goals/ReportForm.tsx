@@ -1,7 +1,8 @@
-import { PaperPlaneTilt, X } from '@phosphor-icons/react';
+import { PaperPlaneTiltIcon as PaperPlaneTilt, XIcon as X } from '@coreds/react/icons';
 import { useEffect, useState, type FormEvent } from 'react';
-import { Button } from '../../components/UI';
+import { Button, IconButton } from '../../components/UI';
 import type { Goal } from '../../types';
+import { Textarea, Input } from '@coreds/react';
 
 type ReportFormProps = {
   goal: Goal;
@@ -47,27 +48,27 @@ export function ReportForm({ goal, authorName, onCancel, onSubmit }: ReportFormP
           <h3>Tạo báo cáo · {goal.title}</h3>
           <p>Người báo cáo: {authorName}</p>
         </div>
-        <button type="button" className="icon-button" aria-label="Đóng" onClick={onCancel}><X size={18} /></button>
+        <IconButton label="Đóng" onClick={onCancel}><X size={18} /></IconButton>
       </div>
 
       <label className="okr-form-field">
         <span>Kỳ báo cáo</span>
-        <input value={periodLabel} onChange={(event) => setPeriodLabel(event.target.value)} required />
+        <Input variant="fill" value={periodLabel} onChange={(event) => setPeriodLabel(event.target.value)} required />
       </label>
 
       <label className="okr-form-field">
         <span>Tiến độ mới (%)</span>
-        <input type="number" min={0} max={100} value={progressAfter} onChange={(event) => handleProgressChange(event.target.value)} />
+        <Input variant="fill" type="number" min={0} max={100} value={progressAfter} onChange={(event) => handleProgressChange(event.target.value)} />
       </label>
 
       <label className="okr-form-field">
         <span>Nội dung cập nhật</span>
-        <textarea rows={3} value={content} onChange={(event) => setContent(event.target.value)} required />
+        <Textarea variant="fill" rows={3} value={content} onChange={(event) => setContent(event.target.value)} required />
       </label>
 
       <label className="okr-form-field">
         <span>Vướng mắc (nếu có)</span>
-        <textarea rows={2} value={blockers} onChange={(event) => setBlockers(event.target.value)} placeholder="Không có vướng mắc" />
+        <Textarea variant="fill" rows={2} value={blockers} onChange={(event) => setBlockers(event.target.value)} placeholder="Không có vướng mắc" />
       </label>
 
       <div className="okr-report-form-actions">

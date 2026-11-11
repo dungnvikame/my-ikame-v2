@@ -1,7 +1,4 @@
-import {
-  AirplaneTilt, BellRinging, CalendarPlus, CheckCircle, CircleNotch, ClipboardText,
-  ListChecks, NotePencil, Sparkle, Target, UsersThree, Wrench,
-} from '@phosphor-icons/react';
+import { AirplaneTiltIcon as AirplaneTilt, BellRingingIcon as BellRinging, CalendarPlusIcon as CalendarPlus, CheckCircleIcon as CheckCircle, CircleNotchIcon as CircleNotch, ClipboardTextIcon as ClipboardText, ListChecksIcon as ListChecks, NotePencilIcon as NotePencil, SparkleIcon as Sparkle, TargetIcon as Target, UsersThreeIcon as UsersThree, WrenchIcon as Wrench } from '@coreds/react/icons';
 import { MCP_SERVERS } from '../../lib/mcp-registry';
 import type { Perspective } from '../../types';
 import type { ThreadMessage } from './assistant-history';
@@ -64,13 +61,13 @@ export function AssistantSteps({ message }: { message: ThreadMessage }) {
   const visible = message.processing ? steps.slice(0, Math.min(revealed + 1, steps.length)) : steps;
   return (
     <div className="assistant-steps" aria-label="AI steps">
-      <p className="assistant-steps-title"><Sparkle size={13} weight="fill" />AI steps</p>
+      <p className="assistant-steps-title"><Sparkle size={13} variant="fill" />AI steps</p>
       <ul>
         {visible.map((step, index) => {
           const running = !!message.processing && revealed < steps.length && index === visible.length - 1;
           return (
             <li key={step} className={running ? 'is-running' : ''}>
-              {running ? <CircleNotch size={14} className="assistant-step-spinner" /> : <CheckCircle size={14} weight="fill" />}
+              {running ? <CircleNotch size={14} className="assistant-step-spinner" /> : <CheckCircle size={14} variant="fill" />}
               <span>{step}</span>
             </li>
           );

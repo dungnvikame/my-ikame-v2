@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react';
 import { useState, type FormEvent } from 'react';
-import { PaperPlaneTilt, Sparkle } from '@phosphor-icons/react';
+import { PaperPlaneTiltIcon as PaperPlaneTilt, SparkleIcon as Sparkle } from '@coreds/react/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { useLive } from '../lib/live/live-data';
+import { Input, Button as DsButton } from '@coreds/react';
 
 const CHIPS = [
   'Tôi có việc gì cần xác nhận?',
@@ -16,7 +18,7 @@ const CHIPS = [
  * lớn + chip gợi ý. Không chat tại chỗ — mọi câu hỏi chuyển sang trang
  * Trợ lý AI (/assistant?q=...) để xử lý trong hội thoại đầy đủ.
  */
-export function AIAssistant({ subtitle }: { subtitle?: string }) {
+export function AIAssistant({ subtitle, compact = false, children }: { subtitle?: string; compact?: boolean; children?: ReactNode }) {
   const { user } = useAppState();
   // Đã nối dữ liệu thật: chào bằng tên thật của người xem thay cho nhân vật mẫu.
   const livePerson = useLive().data?.person;
@@ -40,31 +42,34 @@ export function AIAssistant({ subtitle }: { subtitle?: string }) {
   }
 
   return (
-    <section className="ai-hero" aria-labelledby="ai-hero-title">
+    <section className={`ai-hero ${compact ? 'ai-hero--compact' : ''}`} aria-labelledby="ai-hero-title">
       <p className="eyebrow">{`${weekday}, ${dayMonth}`.toUpperCase()}</p>
       <h1 id="ai-hero-title">
-        <Sparkle size={26} weight="fill" className="ai-hero-spark" />
+        <Sparkle size={26} variant="fill" className="ai-hero-spark" />
         {greeting} {livePerson?.shortName ?? user.shortName}, hôm nay mình giúp gì được?
       </h1>
       {subtitle && <p>{subtitle}</p>}
       <form className="assistant-input" onSubmit={handleSubmit}>
-        <Sparkle size={20} weight="fill" className="assistant-input-spark" />
-        <input
+        <Sparkle size={20} variant="fill" className="assistant-input-spark" />
+        <Input
+          variant="borderless"
+          size="l"
           type="text"
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder='Hỏi Trợ lý AI: "Đặt phòng họp 14:00 hôm nay..."'
           aria-label="Hỏi Trợ lý AI"
         />
-        <button type="submit" className="assistant-send" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} weight="fill" /></button>
+        <DsButton type="submit" variant="primary" size="icon-l" className="send-button" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} variant="fill" /></DsButton>
       </form>
-      <div className="ai-hero-chips">
+      {children}
+      {!compact && <div className="ai-hero-chips">
         {CHIPS.map((chip) => (
           <button key={chip} type="button" className="ai-suggestion-chip" onClick={() => askAssistant(chip)}>
             {chip}
           </button>
         ))}
-      </div>
+      </div>}
     </section>
   );
 }

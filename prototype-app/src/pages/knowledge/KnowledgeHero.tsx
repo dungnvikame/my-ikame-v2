@@ -1,4 +1,5 @@
-import { MagnifyingGlass } from '@phosphor-icons/react';
+import { MagnifyingGlassIcon as MagnifyingGlass } from '@coreds/react/icons';
+import { Input } from '@coreds/react';
 
 const CHIP_COLORS = ['blue', 'violet', 'teal', 'orange', 'pink'] as const;
 
@@ -18,15 +19,17 @@ export function KnowledgeHero({ greetingName, term, onTermChange, topics, active
       <h1>Chào {greetingName}, bạn muốn học gì hôm nay?</h1>
       <p className="khub-hero-sub">Tìm nhanh quy trình, chính sách và tài liệu từ iWiki — đúng theo quyền truy cập của bạn.</p>
 
-      <label className="khub-hero-search">
-        <MagnifyingGlass size={20} />
-        <input
+      <div className="khub-hero-search-ds">
+        <Input
+          size="l"
+          variant="light"
+          leftIcon={<MagnifyingGlass size={20} />}
           value={term}
           onChange={(event) => onTermChange(event.target.value)}
           aria-label="Tìm tài liệu tri thức"
           placeholder="Tìm theo tên, chủ đề, nội dung..."
         />
-      </label>
+      </div>
 
       {topics.length > 0 && (
         <div className="khub-chip-row" role="group" aria-label="Lọc theo chủ đề">

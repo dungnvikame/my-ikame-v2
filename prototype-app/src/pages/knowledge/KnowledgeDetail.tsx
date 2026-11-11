@@ -1,4 +1,4 @@
-import { ArrowLeft } from '@phosphor-icons/react';
+import { ArrowLeftIcon as ArrowLeft } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import { SourceLine, StatusPill } from '../../components/UI';

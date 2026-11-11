@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), ...(artifact ? [viteSingleFile()] : [])],
     define: { __ARTIFACT__: JSON.stringify(artifact) },
+    // Core DS mang theo React riêng trong cây phụ thuộc — ép dùng chung một bản để hook không lỗi.
+    resolve: { dedupe: ['react', 'react-dom'] },
     build: artifact
       ? { outDir: 'dist-artifact', assetsInlineLimit: 100_000_000, cssCodeSplit: false, chunkSizeWarningLimit: 20_000 }
       : {},

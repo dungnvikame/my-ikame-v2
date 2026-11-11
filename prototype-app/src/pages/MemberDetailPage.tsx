@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import {
-  ArrowLeft, BellRinging, CalendarPlus, ChatCircleText, EnvelopeSimple, Target,
-} from '@phosphor-icons/react';
+import { ArrowLeftIcon as ArrowLeft, BellRingingIcon as BellRinging, CalendarPlusIcon as CalendarPlus, ChatCircleTextIcon as ChatCircleText, EnvelopeSimpleIcon as EnvelopeSimple, TargetIcon as Target } from '@coreds/react/icons';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { memberProfile, teamMembers } from '../data/mockData';
 import { PlatformHandoffButton } from '../components/PlatformHandoff';

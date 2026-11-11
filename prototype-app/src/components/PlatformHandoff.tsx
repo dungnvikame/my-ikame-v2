@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { ArrowSquareOut, CheckCircle, CircleNotch, LockKey } from '@phosphor-icons/react';
+import { ArrowSquareOutIcon as ArrowSquareOut, CheckCircleIcon as CheckCircle, CircleNotchIcon as CircleNotch, LockKeyIcon as LockKey } from '@coreds/react/icons';
 import { useToast } from './toast';
 import { Button } from './UI';
 

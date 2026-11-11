@@ -1,4 +1,4 @@
-import { CheckCircle, Circle, Flag, WarningCircle } from '@phosphor-icons/react';
+import { CheckCircleIcon as CheckCircle, CircleIcon as Circle, FlagIcon as Flag, WarningCircleIcon as WarningCircle } from '@coreds/react/icons';
 import type { JourneyView } from '../../lib/onboarding';
 import { SectionHeader } from '../../components/UI';
 
@@ -13,9 +13,9 @@ export function JourneyTimeline({ journey, title = 'Các mốc hành trình' }: 
         {journey.milestones.map((milestone) => (
           <li key={milestone.key} className={`journey-timeline-item journey-timeline-item--${milestone.status}`}>
             <span className="journey-timeline-dot" aria-hidden="true">
-              {milestone.status === 'done' ? <CheckCircle size={20} weight="fill" />
-                : milestone.status === 'open' ? <WarningCircle size={20} weight="fill" />
-                  : milestone.status === 'current' ? <Flag size={18} weight="fill" /> : <Circle size={18} />}
+              {milestone.status === 'done' ? <CheckCircle size={20} variant="fill" />
+                : milestone.status === 'open' ? <WarningCircle size={20} variant="fill" />
+                  : milestone.status === 'current' ? <Flag size={18} variant="fill" /> : <Circle size={18} />}
             </span>
             <div>
               <div className="journey-timeline-head">

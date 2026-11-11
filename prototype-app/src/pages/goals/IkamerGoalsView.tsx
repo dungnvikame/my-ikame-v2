@@ -1,4 +1,4 @@
-import { CheckCircle } from '@phosphor-icons/react';
+import { CheckCircleIcon as CheckCircle } from '@coreds/react/icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useAppState } from '../../AppState';
 import { SectionHeader } from '../../components/UI';

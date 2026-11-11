@@ -1,4 +1,4 @@
-import { ChartBar } from '@phosphor-icons/react';
+import { ChartBarIcon as ChartBar } from '@coreds/react/icons';
 import { useAppState } from '../../AppState';
 import { serverLabel } from '../../lib/mcp-registry';
 
@@ -13,7 +13,7 @@ export function AgentMetricsCard() {
   const servers = Array.from(new Set(agentMetrics.toolCalls.map(serverLabel)));
   return (
     <section className="assistant-metrics" aria-label="Đo lường phiên làm việc">
-      <p className="assistant-metrics-title"><ChartBar size={14} weight="fill" /> Đo lường phiên này</p>
+      <p className="assistant-metrics-title"><ChartBar size={14} variant="fill" /> Đo lường phiên này</p>
       <dl>
         <div><dt>Tác vụ đã duyệt</dt><dd>{agentMetrics.tasks}</dd></div>
         <div><dt>Hỏi → receipt</dt><dd>{agentMetrics.tasks ? `${average}s` : '—'}</dd></div>

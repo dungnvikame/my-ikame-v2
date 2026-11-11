@@ -1,4 +1,4 @@
-import { CheckCircle, Medal } from '@phosphor-icons/react';
+import { CheckCircleIcon as CheckCircle, MedalIcon as Medal } from '@coreds/react/icons';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppState } from '../AppState';

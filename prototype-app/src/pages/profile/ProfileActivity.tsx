@@ -1,4 +1,4 @@
-import { CalendarCheck, CheckCircle, Newspaper, PenNib } from '@phosphor-icons/react';
+import { CalendarCheckIcon as CalendarCheck, CheckCircleIcon as CheckCircle, NewspaperIcon as Newspaper, PenNibIcon as PenNib } from '@coreds/react/icons';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { EmptyState, SectionHeader } from '../../components/UI';
@@ -20,19 +20,19 @@ type ProfileActivityProps = {
 export function ProfileActivity({ user, news, events, checkInReports, posts }: ProfileActivityProps) {
   const rows: ActivityRow[] = [
     ...news.filter((item) => item.acknowledged).map((item): ActivityRow => ({
-      id: `news-${item.id}`, icon: <CheckCircle size={18} weight="duotone" />,
+      id: `news-${item.id}`, icon: <CheckCircle size={18} variant="duotone" />,
       label: `Đã xác nhận đã đọc: ${item.title}`, href: `/feed/article/${item.id}`,
     })),
     ...events.filter((item) => item.myRegistration === 'going' || item.myRegistration === 'waitlisted').map((item): ActivityRow => ({
-      id: `event-${item.id}`, icon: <CalendarCheck size={18} weight="duotone" />,
+      id: `event-${item.id}`, icon: <CalendarCheck size={18} variant="duotone" />,
       label: `${item.myRegistration === 'going' ? 'Đã đăng ký' : 'Đang chờ'}: ${item.title}`, href: `/events/${item.id}`,
     })),
     ...checkInReports.filter((report) => report.authorName === user.name).map((report): ActivityRow => ({
-      id: `report-${report.id}`, icon: <PenNib size={18} weight="duotone" />,
+      id: `report-${report.id}`, icon: <PenNib size={18} variant="duotone" />,
       label: `Đã gửi báo cáo check-in: ${report.goalTitle}`, href: `/goals/${report.goalId}`,
     })),
     ...posts.filter((post) => post.authorName === user.name).map((post): ActivityRow => ({
-      id: `post-${post.id}`, icon: <Newspaper size={18} weight="duotone" />,
+      id: `post-${post.id}`, icon: <Newspaper size={18} variant="duotone" />,
       label: `Đã đăng lên iKame Feed: ${post.body.slice(0, 60)}${post.body.length > 60 ? '…' : ''}`, href: '/feed',
     })),
   ].slice(0, 6);
