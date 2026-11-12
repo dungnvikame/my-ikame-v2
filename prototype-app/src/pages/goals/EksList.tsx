@@ -1,5 +1,6 @@
 import { SectionHeader } from '../../components/UI';
 import type { EksObjective } from '../../types';
+import { Progress } from '@coreds/react';
 
 type EksListProps = {
   eks: EksObjective[];
@@ -30,9 +31,7 @@ function EksObjectiveRow({ objective }: { objective: EksObjective }) {
         <span className="eks-code eks-code--e" aria-hidden="true">{objective.code}</span>
         <strong className="eks-objective-title">{objective.title}</strong>
         <div className="eks-progress">
-          <div className="okr-progress-bar" role="progressbar" aria-valuenow={objective.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Tiến độ ${objective.title}`}>
-            <div className="okr-progress-fill" style={{ width: `${objective.progress}%` }} />
-          </div>
+          <Progress className="okr-progress" size="md" value={objective.progress} aria-label={`Tiến độ ${objective.title}`} />
           <span>{objective.progress}%</span>
         </div>
       </div>
@@ -42,9 +41,7 @@ function EksObjectiveRow({ objective }: { objective: EksObjective }) {
             <span className="eks-code eks-code--ks" aria-hidden="true">{ks.code}</span>
             <p className="eks-ks-title">{ks.title}</p>
             <div className="eks-progress">
-              <div className="okr-progress-bar okr-progress-bar--kr" role="progressbar" aria-valuenow={ks.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Tiến độ ${ks.code}`}>
-                <div className="okr-progress-fill" style={{ width: `${ks.progress}%` }} />
-              </div>
+              <Progress className="okr-progress okr-progress--kr" size="sm" value={ks.progress} aria-label={`Tiến độ ${ks.code}`} />
               <span>{ks.progress}%</span>
             </div>
           </li>

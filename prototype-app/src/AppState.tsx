@@ -37,6 +37,7 @@ import { isEligible } from './lib/audience';
 import { buildJourney, isNewJoiner as computeIsNewJoiner, journeyDay as computeJourneyDay, journeyDigestQuests, JOURNEY_MILESTONES, type JourneyView } from './lib/onboarding';
 import { decide, DEFAULT_PREFERENCE, RULES, toNotificationItem, type NotificationEvent } from './lib/notification-rules';
 import { buildMorningDigest } from './pages/assistant/daily-digest';
+import { resetMyMetrics, trackFlow } from './lib/metrics/metrics';
 import type {
   ApprovalItem,
   AttendanceStatus,
@@ -253,6 +254,11 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const [suppressedByPerson, setSuppressedByPerson] = useState<Record<string, number>>({});
 
   useEffect(() => { writeStored(THEME_STORAGE_KEY, theme); }, [theme]);
+  // Core DS đổi token sáng/tối theo class `dark` trên <html> — giữ đồng bộ với theme của app.
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
   // MVP: tạm không persist perspective để không ghi đè 'manager' đã lưu (xem comment ở khởi tạo).
   // useEffect(() => { writeStored(PERSPECTIVE_STORAGE_KEY, perspective); }, [perspective]);
 
@@ -373,6 +379,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     setNotificationOpen,
     setAskOpen,
     acknowledgeNews: (id) => {
+      trackFlow('ack', 'done');
       // Cờ read/acknowledged là của iKamer đang demo (An) — COM Admin chỉ quan sát,
       // không được "xác nhận hộ" làm hỏng vòng lặp iKamer xác nhận → COM thấy số tăng.
       if (perspective === 'admin') return;
@@ -414,6 +421,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       }));
       const target = events.find((item) => item.id === id);
       if (target && next !== 'not_registered') {
+        trackFlow('event', 'done');
         notify({
           kind: 'event_registration',
           title: next === 'going' ? 'Đăng ký sự kiện thành công' : 'Bạn đang ở danh sách chờ',
@@ -601,6 +609,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     // Restores every mutable slice so the presenter can re-run the golden path.
     // Deliberately does NOT reset theme/perspective (RED TEAM F13).
     resetDemo: () => {
+      resetMyMetrics();
       setNews(initialNews);
       setEvents(initialEvents);
       setNotifications(initialNotifications);

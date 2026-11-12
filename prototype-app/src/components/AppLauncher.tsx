@@ -1,4 +1,4 @@
-import { ArrowRight, SquaresFour } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, SquaresFourIcon as SquaresFour } from '@coreds/react/icons';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';

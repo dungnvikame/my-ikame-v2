@@ -1,11 +1,4 @@
-import {
-  ArrowRight,
-  CheckCircle,
-  Clock,
-  SealCheck,
-  Users,
-  WarningCircle,
-} from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, CheckCircleIcon as CheckCircle, ClockIcon as Clock, SealCheckIcon as SealCheck, UsersIcon as Users, WarningCircleIcon as WarningCircle } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import type { AttentionItem, NewsPost } from '../types';
 import { Button, SourceLine, StatusPill } from './UI';
@@ -55,7 +48,7 @@ export function AttentionCard({ item, primary = false, onAction, onResolve }: {
   return (
     <article className={`attention-card attention-card--${item.severity}`}>
       <div className="attention-icon" aria-hidden="true">
-        {item.severity === 'critical' ? <WarningCircle size={22} weight="duotone" /> : item.severity === 'warning' ? <Clock size={22} weight="duotone" /> : <Users size={22} weight="duotone" />}
+        {item.severity === 'critical' ? <WarningCircle size={22} variant="duotone" /> : item.severity === 'warning' ? <Clock size={22} variant="duotone" /> : <Users size={22} variant="duotone" />}
       </div>
       <div className="attention-copy">
         <div className="card-badges"><StatusPill tone={tone}>{item.required ? 'Bắt buộc' : item.reason}</StatusPill></div>

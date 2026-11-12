@@ -1,9 +1,11 @@
-import { CalendarCheck, Clock, House, Question } from '@phosphor-icons/react';
+import { CalendarCheckIcon as CalendarCheck, ClockIcon as Clock, HouseIcon as House, QuestionIcon as Question } from '@coreds/react/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../../AppState';
 import { useToast } from '../toast';
-import { Button } from '../UI';
+import { Button, ActionButton } from '../UI';
 import { ATTENDANCE_LEGEND, ICHECK_QUICK_ACTIONS, type ICheckQuickActionKey } from '../../data/icheck-data';
+import { useLive } from '../../lib/live/live-data';
+import { PlatformHandoffButton } from '../PlatformHandoff';
 import { LeaveBalanceCard } from './LeaveBalanceCard';
 import { WeekStrip } from './WeekStrip';
 
@@ -15,7 +17,16 @@ const QUICK_ICONS: Record<ICheckQuickActionKey, typeof Clock> = { late: Clock, l
  * `compact` = thẻ trên Home; bản đầy đủ nằm ở tab Công việc.
  */
 export function ICheckWidget({ compact = false }: { compact?: boolean }) {
-  const { dailyCheckIn, leaveBalance, weekAttendance, submitDailyCheckIn } = useAppState();
+  const mock = useAppState();
+  const icheck = useLive().data?.icheck;
+  // Bản artifact đã kết nối iCheck: hiện số thật của người xem, chỉ đọc (không chấm công hộ).
+  const isLive = !!icheck;
+  const dailyCheckIn = isLive ? icheck!.checkIn : mock.dailyCheckIn;
+  const weekAttendance = isLive ? icheck!.week : mock.weekAttendance;
+  const leaveBalance = isLive
+    ? { ...mock.leaveBalance, annualRemaining: icheck!.leave.total, carriedOver: icheck!.leave.carriedOver, annualTotal: icheck!.leave.annualQuota, annualUsed: icheck!.leave.annualUsed }
+    : mock.leaveBalance;
+  const { submitDailyCheckIn } = mock;
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -38,7 +49,9 @@ export function ICheckWidget({ compact = false }: { compact?: boolean }) {
           ) : (
             <>
               <strong role="status">Bạn chưa chấm công hôm nay</strong>
-              <Button variant="primary" onClick={checkIn}>Chấm công ngay</Button>
+              {isLive
+                ? <PlatformHandoffButton platform="iCheck" action="chấm công" label="Mở iCheck để chấm công" />
+                : <Button variant="primary" onClick={checkIn}>Chấm công ngay</Button>}
             </>
           )}
         </div>
@@ -46,15 +59,18 @@ export function ICheckWidget({ compact = false }: { compact?: boolean }) {
           {ICHECK_QUICK_ACTIONS.map((action) => {
             const Icon = QUICK_ICONS[action.key as keyof typeof QUICK_ICONS];
             return (
-              <button key={action.key} type="button" className="icheck-quick-action" onClick={() => navigate(`/assistant?q=${encodeURIComponent(action.prompt)}`)}>
+              <ActionButton key={action.key} onClick={() => navigate(`/assistant?q=${encodeURIComponent(action.prompt)}`)}>
                 <Icon size={17} /> {action.label}
-              </button>
+              </ActionButton>
             );
           })}
         </div>
         {!compact && <WeekStrip days={weekAttendance} showLegend />}
+        {isLive && (
+          <p className="live-source">Nguồn: iCheck · tháng này đã chấm {icheck!.month.checkedDays} buổi, đi muộn {icheck!.month.lateDays} buổi</p>
+        )}
       </div>
-      <LeaveBalanceCard leaveBalance={leaveBalance} compact={compact} />
+      <LeaveBalanceCard leaveBalance={leaveBalance} compact={compact} hideWedding={isLive} />
     </section>
   );
 }

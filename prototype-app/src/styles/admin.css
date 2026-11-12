@@ -31,18 +31,18 @@
 
 .admin-tile small {
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: var(--body-xs-size);
 }
 
 .admin-tile strong {
-  font-size: 28px;
+  font-size: var(--headline-s-size);
   line-height: 1.1;
 }
 
 .admin-tile p {
   margin: 4px 0 0;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: var(--body-xs-size);
 }
 
 .admin-tile-icon {
@@ -73,7 +73,7 @@
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--body-s-size);
 }
 
 .admin-table th,
@@ -85,7 +85,7 @@
 }
 
 .admin-table th {
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.02em;
@@ -117,21 +117,15 @@
   margin-left: 6px;
 }
 
-.admin-pending-toggle {
-  display: block;
-  margin-top: 4px;
-  font-size: 12px;
-}
-
 .admin-pending-list {
   margin: 6px 0 0;
   padding-left: 16px;
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   color: var(--text-secondary);
 }
 
 .admin-pushed {
-  font-size: 12px;
+  font-size: var(--body-xs-size);
   color: var(--fg-success);
 }
 
@@ -163,7 +157,7 @@
 
 .admin-pin-copy strong {
   display: block;
-  font-size: 13px;
+  font-size: var(--body-s-size);
 }
 
 .admin-pin-copy small {
@@ -173,7 +167,7 @@
 
 .admin-pin-copy p {
   margin: 2px 0 0;
-  font-size: 13px;
+  font-size: var(--body-s-size);
   color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -182,7 +176,7 @@
 
 .admin-subheading {
   margin: 20px 0 8px;
-  font-size: 14px;
+  font-size: var(--body-s-size);
   color: var(--text-secondary);
 }
 

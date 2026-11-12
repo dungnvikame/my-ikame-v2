@@ -1,4 +1,4 @@
-import { ArrowRight } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { AiBadge } from '../../components/AiBadge';
 import type { EarlySignal } from '../../lib/engagement';

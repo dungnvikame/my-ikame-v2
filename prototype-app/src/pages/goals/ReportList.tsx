@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { EmptyState, SectionHeader, StatusPill } from '../../components/UI';
+import { EmptyState, SectionHeader, StatusPill, TextButton } from '../../components/UI';
 import type { CheckInReport } from '../../types';
 
 type ReportListProps = {
@@ -27,7 +27,7 @@ export function ReportList({ reports, limit, onViewAll }: ReportListProps) {
         {visible.map((report) => <ReportRow key={report.id} report={report} />)}
       </ul>
       {typeof limit === 'number' && reports.length > limit && onViewAll && (
-        <button type="button" className="text-link okr-report-viewall" onClick={onViewAll}>Xem tất cả báo cáo</button>
+        <TextButton onClick={onViewAll}>Xem tất cả báo cáo</TextButton>
       )}
     </section>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
-import { ArrowRight, ArrowsOutSimple, CheckCircle, PaperPlaneTilt, Sparkle, X } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, ArrowsOutSimpleIcon as ArrowsOutSimple, CheckCircleIcon as CheckCircle, PaperPlaneTiltIcon as PaperPlaneTilt, SparkleIcon as Sparkle, XIcon as X } from '@coreds/react/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppState } from '../../AppState';
 import { buildAgentReply, type AgentAction } from '../../pages/assistant/agent-replies';
@@ -7,9 +7,10 @@ import type { ThreadMessage } from '../../pages/assistant/assistant-history';
 import {
   AssistantSteps, capabilitiesFor, generateMessageId, generateReceiptId,
 } from '../../pages/assistant/assistant-shared';
-import { Button, IconButton } from '../UI';
+import { Button, IconButton, ChipButton } from '../UI';
 import { documentReminders } from '../../data/profile-data';
 import { journeyDigestQuests } from '../../lib/onboarding';
+import { Drawer, DrawerBody, DrawerContent, DrawerDescription, DrawerTitle, Input, Button as DsButton } from '@coreds/react';
 
 const ASK_TRIGGER_SELECTOR = 'button[aria-label="Hỏi iKame"]';
 
@@ -32,7 +33,7 @@ export function QuickAskPanel() {
   const [messages, setMessages] = useState<(ThreadMessage & { question?: string })[]>([]);
   const [input, setInput] = useState('');
 
-  const capabilities = capabilitiesFor(perspective);
+  const capabilities = capabilitiesFor(perspective, isNewJoiner);
 
   // Reset hội thoại khi resetDemo (guard ref vì StrictMode gọi effect 2 lần lúc mount).
   const prevResetRef = useRef(demoResetCount);
@@ -136,19 +137,15 @@ export function QuickAskPanel() {
   if (!askOpen) return null;
 
   return (
-    <div className="drawer-layer" role="presentation" onMouseDown={close}>
-      <aside
-        ref={panelRef}
-        className="ask-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Trợ lý AI — hỏi nhanh"
-        onKeyDown={onKeyDown}
-        onMouseDown={(event) => event.stopPropagation()}
-      >
+    <Drawer open onOpenChange={(next) => { if (!next) close(); }}>
+      <DrawerContent side="right" className="ask-panel-ds">
+        <DrawerTitle className="sr-only">Trợ lý AI — hỏi nhanh</DrawerTitle>
+        <DrawerDescription className="sr-only">Hỏi nhanh Trợ lý AI ngay trong trang đang xem.</DrawerDescription>
+        <DrawerBody>
+        <div className="ask-panel-inner" onKeyDown={onKeyDown}>
         <div className="ask-panel-header">
           <div>
-            <h2><Sparkle size={16} weight="fill" /> Trợ lý AI</h2>
+            <h2><Sparkle size={16} variant="fill" /> Trợ lý AI</h2>
             <p className="ask-panel-disclosure">Hỏi nhanh — tác vụ đầy đủ mở ở trang Trợ lý AI.</p>
           </div>
           <div className="ask-panel-header-actions">
@@ -164,7 +161,7 @@ export function QuickAskPanel() {
             messages.map((message) => (
               <div key={message.id} className={`assistant-message assistant-message--${message.role}`}>
                 {message.role === 'assistant' && (
-                  <span className="assistant-avatar" aria-hidden="true"><Sparkle size={14} weight="fill" /></span>
+                  <span className="assistant-avatar" aria-hidden="true"><Sparkle size={14} variant="fill" /></span>
                 )}
                 <div className="assistant-bubble">
                   {message.role === 'assistant' && <AssistantSteps message={message} />}
@@ -201,7 +198,7 @@ export function QuickAskPanel() {
                         </div>
                       )}
                       {message.action && message.actionDone && (
-                        <p className="assistant-receipt"><CheckCircle size={16} weight="fill" />{message.action.receipt} <span>#RCPT-{message.receiptId}</span></p>
+                        <p className="assistant-receipt"><CheckCircle size={16} variant="fill" />{message.action.receipt} <span>#RCPT-{message.receiptId}</span></p>
                       )}
                     </>
                   )}
@@ -213,25 +210,29 @@ export function QuickAskPanel() {
 
         <div className="ask-panel-chips">
           {capabilities.map((capability) => (
-            <button key={capability.prompt} type="button" className="ai-chip" onClick={() => ask(capability.prompt)}>
+            <ChipButton key={capability.prompt} onClick={() => ask(capability.prompt)}>
               {capability.title}
-            </button>
+            </ChipButton>
           ))}
         </div>
 
         <form className="ask-panel-input" onSubmit={handleSubmit}>
-          <input
+          <Input
+            variant="borderless"
+            size="l"
             type="text"
             value={input}
             onChange={(event) => setInput(event.target.value)}
             placeholder="Nhắn cho Trợ lý AI..."
             aria-label="Hỏi Trợ lý AI"
           />
-          <button type="submit" className="assistant-send" aria-label="Gửi câu hỏi" disabled={!input.trim() || busy}>
-            <PaperPlaneTilt size={16} weight="fill" />
-          </button>
+          <DsButton type="submit" variant="primary" size="icon-l" className="send-button" aria-label="Gửi câu hỏi" disabled={!input.trim() || busy}>
+            <PaperPlaneTilt size={16} variant="fill" />
+          </DsButton>
         </form>
-      </aside>
-    </div>
+        </div>
+        </DrawerBody>
+      </DrawerContent>
+    </Drawer>
   );
 }

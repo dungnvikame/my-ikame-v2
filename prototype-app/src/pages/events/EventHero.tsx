@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarPlus, Clock, MapPin } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, CalendarPlusIcon as CalendarPlus, ClockIcon as Clock, MapPinIcon as MapPin } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { Button, StatusPill } from '../../components/UI';
 import type { EventItem } from '../../types';

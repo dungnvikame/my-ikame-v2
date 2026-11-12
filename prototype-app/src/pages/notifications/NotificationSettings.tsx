@@ -1,9 +1,10 @@
-import { CheckCircle, LockKey, Sun } from '@phosphor-icons/react';
+import { CheckCircleIcon as CheckCircle, LockKeyIcon as LockKey, SunIcon as Sun } from '@coreds/react/icons';
 import { useEffect, useState } from 'react';
 import { useAppState } from '../../AppState';
 import { Button, SectionHeader } from '../../components/UI';
 import { GROUP_META, RULES } from '../../lib/notification-rules';
 import type { NotificationGroup } from '../../types';
+import { Switch } from '@coreds/react';
 
 const GROUP_ORDER: NotificationGroup[] = ['official', 'com', 'feed', 'events', 'work', 'onboarding', 'manager'];
 
@@ -44,16 +45,11 @@ export function NotificationSettings() {
               {isLocked ? (
                 <span className="pref-locked"><LockKey size={14} /> Bắt buộc theo quy định COM</span>
               ) : (
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={on}
+                <Switch
+                  checked={on}
                   aria-label={GROUP_META[group].label}
-                  className={`pref-switch ${on ? 'is-on' : ''}`}
-                  onClick={() => setPreferenceGroup(group, !on)}
-                >
-                  <span className="pref-switch-knob" aria-hidden="true" />
-                </button>
+                  onCheckedChange={(checked) => setPreferenceGroup(group, checked)}
+                />
               )}
             </li>
           );

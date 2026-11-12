@@ -1,21 +1,27 @@
-import { Buildings, Clock, DesktopTower, Sparkle, Ticket, UserCircle, Wrench } from '@phosphor-icons/react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  AirplaneTiltIcon as AirplaneTilt, BuildingsIcon as Buildings, CaretDownIcon as CaretDown, ClockIcon as Clock, ClockCountdownIcon as ClockCountdown,
+  DesktopTowerIcon as DesktopTower, HouseLineIcon as HouseLine, KeyIcon as Key, TicketIcon as Ticket, UserCircleIcon as UserCircle, WrenchIcon as Wrench,
+} from '@coreds/react/icons';
+import { useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
-import { EmptyState, SectionHeader, StatusPill } from '../components/UI';
+import { QuickRequest } from '../components/requests/QuickRequest';
+import { RequestForm } from '../components/requests/RequestForm';
+import { RequestSummary } from '../components/requests/RequestSummary';
+import { loadLeavePlans, todayIso } from '../components/requests/request-context';
+import {
+  accountState, blankState, FORM_KINDS, KIND_META, stateFromSentence, type FormKind, type FormState,
+} from '../components/requests/request-form-model';
+import { EmptyState, StatusPill } from '../components/UI';
+import { useLive } from '../lib/live/live-data';
+import { trackFlow } from '../lib/metrics/metrics';
+import { REQUEST_KIND_LABEL } from '../lib/request-parser';
 import type { RequestItem, RequestStatus, RequestType } from '../types';
 
 /**
- * iRequest center — nơi theo dõi mọi yêu cầu hỗ trợ. Việc TẠO request đi qua
- * Trợ lý AI (AI front door): mỗi loại request deep-link sang /assistant với
- * câu lệnh soạn sẵn, AI dựng form → duyệt → request xuất hiện ở đây.
+ * Trung tâm đề xuất: thẻ tóm tắt phép/đơn chờ, một câu để tạo đề xuất, form có lịch chọn ngày,
+ * các đề xuất nhanh và lịch sử. Gửi đơn là MÔ PHỎNG (nhãn DEMO) — chưa ghi sang iCheck / IT Platform.
  */
-const REQUEST_TYPES: { type: RequestType; icon: typeof Wrench; desc: string; prompt: string }[] = [
-  { type: 'IT support', icon: Wrench, desc: 'Sự cố thiết bị, phần mềm, mạng', prompt: 'Tạo request IT support: laptop không kết nối được wifi' },
-  { type: 'Nhân sự', icon: UserCircle, desc: 'Nghỉ phép, giấy tờ, chế độ', prompt: 'Tạo đơn nghỉ phép 2 ngày cuối tuần sau' },
-  { type: 'Hành chính', icon: Buildings, desc: 'Chỗ ngồi, gửi xe, văn phòng phẩm', prompt: 'Tạo request hành chính: đăng ký chỗ gửi xe máy tầng B1' },
-  { type: 'Thiết bị', icon: DesktopTower, desc: 'Cấp mới, đổi, mượn thiết bị', prompt: 'Tạo request xin cấp thêm màn hình phụ 27 inch' },
-];
-
 const STATUS_META: Record<RequestStatus, { label: string; tone: 'warning' | 'info' | 'success' }> = {
   pending: { label: 'Chờ duyệt', tone: 'warning' },
   in_progress: { label: 'Đang xử lý', tone: 'info' },
@@ -29,6 +35,17 @@ const TYPE_ICON: Record<RequestType, typeof Wrench> = {
   'Thiết bị': DesktopTower,
   'Chấm công': Clock,
 };
+
+const KIND_ICON: Record<FormKind, typeof Wrench> = {
+  leave: AirplaneTilt, wfh: HouseLine, late: ClockCountdown, missing: Clock, it: Wrench, equipment: DesktopTower, admin: Buildings,
+};
+
+const QUICK_CARDS: { id: string; title: string; desc: string; icon: typeof Wrench; tone: string; make: () => FormState }[] = [
+  { id: 'leave', title: 'Xin nghỉ', desc: 'Phép năm, nghỉ nửa buổi', icon: AirplaneTilt, tone: 'blue', make: () => blankState('leave') },
+  { id: 'late', title: 'Đi muộn / về sớm', desc: 'Không bị tính muộn', icon: ClockCountdown, tone: 'amber', make: () => blankState('late') },
+  { id: 'wfh', title: 'Làm từ xa / công tác', desc: 'Làm ở nhà, đi công tác', icon: HouseLine, tone: 'green', make: () => blankState('wfh') },
+  { id: 'account', title: 'Cấp tài khoản', desc: 'Google, Slack, Figma, Jira…', icon: Key, tone: 'indigo', make: accountState },
+];
 
 function RequestRow({ request }: { request: RequestItem }) {
   const Icon = TYPE_ICON[request.type];
@@ -49,51 +66,123 @@ function RequestRow({ request }: { request: RequestItem }) {
   );
 }
 
-export function RequestsPage() {
-  const { requests } = useAppState();
-  const navigate = useNavigate();
+function Collapsible({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="rq-collapse">
+      <button type="button" className="rq-collapse-head" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+        <h2>{title}</h2>
+        <CaretDown size={18} className={open ? 'is-open' : ''} aria-hidden="true" />
+      </button>
+      {open && <div className="rq-collapse-body">{children}</div>}
+    </section>
+  );
+}
 
-  const open = requests.filter((request) => request.status !== 'done');
-  const done = requests.filter((request) => request.status === 'done');
+export function RequestsPage() {
+  const { requests, leaveBalance, hrProfile } = useAppState();
+  const live = useLive().data;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [form, setForm] = useState<{ key: number; state: FormState }>();
+  const [plans, setPlans] = useState(loadLeavePlans);
+  const formRef = useRef<HTMLDivElement>(null);
+  const consumedDraft = useRef<string | null>(null);
+
+  const approver = live?.igoal?.managerName || hrProfile.managerName;
+  const icheck = live?.icheck;
+  const remaining = icheck ? icheck.leave.total : leaveBalance.annualRemaining;
+  const used = icheck ? icheck.leave.annualUsed : leaveBalance.annualUsed;
+  const leaveNote = icheck ? `năm nay ${icheck.leave.thisYear.toLocaleString('vi-VN')}, năm cũ ${icheck.leave.carriedOver.toLocaleString('vi-VN')}` : 'dùng được đến 31/3/2027';
+  const leaveSource = icheck ? 'iCheck' : 'dữ liệu mẫu';
+
+  const pending = requests.filter((request) => request.status === 'pending').length;
+  const upcoming = useMemo(() => {
+    const today = todayIso();
+    return plans.filter((plan) => plan.end >= today).sort((a, b) => a.start.localeCompare(b.start))[0];
+  }, [plans]);
+
+  const openForm = (state: FormState) => {
+    trackFlow('request', 'start');
+    setForm((current) => ({ key: (current?.key ?? 0) + 1, state }));
+  };
+
+  // Trợ lý mở sẵn đề xuất: /requests?draft=<câu tự nhiên> — đọc đúng một lần rồi xoá param.
+  useEffect(() => {
+    const draft = searchParams.get('draft');
+    if (!draft || consumedDraft.current === draft) return;
+    consumedDraft.current = draft;
+    openForm(stateFromSentence(draft));
+    setSearchParams({}, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (form) formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [form?.key]);
+
+  const closeForm = () => { setForm(undefined); setPlans(loadLeavePlans()); };
 
   return (
     <div className="page requests-page">
       <header className="page-heading">
         <div>
-          <p className="eyebrow">CẦN HỖ TRỢ</p>
-          <h1>iRequest</h1>
-          <p>Gửi và theo dõi mọi yêu cầu hỗ trợ — tạo nhanh qua Trợ lý AI, xử lý ở đúng bộ phận.</p>
+          <p className="eyebrow">XIN NGHỈ · LÀM TỪ XA · HỖ TRỢ</p>
+          <h1>Đề xuất</h1>
+          <p>Gõ một câu để tạo đề xuất, theo dõi mọi yêu cầu ở một chỗ, xử lý ở đúng bộ phận.</p>
         </div>
       </header>
 
-      <section>
-        <SectionHeader title="Tạo request mới" meta="Trợ lý AI soạn sẵn form — bạn kiểm tra rồi gửi" />
-        <div className="request-type-grid">
-          {REQUEST_TYPES.map(({ type, icon: Icon, desc, prompt }) => (
-            <button key={type} type="button" className="request-type-card" onClick={() => navigate(`/assistant?q=${encodeURIComponent(prompt)}`)}>
-              <span className="request-icon" aria-hidden="true"><Icon size={20} /></span>
-              <span className="request-type-copy"><strong>{type}</strong><small>{desc}</small></span>
-              <span className="request-type-ai"><Sparkle size={14} weight="fill" />AI</span>
+      <RequestSummary remaining={remaining} used={used} total={remaining + used} leaveNote={leaveNote} pending={pending} upcoming={upcoming} />
+
+      <QuickRequest onOpen={openForm} />
+
+      <div ref={formRef} className="rq-form-anchor">
+        {form && (
+          <RequestForm
+            key={form.key}
+            initial={form.state}
+            leaveRemaining={remaining}
+            leaveSource={leaveSource}
+            approver={approver}
+            meetings={live?.meetings}
+            onClose={closeForm}
+          />
+        )}
+      </div>
+
+      <section className="section-block" aria-labelledby="rq-quick-title">
+        <div className="rq-section-head"><h2 id="rq-quick-title">Đề xuất nhanh</h2><span>Chọn loại, form được điền sẵn</span></div>
+        <div className="rq-quick-grid">
+          {QUICK_CARDS.map(({ id, title, desc, icon: Icon, tone, make }) => (
+            <button key={id} type="button" className="rq-quick-card" onClick={() => openForm(make())}>
+              <span className={`rq-quick-icon rq-quick-icon--${tone}`} aria-hidden="true"><Icon size={22} variant="duotone" /></span>
+              <span className="rq-quick-copy"><strong>{title}</strong><small>{desc}</small></span>
             </button>
           ))}
         </div>
       </section>
 
-      <section className="section-block">
-        <SectionHeader title="Đang theo dõi" meta={`${open.length} request`} />
-        {open.length === 0 ? (
-          <EmptyState icon={<Ticket size={44} weight="duotone" />} title="Không có request nào đang mở" body="Tạo request mới bằng một trong các loại phía trên." />
-        ) : (
-          <div className="request-list">{open.map((request) => <RequestRow key={request.id} request={request} />)}</div>
-        )}
-      </section>
+      <Collapsible title={`Tất cả loại đề xuất (${FORM_KINDS.length})`}>
+        <div className="rq-all-grid">
+          {FORM_KINDS.map((kind) => {
+            const Icon = KIND_ICON[kind];
+            return (
+              <button key={kind} type="button" className="request-type-card" onClick={() => openForm(blankState(kind))}>
+                <span className="request-icon" aria-hidden="true"><Icon size={20} /></span>
+                <span className="request-type-copy"><strong>{REQUEST_KIND_LABEL[kind]}</strong><small>{KIND_META[kind].desc}</small></span>
+              </button>
+            );
+          })}
+        </div>
+      </Collapsible>
 
-      {done.length > 0 && (
-        <section className="section-block">
-          <SectionHeader title="Đã hoàn tất" meta={`${done.length} request`} />
-          <div className="request-list request-list--done">{done.map((request) => <RequestRow key={request.id} request={request} />)}</div>
-        </section>
-      )}
+      <Collapsible title={`Lịch sử (${requests.length})`} defaultOpen>
+        {requests.length === 0 ? (
+          <EmptyState icon={<Ticket size={44} variant="duotone" />} title="Chưa có đề xuất nào" body="Gõ một câu ở trên hoặc chọn một đề xuất nhanh." />
+        ) : (
+          <div className="request-list">{requests.map((request) => <RequestRow key={request.id} request={request} />)}</div>
+        )}
+      </Collapsible>
     </div>
   );
 }

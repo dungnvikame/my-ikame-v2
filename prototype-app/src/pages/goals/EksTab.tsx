@@ -1,10 +1,11 @@
-import { Sparkle } from '@phosphor-icons/react';
+import { SparkleIcon as Sparkle } from '@coreds/react/icons';
 import { AiBadge } from '../../components/AiBadge';
 import { useAppState } from '../../AppState';
 import type { CheckInReport, EksObjective, Goal } from '../../types';
 import { EksList } from './EksList';
 import { ReportBrowser } from './ReportBrowser';
 import { ReportForm } from './ReportForm';
+import { ActionButton } from '../../components/UI';
 
 type EksTabProps = {
   eks: EksObjective[];
@@ -22,16 +23,16 @@ function EksAiStrip() {
   const { setAskOpen } = useAppState();
   return (
     <div className="eks-ai-strip">
-      <button type="button" className="eks-ai-action" onClick={() => setAskOpen(true)}>
+      <ActionButton onClick={() => setAskOpen(true)}>
         <Sparkle size={16} />
         <span>Tổng hợp công việc tuần (AI)</span>
         <AiBadge level="A2" />
-      </button>
-      <button type="button" className="eks-ai-action" onClick={() => setAskOpen(true)}>
+      </ActionButton>
+      <ActionButton onClick={() => setAskOpen(true)}>
         <Sparkle size={16} />
         <span>Viết báo cáo nhanh (AI)</span>
         <AiBadge level="A3" />
-      </button>
+      </ActionButton>
     </div>
   );
 }

@@ -4,7 +4,10 @@ import App from './App';
 // Self-host Inter (variable, latin + vietnamese) — trước đây token khai báo Inter
 // nhưng không load font nào, toàn app render Segoe UI fallback tùy máy.
 import '@fontsource-variable/inter/index.css';
+// Core DS chính thức (token --ds-*, font Inter, style component) — nạp trước để CSS của app ghi đè được.
+import '@coreds/react/style.css';
 import './styles/core-ds-1.1.css';
+import './styles/core-ds-bridge.css';
 import './styles/app.css';
 import './styles/assistant.css';
 import './styles/assistant-page.css';
@@ -22,6 +25,10 @@ import './styles/profile-v2.css';
 import './styles/onboarding.css';
 import './styles/notifications.css';
 import './styles/team-pulse.css';
+import './styles/home-v3.css';
+import './styles/work-calendar.css';
+import './styles/requests-assistant.css';
+import './styles/profile-people.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><App /></React.StrictMode>,

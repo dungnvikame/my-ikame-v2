@@ -1,6 +1,8 @@
 import { teamMembers, users } from '../../data/mockData';
 import { SectionHeader } from '../../components/UI';
 import type { User } from '../../types';
+import { Avatar } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 /** "Tổ chức" section — manager card + up to 5 teammates (same `teamId`). Read-only,
  * fixture-driven; direct `mockData` import follows the existing pattern used by
@@ -13,7 +15,7 @@ export function ProfileOrgSection({ user }: { user: User }) {
     <section className="side-info profile-section">
       <SectionHeader title="Tổ chức" />
       <div className="profile-org-manager">
-        <span className="avatar" aria-hidden="true">{isManager ? 'BLĐ' : users.mai.shortName}</span>
+        <Avatar type="text" size="m" fallback={avatarText(isManager ? 'BLĐ' : users.mai.shortName)} alt="" aria-hidden="true" />
         <div>
           <strong>{isManager ? 'Ban Giám Đốc' : users.mai.name}</strong>
           <small>{isManager ? 'Báo cáo trực tiếp' : `Quản lý trực tiếp · ${users.mai.role}`}</small>
@@ -23,7 +25,7 @@ export function ProfileOrgSection({ user }: { user: User }) {
       <ul className="profile-teammate-list">
         {teammates.map((member) => (
           <li key={member.id}>
-            <span className="avatar" aria-hidden="true">{member.name.split(' ').slice(-1)[0].slice(0, 1)}</span>
+            <Avatar type="text" size="m" fallback={avatarText(member.name.split(' ').slice(-1)[0].slice(0, 1))} alt="" aria-hidden="true" />
             <div>
               <strong>{member.name}</strong>
               <small>{member.role}</small>

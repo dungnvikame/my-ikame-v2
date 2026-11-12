@@ -1,9 +1,10 @@
-import { CaretRight } from '@phosphor-icons/react';
+import { CaretRightIcon as CaretRight } from '@coreds/react/icons';
 import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { StatusPill } from '../../components/UI';
 import type { Goal } from '../../types';
 import { STATUS_META, type OkrNode } from './build-okr-tree';
+import { Progress } from '@coreds/react';
 
 type OkrRowProps = {
   variant: 'list' | 'diagram';
@@ -44,7 +45,7 @@ function OkrNodeRow({ node, depth, variant, expandedIds, onToggle, goalsById }: 
           aria-label={expanded ? `Thu gọn key result của ${node.title}` : `Mở rộng key result của ${node.title}`}
           onClick={() => onToggle(node.id)}
         >
-          <CaretRight size={14} weight="bold" className={expanded ? 'is-expanded' : ''} />
+          <CaretRight size={14} className={expanded ? 'is-expanded' : ''} />
         </button>
         <span className="okr-owner-avatar" aria-hidden="true">{node.ownerShort}</span>
         <div className="okr-row-copy">
@@ -52,9 +53,7 @@ function OkrNodeRow({ node, depth, variant, expandedIds, onToggle, goalsById }: 
           <span>{node.ownerName} · {node.keyResults.length} key result</span>
         </div>
         <div className="okr-row-progress">
-          <div className="okr-progress-bar" role="progressbar" aria-valuenow={node.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Tiến độ ${node.title}`}>
-            <div className="okr-progress-fill" style={{ width: `${node.progress}%` }} />
-          </div>
+          <Progress className="okr-progress" size="md" value={node.progress} aria-label={`Tiến độ ${node.title}`} />
           <span>{node.progress}%</span>
           {linkedGoal && <StatusPill tone={STATUS_META[linkedGoal.status].tone}>{STATUS_META[linkedGoal.status].label}</StatusPill>}
         </div>
@@ -65,9 +64,7 @@ function OkrNodeRow({ node, depth, variant, expandedIds, onToggle, goalsById }: 
           {node.keyResults.map((kr) => (
             <li key={kr.id} className="okr-kr-row">
               <span className="okr-kr-title">{kr.title}</span>
-              <div className="okr-progress-bar okr-progress-bar--kr" role="progressbar" aria-valuenow={kr.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Tiến độ ${kr.title}`}>
-                <div className="okr-progress-fill" style={{ width: `${kr.progress}%` }} />
-              </div>
+              <Progress className="okr-progress okr-progress--kr" size="sm" value={kr.progress} aria-label={`Tiến độ ${kr.title}`} />
               <span className="okr-kr-unit">{kr.progress} {kr.unitLabel}</span>
               <StatusPill tone={STATUS_META[kr.status].tone}>{STATUS_META[kr.status].label}</StatusPill>
             </li>

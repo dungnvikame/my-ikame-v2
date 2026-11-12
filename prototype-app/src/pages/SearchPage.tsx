@@ -1,4 +1,4 @@
-import { BookBookmark, CalendarDots, MagnifyingGlass, Newspaper, Target, UserCircle } from '@phosphor-icons/react';
+import { BookBookmarkIcon as BookBookmark, CalendarDotsIcon as CalendarDots, MagnifyingGlassIcon as MagnifyingGlass, NewspaperIcon as Newspaper, TargetIcon as Target, UserCircleIcon as UserCircle } from '@coreds/react/icons';
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -6,8 +6,9 @@ import { useAppState } from '../AppState';
 import { AiBadge } from '../components/AiBadge';
 import { useSearchResults, type SearchResultGroupKey } from '../components/search/use-search-results';
 import { Tabs } from '../components/Tabs';
-import { SectionHeader } from '../components/UI';
+import { SectionHeader, ChipButton } from '../components/UI';
 import { findSeedAnswer } from '../data/search-answers';
+import { Input } from '@coreds/react';
 
 type TypeFilter = 'all' | SearchResultGroupKey;
 
@@ -99,7 +100,7 @@ export function SearchPage() {
   return (
     <div className="page search-page">
       <header className="page-heading"><div><p className="eyebrow">CẦN TÌM</p><h1>Tìm kiếm</h1><p>Tìm trong nội dung bạn có quyền truy cập — tin tức, sự kiện, tri thức, mục tiêu và con người.</p></div></header>
-      <label className="search-field"><MagnifyingGlass size={22} /><input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Thử “iConnect”, “bảo mật” hoặc “workshop”" aria-label="Tìm kiếm toàn cục" /></label>
+      <Input className="search-field-ds" size="xl" variant="fill" leftIcon={<MagnifyingGlass size={22} />} autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Thử “iConnect”, “bảo mật” hoặc “workshop”" aria-label="Tìm kiếm toàn cục" />
 
       <Tabs
         tabs={[
@@ -134,11 +135,11 @@ export function SearchPage() {
       {trimmedQuery.length < 2 ? (
         <div className="search-suggestions">
           <SectionHeader title="Gợi ý tìm kiếm" />
-          <div>{SUGGESTIONS.map((item) => <button key={item} onClick={() => setQuery(item)}>{item}</button>)}</div>
+          <div>{SUGGESTIONS.map((item) => <ChipButton key={item} onClick={() => setQuery(item)}>{item}</ChipButton>)}</div>
           {recent.length > 0 && (
             <>
               <SectionHeader title="Tìm gần đây" />
-              <div>{recent.map((item) => <button key={item} onClick={() => setQuery(item)}>{item}</button>)}</div>
+              <div>{recent.map((item) => <ChipButton key={item} onClick={() => setQuery(item)}>{item}</ChipButton>)}</div>
             </>
           )}
         </div>
@@ -170,7 +171,7 @@ export function SearchPage() {
           <MagnifyingGlass size={44} />
           <h2>Không tìm thấy kết quả</h2>
           <p>Kiểm tra chính tả hoặc thử một từ khóa rộng hơn.</p>
-          <div className="search-suggestions"><div>{SUGGESTIONS.map((item) => <button key={item} onClick={() => setQuery(item)}>{item}</button>)}</div></div>
+          <div className="search-suggestions"><div>{SUGGESTIONS.map((item) => <ChipButton key={item} onClick={() => setQuery(item)}>{item}</ChipButton>)}</div></div>
         </div>
       )}
     </div>

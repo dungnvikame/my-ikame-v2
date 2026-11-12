@@ -6,13 +6,14 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit -p tsconfig.app.json && vite build",
+    "build:artifact": "tsc --noEmit -p tsconfig.app.json && vite build --mode artifact && node scripts/build-artifact.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc --noEmit",
     "visual:check": "node scripts/visual-check.mjs"
   },
   "dependencies": {
+    "@coreds/react": "file:local-packages/coreds-react-1.0.3.tgz",
     "@fontsource-variable/inter": "^5.3.0",
-    "@phosphor-icons/react": "^2.1.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.8.2"
@@ -23,6 +24,11 @@
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^5.0.2",
     "typescript": "^5.9.2",
-    "vite": "^7.1.3"
+    "vite": "^7.1.3",
+    "vite-plugin-singlefile": "^2.3.4"
+  },
+  "overrides": {
+    "@coreds/ui": "file:local-packages/coreds-ui-1.0.3.tgz",
+    "@coreds/icons": "file:local-packages/coreds-icons-1.0.3.tgz"
   }
 }

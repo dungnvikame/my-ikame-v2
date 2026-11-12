@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, ChatsCircle, ShieldWarning, X } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, ChatsCircleIcon as ChatsCircle, ShieldWarningIcon as ShieldWarning, XIcon as X } from '@coreds/react/icons';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { NewsCard } from '../components/ContentCards';
 import { Tabs } from '../components/Tabs';
-import { Button, EmptyState, IconButton, StatusPill } from '../components/UI';
+import { Button, EmptyState, IconButton, StatusPill, ButtonLink } from '../components/UI';
 import { useToast } from '../components/toast';
 import { CommunityRail } from './community/CommunityRail';
 import { PinnedCarousel } from './community/PinnedCarousel';
@@ -112,12 +112,12 @@ export function FeedPage() {
       {mandatory && (
         <div className="community-mention-banner" role="status">
           <span className="feed-mandatory-copy">
-            <ShieldWarning size={18} weight="duotone" aria-hidden="true" />
+            <ShieldWarning size={18} variant="duotone" aria-hidden="true" />
             <StatusPill tone="error">Cần xác nhận</StatusPill>
             <span>{mandatory.title}</span>
           </span>
           <div className="community-mention-actions">
-            <Link className="button button--dim" to={`/feed/article/${mandatory.id}`}>Đọc & xác nhận<ArrowRight size={16} /></Link>
+            <ButtonLink variant="dim" to={`/feed/article/${mandatory.id}`}>Đọc & xác nhận<ArrowRight size={16} /></ButtonLink>
           </div>
         </div>
       )}
@@ -143,7 +143,7 @@ export function FeedPage() {
             ariaLabel="Lọc bảng tin"
           />
           {feed.length === 0 ? (
-            <EmptyState icon={<ChatsCircle size={44} weight="duotone" />} title={FILTER_EMPTY_COPY[feedFilter].title} body={FILTER_EMPTY_COPY[feedFilter].body} />
+            <EmptyState icon={<ChatsCircle size={44} variant="duotone" />} title={FILTER_EMPTY_COPY[feedFilter].title} body={FILTER_EMPTY_COPY[feedFilter].body} />
           ) : feed.map((item) => item.kind === 'post' ? (
             <PostCard
               key={feedItemKey(item)}

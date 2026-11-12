@@ -1,4 +1,4 @@
-import { CalendarCheck, NotePencil, PlusCircle } from '@phosphor-icons/react';
+import { CalendarCheckIcon as CalendarCheck, NotePencilIcon as NotePencil, PlusCircleIcon as PlusCircle } from '@coreds/react/icons';
 import { useEffect, useState } from 'react';
 import { Button, EmptyState, SectionHeader } from '../../components/UI';
 import type { CheckInReport } from '../../types';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, CheckCircle, ClipboardText, UsersThree, WarningCircle, XCircle } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, CheckCircleIcon as CheckCircle, ClipboardTextIcon as ClipboardText, UsersThreeIcon as UsersThree, WarningCircleIcon as WarningCircle, XCircleIcon as XCircle } from '@coreds/react/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { teamMembers } from '../data/mockData';
 import { teamEngagement } from '../data/team-engagement';
@@ -14,6 +14,8 @@ import type { ApprovalItem, AttentionItem, TeamMember } from '../types';
 import { attentionHref, ManagerAiBrief } from './manager/ManagerAiBrief';
 import { NewJoinerCard } from './manager/NewJoinerCard';
 import { TeamPulse } from './manager/TeamPulse';
+import { Avatar } from '@coreds/react';
+import { avatarText } from '../lib/avatar-text';
 
 type RankableAttention = RankableCard & { source: AttentionItem };
 
@@ -66,7 +68,7 @@ function ApprovalQueue() {
         <div className="approval-list">
           {open.map((item) => (
             <article key={item.id} className="approval-row">
-              <span className="avatar" aria-hidden="true">{item.memberShort.slice(0, 1)}</span>
+              <Avatar type="text" size="m" fallback={avatarText(item.memberShort.slice(0, 1))} alt="" aria-hidden="true" />
               <div className="approval-copy">
                 <div className="approval-copy-head">
                   <strong>{item.title}</strong>
@@ -87,7 +89,7 @@ function ApprovalQueue() {
         <div className="approval-decided">
           {decided.map((item) => (
             <p key={item.id} className={`approval-decided-row approval-decided-row--${item.state}`}>
-              {item.state === 'approved' ? <CheckCircle size={15} weight="fill" /> : <XCircle size={15} weight="fill" />}
+              {item.state === 'approved' ? <CheckCircle size={15} variant="fill" /> : <XCircle size={15} variant="fill" />}
               {item.title} · {item.memberName} — {item.state === 'approved' ? 'đã duyệt' : 'đã từ chối'}
             </p>
           ))}
@@ -141,19 +143,19 @@ export function ManagerPage() {
 
       <div className="manager-stats" role="list">
         <Link to="#" role="listitem" className="manager-stat" onClick={(event) => event.preventDefault()}>
-          <span className="manager-stat-icon manager-stat-icon--danger"><WarningCircle size={20} weight="duotone" /></span>
+          <span className="manager-stat-icon manager-stat-icon--danger"><WarningCircle size={20} variant="duotone" /></span>
           <div><strong>{criticalCount}</strong><span>Việc nghiêm trọng cao</span></div>
         </Link>
         <Link to="#approvals" role="listitem" className="manager-stat" onClick={(event) => { event.preventDefault(); document.querySelector('.approval-queue')?.scrollIntoView({ behavior: 'smooth' }); }}>
-          <span className="manager-stat-icon manager-stat-icon--amber"><ClipboardText size={20} weight="duotone" /></span>
+          <span className="manager-stat-icon manager-stat-icon--amber"><ClipboardText size={20} variant="duotone" /></span>
           <div><strong>{openApprovals}</strong><span>Đơn chờ bạn duyệt</span></div>
         </Link>
         <Link to="/manager/team" role="listitem" className="manager-stat">
-          <span className="manager-stat-icon manager-stat-icon--success"><CheckCircle size={20} weight="duotone" /></span>
+          <span className="manager-stat-icon manager-stat-icon--success"><CheckCircle size={20} variant="duotone" /></span>
           <div><strong>{checkIn.count}/{checkIn.total}</strong><span>Check-in OKR đúng hạn tuần này</span></div>
         </Link>
         <Link to="/manager/team" role="listitem" className="manager-stat">
-          <span className="manager-stat-icon manager-stat-icon--info"><UsersThree size={20} weight="duotone" /></span>
+          <span className="manager-stat-icon manager-stat-icon--info"><UsersThree size={20} variant="duotone" /></span>
           <div><strong>{moments.length}</strong><span>Khoảnh khắc cần đồng hành</span></div>
         </Link>
       </div>
@@ -198,7 +200,7 @@ export function ManagerPage() {
               <NewJoinerCard key={member.id} member={member} />
             ) : (
               <article className="moment-card" key={member.id}>
-                <span className="avatar avatar--large">{member.name.charAt(0)}</span>
+                <Avatar type="text" size="l" fallback={avatarText(member.name.charAt(0))} alt="" aria-hidden="true" />
                 <div>
                   <StatusPill tone="info">{momentLabel(member.momentType)}</StatusPill>
                   <h3><Link to={`/manager/team/${member.id}`}>{member.name}</Link></h3>

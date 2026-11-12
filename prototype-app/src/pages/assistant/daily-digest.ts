@@ -9,7 +9,9 @@ export type DigestItem = {
   label: string;
   meta: string;
   to: string;
-  source: 'HRIS' | 'COM' | 'My iKame' | 'iGoal' | 'Asana' | 'Google Calendar' | 'iCheck' | 'Onboarding';
+  /** Link ra công cụ gốc (mở tab mới) — dùng cho việc từ dữ liệu thật, thay cho `to`. */
+  href?: string;
+  source: 'HRIS' | 'COM' | 'My iKame' | 'iGoal' | 'Asana' | 'Google Calendar' | 'iCheck' | 'Onboarding' | 'iHiring';
   urgent?: boolean;
 };
 

@@ -1,4 +1,5 @@
 import type { GoalStatus, MemberProfile360, SignalTone, TeamMemberStatus } from '../../types';
+import { Progress } from '@coreds/react';
 
 /** Helper hiển thị dùng chung cho roster Đội ngũ và trang hồ sơ 360°. */
 
@@ -64,11 +65,19 @@ export function SignalCard({ label, value, hint, tone, source }: {
   );
 }
 
+/** Màu tín hiệu của app -> variant Progress của Core DS. */
+const PROGRESS_VARIANT: Partial<Record<string, 'default' | 'success' | 'warning' | 'error'>> = {
+  good: 'success', watch: 'warning', risk: 'error',
+};
+
 /** Thanh tiến độ nhỏ dùng lại ở card roster và tab Mục tiêu. */
 export function MiniProgress({ value, tone = 'neutral' }: { value: number; tone?: SignalTone }) {
   return (
-    <div className={`mini-progress mini-progress--${tone}`} role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={100}>
-      <span style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
-    </div>
+    <Progress
+      className="mini-progress-ds"
+      size="sm"
+      value={Math.max(0, Math.min(100, value))}
+      variant={PROGRESS_VARIANT[tone] ?? 'default'}
+    />
   );
 }

@@ -1,4 +1,4 @@
-import { ArrowSquareOut, Database } from '@phosphor-icons/react';
+import { ArrowSquareOutIcon as ArrowSquareOut, DatabaseIcon as Database } from '@coreds/react/icons';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import { SectionHeader } from '../../components/UI';
 import type { HrProfile, SensitiveInfo } from '../../types';

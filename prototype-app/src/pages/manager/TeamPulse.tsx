@@ -1,6 +1,6 @@
-import { ArrowRight, CalendarPlus, HandsClapping, Pulse, Target, UsersThree } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, CalendarPlusIcon as CalendarPlus, HandsClappingIcon as HandsClapping, PulseIcon as Pulse, TargetIcon as Target, UsersThreeIcon as UsersThree } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
-import { SectionHeader } from '../../components/UI';
+import { SectionHeader, ButtonLink } from '../../components/UI';
 import { ENGAGEMENT_WEEK_LABEL, type MemberWeekEngagement } from '../../data/team-engagement';
 import { checkInOnTime, earlySignals, kudosStats, teamWaer, trend } from '../../lib/engagement';
 import type { TeamMember } from '../../types';
@@ -29,7 +29,7 @@ export function TeamPulse({ rows, roster }: { rows: MemberWeekEngagement[]; rost
       <div className="pulse-tiles" role="list">
         {tiles.map(({ icon: Icon, label, value, hint, tone }) => (
           <article key={label} role="listitem" className={`pulse-tile pulse-tile--${tone}`}>
-            <span className="pulse-tile-icon" aria-hidden="true"><Icon size={18} weight="duotone" /></span>
+            <span className="pulse-tile-icon" aria-hidden="true"><Icon size={18} variant="duotone" /></span>
             <small>{label}</small>
             <strong>{value}</strong>
             <p>{hint}</p>
@@ -51,8 +51,8 @@ export function TeamPulse({ rows, roster }: { rows: MemberWeekEngagement[]; rost
                   <small>Gợi ý: {signal.suggestion}</small>
                 </div>
                 <div className="pulse-signal-actions">
-                  <Link className="button button--primary" to={`/feed?compose=kudos&to=${encodeURIComponent(signal.name)}`}><HandsClapping size={16} />Gửi ghi nhận</Link>
-                  <Link className="button" to={`/manager/team/${signal.memberId}`}><CalendarPlus size={16} />Đặt 1:1</Link>
+                  <ButtonLink variant="primary" to={`/feed?compose=kudos&to=${encodeURIComponent(signal.name)}`}><HandsClapping size={16} />Gửi ghi nhận</ButtonLink>
+                  <ButtonLink variant="dim" to={`/manager/team/${signal.memberId}`}><CalendarPlus size={16} />Đặt 1:1</ButtonLink>
                 </div>
               </li>
             ))}

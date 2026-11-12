@@ -1,20 +1,23 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import {
-  ArrowRight, CheckCircle, ClockCounterClockwise, NotePencil, PaperPlaneTilt, Sparkle, Trash,
-} from '@phosphor-icons/react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { ArrowRightIcon as ArrowRight, CheckCircleIcon as CheckCircle, ClockCounterClockwiseIcon as ClockCounterClockwise, NotePencilIcon as NotePencil, PaperPlaneTiltIcon as PaperPlaneTilt, SparkleIcon as Sparkle, TrashIcon as Trash } from '@coreds/react/icons';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLive } from '../lib/live/live-data';
+import { ActionCard } from '../components/assistant/ActionCard';
+import { detectActionCard, executeCard, type ActionCard as ActionCardData } from './assistant/assistant-actions';
 import { useAppState } from '../AppState';
-import { Button, IconButton } from '../components/UI';
+import { Button, IconButton, ChipButton } from '../components/UI';
 import { buildAgentReply, type AgentAction } from './assistant/agent-replies';
 import {
   clearSessions, loadSessions, questionCount, sanitizeForStorage, saveSessions,
   sessionTimeLabel, type StoredSession, type ThreadMessage,
 } from './assistant/assistant-history';
-import { AssistantSteps, capabilitiesFor, CONNECTORS, generateMessageId, generateReceiptId, stepsOf } from './assistant/assistant-shared';
+import { AssistantSteps, AssistantToolsFooter, capabilitiesFor, CONNECTORS, generateMessageId, generateReceiptId, stepsOf } from './assistant/assistant-shared';
 import { AssistantWorkspace, type OkrReportPayload } from './assistant/AssistantWorkspace';
 import { documentReminders } from '../data/profile-data';
 import { journeyDigestQuests } from '../lib/onboarding';
 import { AgentMetricsCard } from '../components/assistant/AgentMetricsCard';
+import { Input, Button as DsButton, Popover } from '@coreds/react';
+import { trackFlow } from '../lib/metrics/metrics';
 
 /** Danh sách phiên cũ — dùng chung cho popover lịch sử và mục "Gần đây" ở màn chào. */
 function HistoryList({ sessions, onResume, onDelete }: {
@@ -41,10 +44,12 @@ function HistoryList({ sessions, onResume, onDelete }: {
 export function AssistantPage() {
   const {
     user, news, events, goals, knowledgeDocs, leaveBalance, demoResetCount,
-    perspective, attention, memberEksStats, approvals, dailyCheckIn, documents, isNewJoiner, journey,
+    perspective, attention, memberEksStats, approvals, dailyCheckIn, documents, isNewJoiner, journey, hrProfile,
     acknowledgeNews, submitReport, addRequest, addAttendanceRequest, recordAgentTask,
   } = useAppState();
-  const capabilities = capabilitiesFor(perspective);
+  const capabilities = capabilitiesFor(perspective, isNewJoiner);
+  const navigate = useNavigate();
+  const liveManager = useLive().data?.igoal?.managerName;
   const chips = capabilities.map((capability) => capability.prompt);
   const [messages, setMessages] = useState<ThreadMessage[]>([]);
   const [input, setInput] = useState('');
@@ -175,6 +180,7 @@ export function AssistantPage() {
   const busy = messages.some((message) => message.processing || message.actionRunning);
 
   function ask(question: string) {
+    if (question.trim()) trackFlow('assistant', 'done');
     const trimmed = question.trim();
     if (!trimmed || busy) return;
     if (!activeSessionId) setActiveSessionId(`s-${Date.now().toString(36)}`);
@@ -182,8 +188,24 @@ export function AssistantPage() {
     setMessages((prev) => [
       ...prev,
       { id: generateMessageId(), role: 'user', text: trimmed },
-      { id: generateMessageId(), ...buildAgentReply(trimmed, ctx), processing: true, revealedSteps: 0, askedAt: Date.now() },
+      // Ý định "làm việc" (tạo việc, lịch họp, mở đề xuất, soạn Slack) → thẻ xác nhận; còn lại → engine cũ.
+      { id: generateMessageId(), ...(detectActionCard(trimmed, { userName: user.name, managerName: liveManager || hrProfile.managerName, perspective }) ?? buildAgentReply(trimmed, ctx)), processing: true, revealedSteps: 0, askedAt: Date.now() },
     ]);
+  }
+
+  function updateCard(messageId: string, changes: Partial<ActionCardData>) {
+    setMessages((prev) => prev.map((message) => (message.id === messageId && message.card ? { ...message, card: { ...message.card, ...changes } } : message)));
+  }
+
+  // Xác nhận thẻ: chạy hành động cục bộ, ghi đo lường; thẻ "đề xuất" thì chuyển sang form đã điền sẵn.
+  function confirmCard(messageId: string) {
+    const target = messages.find((message) => message.id === messageId);
+    const card = target?.card;
+    if (!card || card.status === 'done') return;
+    const result = executeCard(card);
+    recordAgentTask({ ms: Date.now() - (target?.askedAt ?? Date.now()), tool: card.tool });
+    updateCard(messageId, { status: 'done', result });
+    if (card.kind === 'request' && result.link) navigate(result.link.to);
   }
 
   // Deep link từ hero trang chủ: /assistant?q=... — chạy đúng một lần rồi xoá param
@@ -243,20 +265,23 @@ export function AssistantPage() {
     <div className="assistant-composer">
       <div className="assistant-chips">
         {chips.map((chip) => (
-          <button key={chip} type="button" className="ai-suggestion-chip" onClick={() => ask(chip)}>{chip}</button>
+          <ChipButton key={chip} onClick={() => ask(chip)}>{chip}</ChipButton>
         ))}
       </div>
       <form className="assistant-input" onSubmit={handleSubmit}>
-        <Sparkle size={20} weight="fill" className="assistant-input-spark" />
-        <input
+        <Sparkle size={20} variant="fill" className="assistant-input-spark" />
+        <Input
+          variant="borderless"
+          size="l"
           type="text"
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Nhắn cho Trợ lý AI..."
           aria-label="Hỏi Trợ lý AI"
         />
-        <button type="submit" className="assistant-send" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} weight="fill" /></button>
+        <DsButton type="submit" variant="primary" size="icon-l" className="send-button" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} variant="fill" /></DsButton>
       </form>
+      <AssistantToolsFooter />
     </div>
   );
 
@@ -264,7 +289,7 @@ export function AssistantPage() {
     return (
       <div className="page assistant-page assistant-page--empty">
         <div className="assistant-welcome">
-          <span className="assistant-welcome-icon"><Sparkle size={26} weight="fill" /></span>
+          <span className="assistant-welcome-icon"><Sparkle size={26} variant="fill" /></span>
           <h1>Chào {user.shortName}, mình có thể giúp gì?</h1>
           <p>Hỏi đáp và nhờ Agent xử lý nghiệp vụ tại iKame — bạn duyệt, Agent thực thi.</p>
           <div className="assistant-connectors" aria-label="Nguồn đang kết nối">
@@ -277,8 +302,10 @@ export function AssistantPage() {
           </div>
           <AgentMetricsCard />
           <form className="assistant-input assistant-input--hero" onSubmit={handleSubmit}>
-            <Sparkle size={20} weight="fill" className="assistant-input-spark" />
-            <input
+            <Sparkle size={20} variant="fill" className="assistant-input-spark" />
+            <Input
+              variant="borderless"
+              size="l"
               type="text"
               value={input}
               onChange={(event) => setInput(event.target.value)}
@@ -286,7 +313,7 @@ export function AssistantPage() {
               aria-label="Hỏi Trợ lý AI"
               autoFocus
             />
-            <button type="submit" className="assistant-send" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} weight="fill" /></button>
+            <DsButton type="submit" variant="primary" size="icon-l" className="send-button" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} variant="fill" /></DsButton>
           </form>
           <div className="assistant-capabilities">
             {capabilities.map(({ icon: Icon, title, prompt }) => (
@@ -303,6 +330,7 @@ export function AssistantPage() {
               <HistoryList sessions={sessions.slice(0, 4)} onResume={resumeSession} onDelete={deleteSession} />
             </div>
           )}
+          <AssistantToolsFooter />
           <p className="assistant-disclosure">Concept demo — trả lời theo kịch bản trên dữ liệu mẫu, chưa xử lý văn bản tự do.</p>
         </div>
       </div>
@@ -319,19 +347,21 @@ export function AssistantPage() {
               <small>{messages.filter((message) => message.role === 'user').length} lượt hỏi</small>
             </div>
             <IconButton label="Cuộc trò chuyện mới" onClick={startNewChat}><NotePencil size={18} /></IconButton>
-            <IconButton label="Lịch sử trò chuyện" onClick={() => setHistoryOpen((open) => !open)}><ClockCounterClockwise size={18} /></IconButton>
-            {historyOpen && (
-              <div className="assistant-history-pop" role="dialog" aria-label="Lịch sử trò chuyện">
+            <Popover
+              side="bottom"
+              trigger={<IconButton label="Lịch sử trò chuyện"><ClockCounterClockwise size={18} /></IconButton>}
+            >
+              <div className="assistant-history-popover">
                 <p className="assistant-history-pop-title">Lịch sử trò chuyện</p>
                 <HistoryList sessions={sessions} onResume={resumeSession} onDelete={deleteSession} />
               </div>
-            )}
+            </Popover>
           </header>
           <div className="assistant-thread" role="log" aria-live="polite" ref={threadRef}>
             {messages.map((message) => (
               <div key={message.id} className={`assistant-message assistant-message--${message.role}`}>
                 {message.role === 'assistant' && (
-                  <span className="assistant-avatar" aria-hidden="true"><Sparkle size={14} weight="fill" /></span>
+                  <span className="assistant-avatar" aria-hidden="true"><Sparkle size={14} variant="fill" /></span>
                 )}
                 <div className="assistant-bubble">
                   {message.role === 'assistant' && <AssistantSteps message={message} />}
@@ -352,6 +382,9 @@ export function AssistantPage() {
                         </div>
                       )}
                       {/* Tác vụ có workspace: nút duyệt nằm ở khung bên phải, chat chỉ giữ hội thoại. */}
+                      {message.card && (
+                        <ActionCard card={message.card} onChange={(changes) => updateCard(message.id, changes)} onConfirm={() => confirmCard(message.id)} />
+                      )}
                       {message.action && !message.workspace && !message.actionDone && (
                         <div className="assistant-actions">
                           <Button variant="primary" disabled={message.actionRunning} onClick={() => runAction(message.id, message.action!)}>
@@ -361,12 +394,12 @@ export function AssistantPage() {
                       )}
                       {message.action && !message.workspace && message.actionDone && (
                         <p className="assistant-receipt">
-                          <CheckCircle size={16} weight="fill" />{message.action.receipt} <span>#RCPT-{message.receiptId}</span>
+                          <CheckCircle size={16} variant="fill" />{message.action.receipt} <span>#RCPT-{message.receiptId}</span>
                           {message.action.tool && <span className="assistant-receipt-tool">via MCP · {message.action.tool}</span>}
                         </p>
                       )}
                       {message.action && message.workspace && message.actionDone && (
-                        <p className="assistant-receipt"><CheckCircle size={16} weight="fill" />{message.action.receipt}</p>
+                        <p className="assistant-receipt"><CheckCircle size={16} variant="fill" />{message.action.receipt}</p>
                       )}
                       {!!message.toolCalls?.length && (
                         <p className="assistant-toolcalls" aria-label="Tool MCP đã gọi">

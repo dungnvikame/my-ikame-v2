@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDots, CheckCircle, Clock, MapPin, Users } from '@phosphor-icons/react';
+import { ArrowLeftIcon as ArrowLeft, CalendarDotsIcon as CalendarDots, CheckCircleIcon as CheckCircle, ClockIcon as Clock, MapPinIcon as MapPin, UsersIcon as Users } from '@coreds/react/icons';
 import { useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
@@ -90,7 +90,7 @@ export function EventsPage() {
           </section>
         )
       ) : (
-        <EmptyState icon={<CalendarDots size={44} weight="duotone" />} title="Chưa có sự kiện trong mục này" body="Sự kiện mới sẽ xuất hiện khi phù hợp với audience của bạn." />
+        <EmptyState icon={<CalendarDots size={44} variant="duotone" />} title="Chưa có sự kiện trong mục này" body="Sự kiện mới sẽ xuất hiện khi phù hợp với audience của bạn." />
       )}
     </div>
   );

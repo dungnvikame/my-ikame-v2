@@ -1,4 +1,4 @@
-import { ShareNetwork } from '@phosphor-icons/react';
+import { ShareNetworkIcon as ShareNetwork } from '@coreds/react/icons';
 import { useState } from 'react';
 import { Button } from '../../components/UI';
 

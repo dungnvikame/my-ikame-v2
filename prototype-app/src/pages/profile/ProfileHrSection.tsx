@@ -1,4 +1,4 @@
-import { Eye, Laptop } from '@phosphor-icons/react';
+import { EyeIcon as Eye, LaptopIcon as Laptop } from '@coreds/react/icons';
 import { PlatformHandoffButton } from '../../components/PlatformHandoff';
 import { SectionHeader, StatusPill } from '../../components/UI';
 import type { ContractInfo, Equipment, LeaveBalance, Payslip, SeniorityEntry } from '../../types';

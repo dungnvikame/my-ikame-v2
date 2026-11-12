@@ -1,7 +1,7 @@
-import { BellRinging, PaperPlaneTilt } from '@phosphor-icons/react';
+import { BellRingingIcon as BellRinging, PaperPlaneTiltIcon as PaperPlaneTilt } from '@coreds/react/icons';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, SectionHeader, StatusPill } from '../../components/UI';
+import { Button, SectionHeader, StatusPill, TextButton } from '../../components/UI';
 import { RULES } from '../../lib/notification-rules';
 import type { NewsPost } from '../../types';
 
@@ -60,9 +60,9 @@ export function OfficialNewsTable({ news, onPush, onRemind }: OfficialNewsTableP
                       <>
                         <strong>{percent(metrics.acknowledged, metrics.reach)}</strong>
                         {pending.length > 0 && (
-                          <button type="button" className="text-link admin-pending-toggle" aria-expanded={expanded} onClick={() => setExpandedId(expanded ? undefined : item.id)}>
+                          <TextButton aria-expanded={expanded} onClick={() => setExpandedId(expanded ? undefined : item.id)}>
                             {pending.length} chưa xác nhận
-                          </button>
+                          </TextButton>
                         )}
                         {expanded && (
                           <ul className="admin-pending-list" aria-label="Người chưa xác nhận">

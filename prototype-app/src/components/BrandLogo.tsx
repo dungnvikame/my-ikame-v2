@@ -1,8 +1,10 @@
-/** iKame mascot logo — served from public/ikame-logo.png (also used as favicon). */
+import logoUrl from '../assets/ikame-logo.png';
+
+/** iKame mascot logo — import qua bundler để bản artifact nhúng được ảnh (không có file ngoài). */
 export function BrandLogo({ size = 32 }: { size?: number }) {
   return (
     <img
-      src="/ikame-logo.png"
+      src={logoUrl}
       width={size}
       height={size}
       alt="iKame"

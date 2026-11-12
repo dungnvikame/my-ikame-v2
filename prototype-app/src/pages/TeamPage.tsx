@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
-import { ArrowRight, MagnifyingGlass, Rows, SquaresFour } from '@phosphor-icons/react';
+import { ArrowRightIcon as ArrowRight, MagnifyingGlassIcon as MagnifyingGlass, RowsIcon as Rows, SquaresFourIcon as SquaresFour } from '@coreds/react/icons';
 import { Link } from 'react-router-dom';
 import { memberProfile, teamMembers } from '../data/mockData';
-import { Button, EmptyState, StatusPill } from '../components/UI';
+import { Button, EmptyState, StatusPill, ChipButton } from '../components/UI';
 import { useAppState } from '../AppState';
 import type { TeamMember, TeamMemberStatus } from '../types';
 import { MemberCard } from './team/MemberCard';
+import { Select, Input, Avatar } from '@coreds/react';
+import { avatarText } from '../lib/avatar-text';
 import {
   initials, MiniProgress, normalize, riskLabel, riskScore, STATUS_LABEL, STATUS_TONE,
 } from './team/team-visuals';
@@ -91,45 +93,44 @@ export function TeamPage() {
       <TeamHealthStrip roster={roster} />
 
       <div className="team-toolbar">
-        <label className="filter-input">
-          <MagnifyingGlass size={17} />
-          <input aria-label="Tìm theo tên hoặc vai trò" placeholder="Tìm theo tên hoặc vai trò" value={query} onChange={(event) => setQuery(event.target.value)} />
-        </label>
+        <Input className="filter-field" variant="fill" leftIcon={<MagnifyingGlass size={17} />} aria-label="Tìm theo tên hoặc vai trò" placeholder="Tìm theo tên hoặc vai trò" value={query} onChange={(event) => setQuery(event.target.value)} />
         <div className="team-toolbar-right">
           <label className="team-sort">
             <span>Sắp xếp</span>
-            <select value={sortKey} onChange={(event) => setSortKey(event.target.value as SortKey)}>
-              {(Object.keys(SORT_LABEL) as SortKey[]).map((key) => <option key={key} value={key}>{SORT_LABEL[key]}</option>)}
-            </select>
+            <Select
+              size="s"
+              aria-label="Sắp xếp"
+              options={(Object.keys(SORT_LABEL) as SortKey[]).map((key) => ({ value: key, label: SORT_LABEL[key] }))}
+              value={sortKey}
+              onValueChange={(value) => setSortKey(String(value) as SortKey)}
+            />
           </label>
           <div className="team-view-toggle" role="group" aria-label="Kiểu hiển thị">
-            <button type="button" aria-pressed={view === 'cards'} className={view === 'cards' ? 'is-active' : ''} onClick={() => setView('cards')} title="Dạng thẻ">
+            <ChipButton aria-pressed={view === 'cards'} onClick={() => setView('cards')} title="Dạng thẻ">
               <SquaresFour size={17} />
-            </button>
-            <button type="button" aria-pressed={view === 'table'} className={view === 'table' ? 'is-active' : ''} onClick={() => setView('table')} title="Dạng bảng">
+            </ChipButton>
+            <ChipButton aria-pressed={view === 'table'} onClick={() => setView('table')} title="Dạng bảng">
               <Rows size={17} />
-            </button>
+            </ChipButton>
           </div>
         </div>
       </div>
 
       <div className="team-filter-chips" role="group" aria-label="Lọc theo trạng thái">
         {chips.map((chip) => (
-          <button
+          <ChipButton
             key={chip.key}
-            type="button"
-            className={`topic-chip ${statusFilter === chip.key ? 'is-active' : ''}`}
             aria-pressed={statusFilter === chip.key}
             onClick={() => setStatusFilter(chip.key)}
           >
             {chip.label} ({chip.count})
-          </button>
+          </ChipButton>
         ))}
       </div>
 
       {visible.length === 0 ? (
         <div className="empty-state">
-          <EmptyState icon={<MagnifyingGlass size={44} weight="duotone" />} title="Không tìm thấy thành viên" body="Không có thành viên phù hợp với bộ lọc hiện tại." />
+          <EmptyState icon={<MagnifyingGlass size={44} variant="duotone" />} title="Không tìm thấy thành viên" body="Không có thành viên phù hợp với bộ lọc hiện tại." />
           <Button variant="dim" onClick={resetFilters}>Xóa bộ lọc</Button>
         </div>
       ) : view === 'cards' ? (
@@ -148,7 +149,7 @@ export function TeamPage() {
             return (
               <Link key={member.id} className="member-table-row" to={`/manager/team/${member.id}`}>
                 <span className="member-table-person">
-                  <span className="avatar" aria-hidden="true">{initials(member.name)}</span>
+                  <Avatar type="text" size="m" fallback={avatarText(initials(member.name))} alt="" aria-hidden="true" />
                   <span><strong>{member.name}</strong><small>{member.role}</small></span>
                 </span>
                 <span className="member-table-progress">

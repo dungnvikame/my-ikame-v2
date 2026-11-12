@@ -1,4 +1,4 @@
-import { ArrowLeft } from '@phosphor-icons/react';
+import { ArrowLeftIcon as ArrowLeft } from '@coreds/react/icons';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import { PlatformHandoffButton } from '../components/PlatformHandoff';
@@ -7,6 +7,7 @@ import { STATUS_META } from './goals/build-okr-tree';
 import { IkamerGoalsView } from './goals/IkamerGoalsView';
 import { ManagerGoalsView } from './goals/ManagerGoalsView';
 import { ReportList } from './goals/ReportList';
+import { Progress } from '@coreds/react';
 
 /** Perspective-aware entry point (spec): iKamer gets the EKS-first "My EKS" layout,
  * Manager gets the team OKR management layout. `/goals` carries no PerspectiveGuard
@@ -38,9 +39,7 @@ export function GoalDetailPage() {
           </div>
           <h1>{goal.title}</h1>
           <div className="goal-detail-progress">
-            <div className="okr-progress-bar" role="progressbar" aria-valuenow={goal.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Tiến độ ${goal.title}`}>
-              <div className="okr-progress-fill" style={{ width: `${goal.progress}%` }} />
-            </div>
+            <Progress className="okr-progress" size="md" value={goal.progress} aria-label={`Tiến độ ${goal.title}`} />
             <strong>{goal.progress}%</strong>
           </div>
           <dl className="goal-detail-facts">
@@ -58,9 +57,7 @@ export function GoalDetailPage() {
             {objective.keyResults.map((kr) => (
               <li key={kr.id} className="okr-kr-row">
                 <span className="okr-kr-title">{kr.title}</span>
-                <div className="okr-progress-bar okr-progress-bar--kr" role="progressbar" aria-valuenow={kr.progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Tiến độ ${kr.title}`}>
-                  <div className="okr-progress-fill" style={{ width: `${kr.progress}%` }} />
-                </div>
+                <Progress className="okr-progress okr-progress--kr" size="sm" value={kr.progress} aria-label={`Tiến độ ${kr.title}`} />
                 <span className="okr-kr-unit">{kr.progress} {kr.unitLabel}</span>
                 <StatusPill tone={STATUS_META[kr.status].tone}>{STATUS_META[kr.status].label}</StatusPill>
               </li>

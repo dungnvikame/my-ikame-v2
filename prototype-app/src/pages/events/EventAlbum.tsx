@@ -1,4 +1,4 @@
-import { ArrowSquareOut, Images } from '@phosphor-icons/react';
+import { ArrowSquareOutIcon as ArrowSquareOut, ImagesIcon as Images } from '@coreds/react/icons';
 import type { EventItem } from '../../types';
 
 /** Album ảnh sự kiện đã diễn ra — gắn thẳng vào trang sự kiện thay vì link Drive rời rạc (yêu cầu COM). */

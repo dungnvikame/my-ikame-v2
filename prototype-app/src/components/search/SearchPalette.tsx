@@ -1,11 +1,12 @@
-import { MagnifyingGlass, X } from '@phosphor-icons/react';
+import { MagnifyingGlassIcon as MagnifyingGlass, XIcon as X } from '@coreds/react/icons';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../../AppState';
 import { findSeedAnswer } from '../../data/search-answers';
 import { AiBadge } from '../AiBadge';
-import { IconButton } from '../UI';
+import { IconButton, ActionButton, ChipButton } from '../UI';
 import { useSearchResults } from './use-search-results';
+import { Input, Modal } from '@coreds/react';
 
 /** Matches the topbar search trigger's aria-label — mirrors AskIKamePanel's focus-return pattern. */
 const SEARCH_TRIGGER_SELECTOR = 'button[aria-label^="Tìm kiếm"]';
@@ -70,33 +71,30 @@ export function SearchPalette() {
     }
   }
 
-  if (!searchOpen) return null;
 
   const activeId = flat[activeIndex] ? `search-result-${flat[activeIndex].id}` : undefined;
 
   return (
-    <div className="drawer-layer" role="presentation" onMouseDown={close}>
-      <div
-        className="search-palette"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Tìm kiếm"
-        onMouseDown={(event) => event.stopPropagation()}
-        onKeyDown={onKeyDown}
-      >
-        <label className="search-palette-field">
-          <MagnifyingGlass size={20} />
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Tìm tin tức, sự kiện, tài liệu, mục tiêu, con người…"
-            aria-label="Tìm kiếm toàn cục"
-            aria-autocomplete="list"
-            aria-activedescendant={activeId}
-          />
-          <IconButton label="Đóng tìm kiếm" onClick={close}><X size={18} /></IconButton>
-        </label>
+    <Modal
+      open={searchOpen}
+      onOpenChange={(next) => { if (!next) close(); }}
+      size="lg"
+      title="Tìm kiếm"
+      description="Tin tức, sự kiện, tài liệu, mục tiêu và con người trong iKame."
+    >
+      <div className="search-palette-ds" onKeyDown={onKeyDown}>
+        <Input
+          ref={inputRef}
+          size="l"
+          variant="fill"
+          leftIcon={<MagnifyingGlass size={20} />}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Tìm tin tức, sự kiện, tài liệu, mục tiêu, con người…"
+          aria-label="Tìm kiếm toàn cục"
+          aria-autocomplete="list"
+          aria-activedescendant={activeId}
+        />
 
         <div className="search-palette-body">
           {trimmed.length < 2 ? (
@@ -104,7 +102,7 @@ export function SearchPalette() {
               <p className="nav-label">GỢI Ý TÌM KIẾM</p>
               <div>
                 {SUGGESTED_QUERIES.map((item) => (
-                  <button key={item} type="button" onClick={() => setQuery(item)}>{item}</button>
+                  <ChipButton key={item} onClick={() => setQuery(item)}>{item}</ChipButton>
                 ))}
               </div>
             </div>
@@ -116,7 +114,7 @@ export function SearchPalette() {
                   {answer.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
                   <div className="search-palette-citations">
                     {answer.citations.map((citation) => (
-                      <button key={citation.href} type="button" onClick={() => go(citation.href)}>{citation.title}</button>
+                      <ChipButton key={citation.href} onClick={() => go(citation.href)}>{citation.title}</ChipButton>
                     ))}
                   </div>
                 </div>
@@ -148,13 +146,13 @@ export function SearchPalette() {
                 </section>
               ))}
 
-              <button type="button" className="search-palette-viewall" onClick={submitQuery}>
+              <ActionButton onClick={submitQuery}>
                 Xem tất cả kết quả cho “{trimmed}” <kbd>↵</kbd>
-              </button>
+              </ActionButton>
             </>
           )}
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }

@@ -1,4 +1,4 @@
-import { Eye, Pulse, SealCheck, UsersThree } from '@phosphor-icons/react';
+import { EyeIcon as Eye, PulseIcon as Pulse, SealCheckIcon as SealCheck, UsersThreeIcon as UsersThree } from '@coreds/react/icons';
 import { companyWeek } from '../../data/team-engagement';
 import type { NewsPost } from '../../types';
 
@@ -28,7 +28,7 @@ export function AdminMetrics({ news }: { news: NewsPost[] }) {
     <section className="admin-tiles" aria-label="Chỉ số COM">
       {tiles.map(({ icon: Icon, label, value, hint, tone }) => (
         <article key={label} className={`admin-tile admin-tile--${tone}`}>
-          <span className="admin-tile-icon" aria-hidden="true"><Icon size={18} weight="duotone" /></span>
+          <span className="admin-tile-icon" aria-hidden="true"><Icon size={18} variant="duotone" /></span>
           <small>{label}</small>
           <strong>{value}</strong>
           <p>{hint}</p>

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { HandsClapping, PencilSimpleLine, ShieldWarning } from '@phosphor-icons/react';
-import { Button } from '../../components/UI';
+import { HandsClappingIcon as HandsClapping, PencilSimpleLineIcon as PencilSimpleLine, ShieldWarningIcon as ShieldWarning } from '@coreds/react/icons';
+import { Button, ChipButton } from '../../components/UI';
 import { checkContent, type ModerationResult } from '../../lib/moderation';
 import type { Post } from '../../types';
+import { Select, Avatar, Textarea } from '@coreds/react';
+import { avatarText } from '../../lib/avatar-text';
 
 export type ComposerSubmit = { body: string; kudos?: Post['kudos'] };
 export type Colleague = { name: string; shortName: string; role: string };
@@ -50,24 +52,30 @@ export function PostComposer({ userShort, demoResetCount, colleagues, onSubmit, 
   return (
     <section className="community-composer" aria-label="Đăng bài mới">
       <div className="community-composer-modes" role="group" aria-label="Loại bài đăng">
-        <button type="button" aria-pressed={mode === 'share'} className={mode === 'share' ? 'is-active' : ''} onClick={() => setMode('share')}>
+        <ChipButton aria-pressed={mode === 'share'} onClick={() => setMode('share')}>
           <PencilSimpleLine size={15} /> Chia sẻ
-        </button>
-        <button type="button" aria-pressed={mode === 'kudos'} className={mode === 'kudos' ? 'is-active' : ''} onClick={() => setMode('kudos')}>
+        </ChipButton>
+        <ChipButton aria-pressed={mode === 'kudos'} onClick={() => setMode('kudos')}>
           <HandsClapping size={15} /> Ghi nhận đồng nghiệp
-        </button>
+        </ChipButton>
       </div>
       {mode === 'kudos' && (
         <label className="community-composer-recipient">
           <span>Gửi tới</span>
-          <select value={recipient} onChange={(event) => setRecipient(event.target.value)} aria-label="Người được ghi nhận">
-            {colleagues.map((person) => <option key={person.name} value={person.name}>{person.name} · {person.role}</option>)}
-          </select>
+          <Select
+            variant="fill"
+            searchable
+            aria-label="Người được ghi nhận"
+            searchPlaceholder="Tìm đồng nghiệp…"
+            options={colleagues.map((person) => ({ value: person.name, label: person.name, description: person.role }))}
+            value={recipient}
+            onValueChange={(value) => setRecipient(String(value))}
+          />
         </label>
       )}
       <div className="community-composer-row">
-        <span className="avatar" aria-hidden="true">{userShort}</span>
-        <textarea
+        <Avatar type="text" size="m" fallback={avatarText(userShort)} alt="" aria-hidden="true" />
+        <Textarea variant="borderless" autosize minRows={2}
           value={body}
           onChange={(event) => { setBody(event.target.value); if (rejection) setRejection(null); }}
           placeholder={mode === 'kudos' ? `Vì sao bạn muốn ghi nhận ${recipient || 'đồng nghiệp'}?` : 'Bạn muốn chia sẻ gì với iKame?'}
@@ -78,7 +86,7 @@ export function PostComposer({ userShort, demoResetCount, colleagues, onSubmit, 
       </div>
       {rejection && (
         <div className="community-moderation" role="alert">
-          <ShieldWarning size={20} weight="duotone" aria-hidden="true" />
+          <ShieldWarning size={20} variant="duotone" aria-hidden="true" />
           <div>
             <strong>Bài chưa được đăng — {rejection.reason}</strong>
             <p>Hệ thống phát hiện “{rejection.matched}”. {rejection.hint}</p>
