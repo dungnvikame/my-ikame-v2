@@ -1,11 +1,11 @@
 import { BellIcon as Bell, BriefcaseIcon as Briefcase, CalendarDotsIcon as CalendarDots, ChatsCircleIcon as ChatsCircle, CompassIcon as Compass, GaugeIcon as Gauge, HouseIcon as House, MagnifyingGlassIcon as MagnifyingGlass, MoonIcon as Moon, SidebarSimpleIcon as SidebarSimple, SparkleIcon as Sparkle, SquaresFourIcon as SquaresFour, SunIcon as Sun, TargetIcon as Target, UsersThreeIcon as UsersThree, XIcon as X, PaperPlaneTiltIcon as PaperPlaneTilt, UserCircleIcon as UserCircle, ArrowsClockwiseIcon as ArrowsClockwise, EyeIcon as Eye, EyeSlashIcon as EyeSlash, PlugsConnectedIcon as PlugsConnected, DatabaseIcon as Database, CalendarIcon as CalendarIco, HandHeartIcon as HandHeart } from '@coreds/react/icons';
-import { useEffect, useRef, useState, type KeyboardEvent, type PropsWithChildren } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PropsWithChildren } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
 import type { Perspective } from '../types';
 import { AppLauncher } from './AppLauncher';
 import { BrandLogo } from './BrandLogo';
-import { IconButton, StatusPill, ChipButton, TextButton } from './UI';
+import { Button, IconButton, StatusPill, ChipButton, TextButton } from './UI';
 import { NotificationList } from '../pages/NotificationsPage';
 import { QuickAskPanel } from './assistant/QuickAskPanel';
 import { SearchPalette } from './search/SearchPalette';
@@ -17,76 +17,63 @@ import { FeedbackWidgets } from './feedback/FeedbackWidgets';
 type NavEntry = { label: string; to: string; icon: typeof House };
 type NavGroup = { label: string; items: NavEntry[] };
 
-// MVP: nav tinh gọn còn 5 mục (Newsfeed + Sự kiện là trọng tâm; Ứng dụng là một cửa
-// vào các platform khác). Module ngoài MVP (Tri thức, Mục tiêu, iRequest, Manager)
-// vẫn giữ route — chỉ ẩn khỏi điều hướng.
+// Thanh bên chỉ giữ việc hằng ngày + không gian iKame. Cá nhân nằm ở ô tài khoản cuối thanh,
+// Ứng dụng ở nút ▦ và Trợ lý ở nút "Hỏi trợ lý" trên topbar — không lặp lại trong menu.
+const IKAME_GROUP: NavGroup = { label: 'iKame', items: [
+  { label: 'Bảng tin', to: '/feed', icon: ChatsCircle },
+  { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+  { label: 'Gắn kết', to: '/people', icon: HandHeart },
+] };
+
 const iKamerNavGroups: NavGroup[] = [
-  { label: 'KHÔNG GIAN CỦA BẠN', items: [
+  { label: '', items: [
     { label: 'Trang chủ', to: '/home', icon: House },
     { label: 'Công việc', to: '/work', icon: Briefcase },
     { label: 'Lịch', to: '/calendar', icon: CalendarIco },
     { label: 'Đề xuất', to: '/requests', icon: PaperPlaneTilt },
-    { label: 'Cá nhân', to: '/profile', icon: UserCircle },
   ] },
-  { label: 'IKAME', items: [
-    { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
-    { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-    { label: 'Gắn kết', to: '/people', icon: HandHeart },
-    { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
-    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
-  ] },
+  IKAME_GROUP,
 ];
 
-// Manager: không gian quản lý (tổng quan, đội ngũ, OKR team) đứng trước; lõi chung phía dưới.
+// Manager: không gian quản lý đứng trước, việc của chính mình và iKame phía dưới.
 const managerNavGroups: NavGroup[] = [
-  { label: 'QUẢN LÝ', items: [
+  { label: 'Quản lý', items: [
     { label: 'Tổng quan', to: '/manager/overview', icon: House },
     { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
     { label: 'Mục tiêu team', to: '/goals', icon: Target },
   ] },
-  { label: 'KHÔNG GIAN CHUNG', items: [
+  { label: 'Của bạn', items: [
     { label: 'Công việc', to: '/work', icon: Briefcase },
     { label: 'Lịch', to: '/calendar', icon: CalendarIco },
     { label: 'Đề xuất', to: '/requests', icon: PaperPlaneTilt },
-    { label: 'Cá nhân', to: '/profile', icon: UserCircle },
-    { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
-    { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-    { label: 'Gắn kết', to: '/people', icon: HandHeart },
-    { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
-    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
   ] },
+  IKAME_GROUP,
 ];
 
 const managerBottomNav: NavEntry[] = [
   { label: 'Tổng quan', to: '/manager/overview', icon: House },
   { label: 'Đội ngũ', to: '/manager/team', icon: UsersThree },
   { label: 'Công việc', to: '/work', icon: Briefcase },
-  { label: 'Feed', to: '/feed', icon: ChatsCircle },
-  { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
+  { label: 'Lịch', to: '/calendar', icon: CalendarIco },
+  { label: 'Trợ lý', to: '/assistant', icon: Sparkle },
 ];
 
-// COM Admin: "Tổng quan COM" thay Trang chủ — nơi ghim/push/đo acknowledge; các mục còn lại dùng chung.
+// COM Admin: "Tổng quan COM" thay Trang chủ; phần iKame dùng chung.
 const adminNavGroups: NavGroup[] = [
-  { label: 'QUẢN TRỊ COM', items: [
+  { label: 'Quản trị COM', items: [
     { label: 'Tổng quan COM', to: '/admin', icon: Gauge },
   ] },
-  { label: 'KHÔNG GIAN CHUNG', items: [
-    { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
-    { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-    { label: 'Gắn kết', to: '/people', icon: HandHeart },
-    { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
-    { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
-  ] },
+  IKAME_GROUP,
 ];
 
-// Fixed 5 — mobile bottom-nav mirrors the MVP sidebar.
-// Mobile: Ứng dụng nhường chỗ cho Công việc (vẫn còn launcher ▦ trên topbar).
+// Thanh dưới mobile: 5 mục dùng hằng ngày.
+// Bảng tin, Sự kiện, Gắn kết vào từ Trang chủ hoặc launcher ▦.
 const iKamerBottomNav: NavEntry[] = [
   { label: 'Trang chủ', to: '/home', icon: House },
   { label: 'Công việc', to: '/work', icon: Briefcase },
-  { label: 'Feed', to: '/feed', icon: ChatsCircle },
-  { label: 'Sự kiện', to: '/events', icon: CalendarDots },
-  { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
+  { label: 'Lịch', to: '/calendar', icon: CalendarIco },
+  { label: 'Đề xuất', to: '/requests', icon: PaperPlaneTilt },
+  { label: 'Trợ lý', to: '/assistant', icon: Sparkle },
 ];
 
 const adminBottomNav: NavEntry[] = [
@@ -107,13 +94,13 @@ const PERSPECTIVE_ORDER: Perspective[] = ['ikamer', 'manager', 'admin'];
 
 const JOURNEY_NAV: NavEntry = { label: 'Hành trình', to: '/onboarding', icon: Compass };
 
-/** Overlay Người mới: thêm "Hành trình" ngay sau Trang chủ; mobile nhường chỗ của Sự kiện (vẫn vào được từ Home). */
+/** Overlay Người mới: thêm "Hành trình" ngay sau Trang chủ; mobile nhường chỗ của Đề xuất (vẫn vào được từ Trang chủ). */
 function navFor(perspective: Perspective, newJoiner: boolean) {
   const base = NAV_BY_PERSPECTIVE[perspective];
   if (perspective !== 'ikamer' || !newJoiner) return base;
   const [first, ...rest] = base.groups;
   const groups = [{ ...first, items: [first.items[0], JOURNEY_NAV, ...first.items.slice(1)] }, ...rest];
-  const bottom = base.bottom.map((entry) => (entry.to === '/events' ? JOURNEY_NAV : entry));
+  const bottom = base.bottom.map((entry) => (entry.to === '/requests' ? JOURNEY_NAV : entry));
   return { ...base, groups, bottom };
 }
 
@@ -250,7 +237,11 @@ export function AppShell({ children }: PropsWithChildren) {
       <aside className="sidebar sidebar--ds">
         <Logo />
         {/* Danh sách mục: SimpleSidebar của Core DS; logo và ô tài khoản nằm ngoài vì khe header/footer của kit chỉ vừa một icon. */}
-        <div className="sidebar-nav-ds">
+        {/* Kit không vẽ tiêu đề nhóm: truyền tên nhóm qua biến CSS, CSS hiện nó phía trên từng nhóm. */}
+        <div
+          className="sidebar-nav-ds"
+          style={Object.fromEntries(navGroups.map((group, index) => [`--nav-group-${index + 1}`, JSON.stringify(group.label)])) as CSSProperties}
+        >
           <SimpleSidebar
             aria-label="Điều hướng chính"
             alwaysExpanded={!sidebarCollapsed}
@@ -313,9 +304,7 @@ export function AppShell({ children }: PropsWithChildren) {
               {privacy ? <EyeSlash size={20} /> : <Eye size={20} />}
             </IconButton>
             <AppLauncher />
-            <IconButton label="Hỏi iKame" onClick={() => setAskOpen(true)}>
-              <Sparkle size={20} />
-            </IconButton>
+            <Button className="topbar-ask" variant="dim" size="m" icon={<Sparkle size={16} />} onClick={() => setAskOpen(true)}>Hỏi trợ lý</Button>
             <IconButton label={theme === 'light' ? 'Bật giao diện tối' : 'Bật giao diện sáng'} onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </IconButton>
