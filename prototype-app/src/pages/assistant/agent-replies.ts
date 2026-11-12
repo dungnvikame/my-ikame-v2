@@ -2,6 +2,7 @@ import type {
   ApprovalItem, AttentionItem, EventItem, Goal, KnowledgeDoc, LeaveBalance,
   MemberEksStat, NewsPost, Perspective, RequestType, User,
 } from '../../types';
+import type { ActionCard } from './assistant-actions';
 import { buildDailyDigestItems, DIGEST_SOURCES, type DigestCtx } from './daily-digest';
 
 /**
@@ -73,6 +74,8 @@ export type AgentMessage = {
   sources?: string[];
   /** Tool MCP (read) agent đã gọi để dựng câu trả lời — audit trail. */
   toolCalls?: string[];
+  /** Thẻ hành động có xác nhận (tạo việc, lịch họp, mở đề xuất, soạn Slack) — xem assistant-actions.ts. */
+  card?: ActionCard;
 };
 
 export type AgentCtx = {

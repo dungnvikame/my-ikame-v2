@@ -25,6 +25,10 @@ import './styles/profile-v2.css';
 import './styles/onboarding.css';
 import './styles/notifications.css';
 import './styles/team-pulse.css';
+import './styles/home-v3.css';
+import './styles/work-calendar.css';
+import './styles/requests-assistant.css';
+import './styles/profile-people.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><App /></React.StrictMode>,

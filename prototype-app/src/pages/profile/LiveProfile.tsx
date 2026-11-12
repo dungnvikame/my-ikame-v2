@@ -65,7 +65,7 @@ export function LiveProfileHero({ live }: { live: LiveData }) {
   );
 }
 
-function GoalsSection({ live }: { live: LiveData }) {
+export function GoalsSection({ live }: { live: LiveData }) {
   const objectives = live.objectives;
   if (!objectives) return <SourceUnavailable source="igoal" title="Mục tiêu của tôi" />;
   return (
@@ -111,7 +111,7 @@ function GoalsSection({ live }: { live: LiveData }) {
   );
 }
 
-function ReportSection({ live }: { live: LiveData }) {
+export function ReportSection({ live }: { live: LiveData }) {
   const weekly = live.igoal?.weekly;
   if (!weekly) return null;
   return (
@@ -127,7 +127,7 @@ function ReportSection({ live }: { live: LiveData }) {
   );
 }
 
-function OrgSection({ live }: { live: LiveData }) {
+export function OrgSection({ live }: { live: LiveData }) {
   return (
     <section className="side-info profile-section" aria-label="Tổ chức">
       <SectionHeader title="Tổ chức" />
@@ -141,7 +141,7 @@ function OrgSection({ live }: { live: LiveData }) {
   );
 }
 
-function AttendanceSection({ live }: { live: LiveData }) {
+export function AttendanceSection({ live }: { live: LiveData }) {
   const icheck = live.icheck;
   if (!icheck) return <SourceUnavailable source="icheck" title="Chấm công và phép" />;
   const { leave, month, checkIn } = icheck;
@@ -158,6 +158,38 @@ function AttendanceSection({ live }: { live: LiveData }) {
         <SourceNote source="icheck" live={live} />
         <PlatformHandoffButton platform="iCheck" action="xem lịch chấm công và lịch sử nghỉ phép" label="Mở iCheck" variant="link" />
       </div>
+    </section>
+  );
+}
+
+/** Chỉ phần license (thiết bị hiện bằng thẻ thiết bị ở trang Cá nhân). */
+export function LiveLicenses({ live }: { live: LiveData }) {
+  const licenses = live.licenses;
+  if (!licenses) return <SourceUnavailable source="itp" title="License đang dùng" />;
+  return (
+    <section className="side-info profile-section" aria-label="License đang dùng">
+      <SectionHeader title="License đang dùng" meta={`${licenses.length} license`} />
+      {licenses.length === 0 ? <p className="live-source">Bạn chưa có license nào.</p> : (
+        <ul className="live-licenses">
+          {licenses.map((license) => (
+            <li key={license.id}><Key size={15} aria-hidden="true" /><strong>{license.name}</strong><small>{license.kind}</small></li>
+          ))}
+        </ul>
+      )}
+      <SourceNote source="itp" live={live} />
+    </section>
+  );
+}
+
+/** Ghi chú phần Hồ sơ HRIS chưa nối ở bản dữ liệu thật. */
+export function LiveRecordNote() {
+  return (
+    <section className="side-info profile-section" aria-label="Hồ sơ nhân sự">
+      <SectionHeader title="Hồ sơ nhân sự" />
+      <p className="live-source">
+        Ngày vào làm, hợp đồng, lương, giấy tờ và cột mốc thâm niên lấy từ HRIS. My iKame chưa nối HRIS nên phần này để trống,
+        không hiển thị số liệu mẫu.
+      </p>
     </section>
   );
 }

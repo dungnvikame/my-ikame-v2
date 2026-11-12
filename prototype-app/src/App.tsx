@@ -30,6 +30,8 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ defa
 const RequestsPage = lazy(() => import('./pages/RequestsPage').then((m) => ({ default: m.RequestsPage })));
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })));
 const TeamPage = lazy(() => import('./pages/TeamPage').then((m) => ({ default: m.TeamPage })));
+const CalendarPage = lazy(() => import('./pages/CalendarPage').then((m) => ({ default: m.CalendarPage })));
+const PeoplePage = lazy(() => import('./pages/PeoplePage').then((m) => ({ default: m.PeoplePage })));
 const WorkPage = lazy(() => import('./pages/WorkPage').then((m) => ({ default: m.WorkPage })));
 
 /** Điều hướng tiến (PUSH) cuộn về đầu trang; Back/Forward (POP) giữ nguyên vị trí (state preservation). */
@@ -71,6 +73,8 @@ function AppRoutes() {
         <Route path="/work" element={<WorkPage />} />
         <Route path="/onboarding" element={<PerspectiveGuard expected="ikamer"><OnboardingPage /></PerspectiveGuard>} />
         <Route path="/admin" element={<PerspectiveGuard expected="admin"><AdminPage /></PerspectiveGuard>} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/people" element={<PeoplePage />} />
         <Route path="/requests" element={<RequestsPage />} />
         <Route path="/feed" element={<FeedPage />} />
         <Route path="/feed/article/:postId" element={<ArticlePage />} />

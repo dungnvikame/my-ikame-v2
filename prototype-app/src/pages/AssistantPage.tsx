@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowRightIcon as ArrowRight, CheckCircleIcon as CheckCircle, ClockCounterClockwiseIcon as ClockCounterClockwise, NotePencilIcon as NotePencil, PaperPlaneTiltIcon as PaperPlaneTilt, SparkleIcon as Sparkle, TrashIcon as Trash } from '@coreds/react/icons';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLive } from '../lib/live/live-data';
+import { ActionCard } from '../components/assistant/ActionCard';
+import { detectActionCard, executeCard, type ActionCard as ActionCardData } from './assistant/assistant-actions';
 import { useAppState } from '../AppState';
 import { Button, IconButton, ChipButton } from '../components/UI';
 import { buildAgentReply, type AgentAction } from './assistant/agent-replies';
@@ -8,7 +11,7 @@ import {
   clearSessions, loadSessions, questionCount, sanitizeForStorage, saveSessions,
   sessionTimeLabel, type StoredSession, type ThreadMessage,
 } from './assistant/assistant-history';
-import { AssistantSteps, capabilitiesFor, CONNECTORS, generateMessageId, generateReceiptId, stepsOf } from './assistant/assistant-shared';
+import { AssistantSteps, AssistantToolsFooter, capabilitiesFor, CONNECTORS, generateMessageId, generateReceiptId, stepsOf } from './assistant/assistant-shared';
 import { AssistantWorkspace, type OkrReportPayload } from './assistant/AssistantWorkspace';
 import { documentReminders } from '../data/profile-data';
 import { journeyDigestQuests } from '../lib/onboarding';
@@ -41,10 +44,12 @@ function HistoryList({ sessions, onResume, onDelete }: {
 export function AssistantPage() {
   const {
     user, news, events, goals, knowledgeDocs, leaveBalance, demoResetCount,
-    perspective, attention, memberEksStats, approvals, dailyCheckIn, documents, isNewJoiner, journey,
+    perspective, attention, memberEksStats, approvals, dailyCheckIn, documents, isNewJoiner, journey, hrProfile,
     acknowledgeNews, submitReport, addRequest, addAttendanceRequest, recordAgentTask,
   } = useAppState();
-  const capabilities = capabilitiesFor(perspective);
+  const capabilities = capabilitiesFor(perspective, isNewJoiner);
+  const navigate = useNavigate();
+  const liveManager = useLive().data?.igoal?.managerName;
   const chips = capabilities.map((capability) => capability.prompt);
   const [messages, setMessages] = useState<ThreadMessage[]>([]);
   const [input, setInput] = useState('');
@@ -183,8 +188,24 @@ export function AssistantPage() {
     setMessages((prev) => [
       ...prev,
       { id: generateMessageId(), role: 'user', text: trimmed },
-      { id: generateMessageId(), ...buildAgentReply(trimmed, ctx), processing: true, revealedSteps: 0, askedAt: Date.now() },
+      // Ý định "làm việc" (tạo việc, lịch họp, mở đề xuất, soạn Slack) → thẻ xác nhận; còn lại → engine cũ.
+      { id: generateMessageId(), ...(detectActionCard(trimmed, { userName: user.name, managerName: liveManager || hrProfile.managerName, perspective }) ?? buildAgentReply(trimmed, ctx)), processing: true, revealedSteps: 0, askedAt: Date.now() },
     ]);
+  }
+
+  function updateCard(messageId: string, changes: Partial<ActionCardData>) {
+    setMessages((prev) => prev.map((message) => (message.id === messageId && message.card ? { ...message, card: { ...message.card, ...changes } } : message)));
+  }
+
+  // Xác nhận thẻ: chạy hành động cục bộ, ghi đo lường; thẻ "đề xuất" thì chuyển sang form đã điền sẵn.
+  function confirmCard(messageId: string) {
+    const target = messages.find((message) => message.id === messageId);
+    const card = target?.card;
+    if (!card || card.status === 'done') return;
+    const result = executeCard(card);
+    recordAgentTask({ ms: Date.now() - (target?.askedAt ?? Date.now()), tool: card.tool });
+    updateCard(messageId, { status: 'done', result });
+    if (card.kind === 'request' && result.link) navigate(result.link.to);
   }
 
   // Deep link từ hero trang chủ: /assistant?q=... — chạy đúng một lần rồi xoá param
@@ -260,6 +281,7 @@ export function AssistantPage() {
         />
         <DsButton type="submit" variant="primary" size="icon-l" className="send-button" aria-label="Gửi câu hỏi"><PaperPlaneTilt size={18} variant="fill" /></DsButton>
       </form>
+      <AssistantToolsFooter />
     </div>
   );
 
@@ -308,6 +330,7 @@ export function AssistantPage() {
               <HistoryList sessions={sessions.slice(0, 4)} onResume={resumeSession} onDelete={deleteSession} />
             </div>
           )}
+          <AssistantToolsFooter />
           <p className="assistant-disclosure">Concept demo — trả lời theo kịch bản trên dữ liệu mẫu, chưa xử lý văn bản tự do.</p>
         </div>
       </div>
@@ -359,6 +382,9 @@ export function AssistantPage() {
                         </div>
                       )}
                       {/* Tác vụ có workspace: nút duyệt nằm ở khung bên phải, chat chỉ giữ hội thoại. */}
+                      {message.card && (
+                        <ActionCard card={message.card} onChange={(changes) => updateCard(message.id, changes)} onConfirm={() => confirmCard(message.id)} />
+                      )}
                       {message.action && !message.workspace && !message.actionDone && (
                         <div className="assistant-actions">
                           <Button variant="primary" disabled={message.actionRunning} onClick={() => runAction(message.id, message.action!)}>

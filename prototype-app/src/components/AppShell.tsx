@@ -1,4 +1,4 @@
-import { BellIcon as Bell, BriefcaseIcon as Briefcase, CalendarDotsIcon as CalendarDots, ChatsCircleIcon as ChatsCircle, CompassIcon as Compass, GaugeIcon as Gauge, HouseIcon as House, MagnifyingGlassIcon as MagnifyingGlass, MoonIcon as Moon, SidebarSimpleIcon as SidebarSimple, SparkleIcon as Sparkle, SquaresFourIcon as SquaresFour, SunIcon as Sun, TargetIcon as Target, UsersThreeIcon as UsersThree, XIcon as X, PaperPlaneTiltIcon as PaperPlaneTilt, UserCircleIcon as UserCircle, ArrowsClockwiseIcon as ArrowsClockwise, EyeIcon as Eye, EyeSlashIcon as EyeSlash, PlugsConnectedIcon as PlugsConnected, DatabaseIcon as Database } from '@coreds/react/icons';
+import { BellIcon as Bell, BriefcaseIcon as Briefcase, CalendarDotsIcon as CalendarDots, ChatsCircleIcon as ChatsCircle, CompassIcon as Compass, GaugeIcon as Gauge, HouseIcon as House, MagnifyingGlassIcon as MagnifyingGlass, MoonIcon as Moon, SidebarSimpleIcon as SidebarSimple, SparkleIcon as Sparkle, SquaresFourIcon as SquaresFour, SunIcon as Sun, TargetIcon as Target, UsersThreeIcon as UsersThree, XIcon as X, PaperPlaneTiltIcon as PaperPlaneTilt, UserCircleIcon as UserCircle, ArrowsClockwiseIcon as ArrowsClockwise, EyeIcon as Eye, EyeSlashIcon as EyeSlash, PlugsConnectedIcon as PlugsConnected, DatabaseIcon as Database, CalendarIcon as CalendarIco, HandHeartIcon as HandHeart } from '@coreds/react/icons';
 import { useEffect, useRef, useState, type KeyboardEvent, type PropsWithChildren } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAppState } from '../AppState';
@@ -24,10 +24,14 @@ const iKamerNavGroups: NavGroup[] = [
   { label: 'KHÔNG GIAN CỦA BẠN', items: [
     { label: 'Trang chủ', to: '/home', icon: House },
     { label: 'Công việc', to: '/work', icon: Briefcase },
+    { label: 'Lịch', to: '/calendar', icon: CalendarIco },
     { label: 'Đề xuất', to: '/requests', icon: PaperPlaneTilt },
     { label: 'Cá nhân', to: '/profile', icon: UserCircle },
+  ] },
+  { label: 'IKAME', items: [
     { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+    { label: 'Gắn kết', to: '/people', icon: HandHeart },
     { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
     { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
   ] },
@@ -42,10 +46,12 @@ const managerNavGroups: NavGroup[] = [
   ] },
   { label: 'KHÔNG GIAN CHUNG', items: [
     { label: 'Công việc', to: '/work', icon: Briefcase },
+    { label: 'Lịch', to: '/calendar', icon: CalendarIco },
     { label: 'Đề xuất', to: '/requests', icon: PaperPlaneTilt },
     { label: 'Cá nhân', to: '/profile', icon: UserCircle },
     { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+    { label: 'Gắn kết', to: '/people', icon: HandHeart },
     { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
     { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
   ] },
@@ -67,6 +73,7 @@ const adminNavGroups: NavGroup[] = [
   { label: 'KHÔNG GIAN CHUNG', items: [
     { label: 'iKame Feed', to: '/feed', icon: ChatsCircle },
     { label: 'Sự kiện', to: '/events', icon: CalendarDots },
+    { label: 'Gắn kết', to: '/people', icon: HandHeart },
     { label: 'Ứng dụng', to: '/apps', icon: SquaresFour },
     { label: 'Trợ lý AI', to: '/assistant', icon: Sparkle },
   ] },

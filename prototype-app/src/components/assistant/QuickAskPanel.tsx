@@ -33,7 +33,7 @@ export function QuickAskPanel() {
   const [messages, setMessages] = useState<(ThreadMessage & { question?: string })[]>([]);
   const [input, setInput] = useState('');
 
-  const capabilities = capabilitiesFor(perspective);
+  const capabilities = capabilitiesFor(perspective, isNewJoiner);
 
   // Reset hội thoại khi resetDemo (guard ref vì StrictMode gọi effect 2 lần lúc mount).
   const prevResetRef = useRef(demoResetCount);
