@@ -340,6 +340,17 @@ export function routeAiPrompt(params: {
     });
   }
 
+  if (q.includes('báo cáo tuần') || q.includes('weekly report')) {
+    const myOkr = objectives.find((o) => o.ownerId === person.id) || objectives[0];
+    return {
+      id,
+      role: 'assistant',
+      timestamp: nowStr,
+      text: `**Bản nháp Báo cáo Tuần 48 cho ${person.name}:**\n\n• **Hoàn thành nổi bật:** Chốt thiết kế Trang chủ My iKame v2 (Mascot ngọn lửa, Theme Noel Light/Dark, Omni-Search).\n• **Tiến độ OKR / EKS:** "${myOkr.title}" đạt **${myOkr.progress}%**.\n• **Kế hoạch tuần tới:** Triển khai tối ưu các trang con và kiểm thử cùng team QA/COM.\n• **Vướng mắc cần hỗ trợ:** Không có điểm nghẽn lớn.`,
+      sources: ['iGoal · OKR', 'Asana · Sprint 24', 'iCheck · Tuần 48'],
+    };
+  }
+
   if (q.includes('check-in') || q.includes('okr') || q.includes('mục tiêu')) {
     const myOkr = objectives.find((o) => o.ownerId === person.id) || objectives[0];
     return makeProposal({

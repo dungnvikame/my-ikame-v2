@@ -95,11 +95,11 @@ button {
   top: 0;
   height: var(--topbar-h);
   background: var(--bg-shell);
-  padding: 0 18px 0 12px;
-  display: flex;
+  padding: 0 20px 0 12px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
+  gap: 16px;
   z-index: 50;
 }
 
@@ -108,14 +108,14 @@ button {
   align-items: center;
   gap: 8px;
   min-width: 0;
-  flex-shrink: 0;
+  justify-self: start;
 }
 
 .g-brand-link {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  padding: 4px 8px;
+  padding: 4px 10px 4px 6px;
   border-radius: var(--r-full);
   transition: background var(--t-fast);
 }
@@ -124,31 +124,32 @@ button {
 }
 
 .g-brand-logo {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  background: #ffffff;
-  padding: 2px;
-  border: 1px solid var(--border-primary);
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 .g-brand-title {
   font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 16.5px;
+  font-weight: 700;
   color: var(--text-strong);
   letter-spacing: -0.02em;
 }
 
-/* Top Suite App Switcher (My iKame · iCheck · iGoal · iCom · iWiki) */
+/* Top Suite App Switcher (Mathematically Centered!) */
 .g-suite-nav {
+  justify-self: center;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   padding: 4px;
   border-radius: var(--r-full);
   background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -160,8 +161,8 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  height: 34px;
-  padding: 0 14px;
+  height: 32px;
+  padding: 0 13px;
   border-radius: var(--r-full);
   border: none;
   background: transparent;
@@ -185,35 +186,37 @@ button {
 }
 
 .g-suite-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: var(--r-full);
   flex-shrink: 0;
 }
 
 .g-topbar-right {
+  justify-self: end;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
 .g-search-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 14px;
-  min-width: 210px;
+  gap: 7px;
+  height: 36px;
+  padding: 0 10px 0 12px;
   border-radius: var(--r-full);
-  border: 1px solid transparent;
-  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
   color: var(--text-secondary);
-  font-size: 13.5px;
-  transition: background var(--t-fast), box-shadow var(--t-fast);
+  font-size: 13px;
+  margin-right: 2px;
+  transition: background var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
 }
 .g-search-pill:hover {
   background: var(--bg-surface);
+  border-color: var(--border-primary);
   box-shadow: var(--shadow-card);
 }
 
@@ -327,6 +330,8 @@ button {
 }
 
 .g-workspace-sheet {
+  position: relative;
+  overflow: clip;
   flex: 1;
   background: var(--bg-surface);
   border-radius: var(--r-16);
@@ -347,6 +352,8 @@ button {
 
 @media (max-width: 960px) {
   .g-topbar {
+    display: flex;
+    justify-content: space-between;
     padding: 0 10px;
     gap: 8px;
   }
@@ -1115,3 +1122,889 @@ button {
 @keyframes scaleIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ==========================================================================
+   Home Page — Google Workspace Focus + iKame Flame Mascot & Check-in Delight
+   ========================================================================== */
+.home-hero {
+  position: relative;
+  border-radius: 20px;
+  padding: 22px 24px 20px;
+  border: 1px solid var(--border-primary);
+  background:
+    radial-gradient(520px 220px at 4% 0%, rgba(247, 98, 38, 0.085), transparent 70%),
+    radial-gradient(420px 200px at 96% 10%, rgba(11, 87, 208, 0.055), transparent 72%),
+    var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: visible;
+}
+
+[data-theme="dark"] .home-hero {
+  background:
+    radial-gradient(520px 220px at 4% 0%, rgba(247, 98, 38, 0.16), transparent 70%),
+    radial-gradient(420px 200px at 96% 10%, rgba(168, 199, 250, 0.08), transparent 72%),
+    var(--bg-surface);
+}
+
+.home-hero-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.mascot-greeting {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.mascot-stage {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  transition: transform 200ms var(--ease-out);
+}
+
+.mascot-stage:hover {
+  transform: translateY(-2px) scale(1.06);
+}
+
+.mascot-aura {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(247, 98, 38, 0.24) 0%, transparent 70%);
+  opacity: 0.6;
+  pointer-events: none;
+  animation: auraPulse 3.6s ease-in-out infinite;
+}
+
+.mascot-bob {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  animation: mascotFloat 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.mascot-img {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(247, 98, 38, 0.2));
+  user-select: none;
+  pointer-events: none;
+}
+
+.mascot-santa-hat {
+  position: absolute;
+  top: -7px;
+  left: 19px;
+  width: 34px;
+  height: 24px;
+  transform: rotate(11deg);
+  transform-origin: center bottom;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.28));
+}
+
+.mascot-stage.celebrating .mascot-bob {
+  animation: mascotCelebrate 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.mascot-stage.celebrating .mascot-aura {
+  opacity: 1;
+  background: radial-gradient(circle, rgba(247, 98, 38, 0.52) 0%, rgba(249, 171, 0, 0.22) 55%, transparent 75%);
+}
+
+/* Prominent Hero Check-in Action */
+.checkin-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.checkin-btn-fire {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 50px;
+  min-width: 226px;
+  padding: 0 26px;
+  border-radius: var(--r-full);
+  border: none;
+  background: linear-gradient(135deg, #f76226 0%, #ff823a 60%, #f9ab00 100%);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 6px 20px rgba(247, 98, 38, 0.32);
+  transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), filter 160ms;
+}
+
+.checkin-btn-fire:hover {
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 10px 26px rgba(247, 98, 38, 0.42);
+  filter: brightness(1.03);
+}
+
+.checkin-btn-fire:active {
+  transform: scale(0.97);
+}
+
+.checkin-btn-done {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  height: 48px;
+  min-width: 226px;
+  padding: 0 22px;
+  border-radius: var(--r-full);
+  border: 1.5px solid var(--success-border);
+  background: var(--success-bg);
+  color: var(--success-fg);
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  font-weight: 700;
+  transition: background 150ms, border-color 150ms, transform 150ms;
+}
+
+.checkin-btn-done:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.97);
+}
+
+.checkin-btn-done.just-checked {
+  animation: checkinPop 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Full-Page Check-In Celebration Overlay */
+.checkin-celebration-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.checkin-confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.checkin-banner-pop {
+  position: fixed;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 20px 10px 14px;
+  border-radius: var(--r-full);
+  background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  animation: celebrationBannerIn 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  white-space: nowrap;
+}
+
+.checkin-banner-mascot {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  animation: mascotCelebrate 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+
+@keyframes celebrationBannerIn {
+  0% { opacity: 0; transform: translate(-50%, -20px) scale(0.95); }
+  12% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  84% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -14px) scale(0.97); }
+}
+
+/* ==========================================================================
+   Noel Season Decorations (Light & Dark Mode): Framed Snowfall & Volumetric Snowdrift
+   ========================================================================== */
+.noel-sheet-stage {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: clip;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.noel-sheet-sticky {
+  position: sticky;
+  top: var(--topbar-h);
+  width: 100%;
+  height: calc(100vh - var(--topbar-h));
+  max-height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.noel-snow-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  contain: strict;
+  pointer-events: none;
+}
+
+.noel-snowbank-canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 185px;
+  display: block;
+  contain: strict;
+  pointer-events: none;
+}
+
+[data-theme="light"][data-season="noel"] .home-hero {
+  background:
+    radial-gradient(540px 220px at 4% 0%, rgba(196, 30, 58, 0.085), transparent 70%),
+    radial-gradient(460px 220px at 96% 10%, rgba(20, 107, 58, 0.085), transparent 72%),
+    var(--bg-surface);
+  border-color: #c8dfd4;
+}
+
+[data-theme="dark"][data-season="noel"] .home-hero {
+  background:
+    radial-gradient(520px 220px at 4% 0%, rgba(224, 53, 83, 0.16), transparent 70%),
+    radial-gradient(440px 200px at 96% 10%, rgba(255, 255, 255, 0.05), transparent 72%),
+    var(--bg-surface);
+  border-color: var(--border-primary);
+}
+
+[data-theme="noel"] .home-hero {
+  background:
+    radial-gradient(540px 220px at 4% 0%, rgba(224, 53, 83, 0.16), transparent 70%),
+    radial-gradient(460px 220px at 96% 10%, rgba(46, 182, 101, 0.14), transparent 72%),
+    var(--bg-surface);
+  border-color: #2c473d;
+}
+
+/* Velvet Holly-Red Festive Check-In Button with Soft 3D Organic Snow Cap */
+[data-season="noel"] .checkin-btn-fire {
+  background: linear-gradient(180deg, #d62644 0%, #b51833 58%, #961128 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 8px 22px rgba(181, 24, 51, 0.28);
+  overflow: visible;
+}
+
+[data-season="noel"] .checkin-btn-fire::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 6px;
+  right: 6px;
+  height: 22px;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 22' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='snow' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='68%25' stop-color='%23f4f9ff'/%3E%3Cstop offset='100%25' stop-color='%23d7eafc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M4 11 C8 4, 24 1, 46 2 C66 3, 78 6, 98 3 C118 0, 144 0, 168 3 C190 5, 208 4, 216 11 C218 13, 215 16, 209 15 C201 13, 194 19, 184 18 C174 17, 168 12, 156 13 C144 14, 138 20, 126 19 C114 18, 108 12, 95 13 C82 14, 75 18, 63 17 C51 16, 46 11, 34 13 C23 15, 16 18, 9 15 C5 14, 3 13, 4 11 Z' fill='url(%23snow)'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 2px 3px rgba(100, 14, 30, 0.24));
+  transition: transform 180ms var(--ease-out);
+}
+
+[data-season="noel"] .checkin-btn-fire:hover::before {
+  transform: translateY(-1px);
+}
+
+[data-season="noel"] .checkin-btn-fire:active::before {
+  transform: translateY(1px) scaleY(0.9);
+}
+
+/* Primary Buttons in Noel Mode: Clean, Subtle Tapered Snow Rim */
+[data-season="noel"] .btn-primary {
+  position: relative;
+  overflow: visible;
+  background: linear-gradient(180deg, #d12340 0%, #b01731 100%);
+  border-color: #9e142c;
+  color: #ffffff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 3px 10px rgba(176, 23, 49, 0.22);
+}
+
+[data-season="noel"] .btn-primary::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 5px;
+  right: 5px;
+  height: 12px;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 12' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='s2' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%23dbeeff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M3 6 C7 1, 24 0, 44 2 C64 4, 80 0, 102 2 C120 3, 132 2, 137 6 C138 8, 135 10, 129 9 C121 8, 114 11, 104 10 C94 9, 86 7, 74 8 C62 9, 54 11, 42 10 C30 9, 22 7, 12 9 C6 10, 2 8, 3 6 Z' fill='url(%23s2)'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 1.5px 2px rgba(95, 14, 28, 0.2));
+}
+
+[data-theme="light"][data-season="noel"] .qa-pill {
+  border-color: #cfe2d8;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbf9 100%);
+  box-shadow: inset 0 1px 0 #ffffff;
+}
+
+[data-theme="light"][data-season="noel"] .qa-pill:hover {
+  border-color: #9bc7b1;
+  background: #eff7f3;
+}
+
+[data-theme="dark"][data-season="noel"] .qa-pill {
+  border-color: var(--border-primary);
+  background: var(--bg-subtle);
+}
+
+[data-theme="dark"][data-season="noel"] .qa-pill:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-muted);
+}
+
+[data-theme="noel"] .qa-pill {
+  border-color: #2b443b;
+  background: #192823;
+}
+
+[data-theme="noel"] .qa-pill:hover {
+  border-color: #3f6b5a;
+  background: #20332d;
+}
+
+[data-season="noel"] .checkin-btn-fire:hover,
+[data-season="noel"] .btn-primary:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 8px 22px rgba(176, 23, 49, 0.34);
+}
+
+[data-theme="light"][data-season="noel"] .g-suite-pill.active {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f8f4 100%);
+  color: #146b3a;
+  box-shadow: 0 2px 8px rgba(20, 107, 58, 0.14);
+}
+
+[data-theme="dark"][data-season="noel"] .g-suite-pill.active {
+  background: var(--bg-surface);
+  color: #ff8599;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="noel"] .g-suite-pill.active {
+  background: #1f342c;
+  color: #9ce6be;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Compact 3-Icon Theme Switcher Pill (Sun · Moon · Santa Hat) */
+.theme-switcher-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--r-full);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-primary);
+}
+
+.theme-switcher-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-full);
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast);
+}
+
+.theme-switcher-btn:hover {
+  color: var(--text-strong);
+  background: var(--hover-neutral);
+}
+
+.theme-switcher-btn.active {
+  background: var(--bg-surface);
+  color: var(--text-strong);
+  box-shadow: var(--shadow-card);
+}
+
+/* On-Time Check-in Streak Pill & Hover Popover */
+.streak-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.streak-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--r-full);
+  background: rgba(247, 98, 38, 0.13);
+  border: 1px solid rgba(247, 98, 38, 0.28);
+  color: #f76226;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+  transition: transform 180ms var(--ease-out);
+}
+
+[data-theme="dark"] .streak-pill,
+[data-theme="noel"] .streak-pill {
+  background: rgba(255, 138, 91, 0.16);
+  border-color: rgba(255, 138, 91, 0.34);
+  color: #ff986e;
+}
+
+.streak-pill.bumped {
+  animation: checkinPop 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.streak-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 244px;
+  padding: 11px 13px;
+  border-radius: var(--r-12);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-popover);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 150ms, transform 150ms, visibility 150ms;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.streak-wrap:hover .streak-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Google Instant Live Search Dropdown on Hero Omni-Bar */
+.home-omni-wrap {
+  position: relative;
+  z-index: 35;
+}
+
+.home-omni-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
+  box-shadow: var(--shadow-popover);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: fadeIn 120ms var(--ease-out);
+}
+
+.home-omni-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  transition: background 120ms;
+}
+
+.home-omni-row:hover,
+.home-omni-row.active {
+  background: var(--hover-neutral);
+}
+
+.home-omni-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+/* Feed Compact Filter Pills */
+.feed-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.feed-filter-pill {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--r-full);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+
+.feed-filter-pill:hover {
+  background: var(--hover-neutral);
+  color: var(--text-strong);
+}
+
+.feed-filter-pill.active {
+  background: var(--brand-primary-subtle);
+  border-color: var(--brand-primary-border);
+  color: var(--brand-primary-fg);
+  font-weight: 600;
+}
+
+/* Live Today Schedule States & Inline Quick Preview */
+.live-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-full);
+  background: #188038;
+  display: inline-block;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0 rgba(24, 128, 56, 0.55);
+  animation: liveDotPulse 1.8s ease-out infinite;
+}
+
+[data-theme="dark"] .live-pulse-dot,
+[data-theme="noel"] .live-pulse-dot {
+  background: #4ade80;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
+}
+
+@keyframes liveDotPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(24, 128, 56, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(24, 128, 56, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(24, 128, 56, 0);
+  }
+}
+
+.meeting-row-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 8px;
+  margin: 0 -8px;
+  border-radius: var(--r-10);
+  border: none;
+  background: transparent;
+  text-align: left;
+  transition: background var(--t-fast), opacity var(--t-fast);
+}
+
+.meeting-row-btn:hover,
+.meeting-row-btn.selected {
+  background: var(--hover-neutral);
+}
+
+.meeting-row-btn.past {
+  opacity: 0.52;
+}
+
+.meeting-row-btn.past:hover {
+  opacity: 0.82;
+}
+
+.meeting-preview-box {
+  margin: 4px 0 8px;
+  padding: 12px 13px;
+  border-radius: var(--r-12);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  animation: fadeIn 140ms var(--ease-out);
+}
+
+.mini-avatar-stack {
+  display: inline-flex;
+  align-items: center;
+}
+
+.mini-avatar-chip {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-full);
+  border: 1.5px solid var(--bg-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  margin-left: -5px;
+}
+
+.mini-avatar-chip:first-child {
+  margin-left: 0;
+}
+
+.checkin-float-tag {
+  position: absolute;
+  top: -12px;
+  right: 8px;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  background: linear-gradient(135deg, #f76226 0%, #f9ab00 100%);
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(247, 98, 38, 0.3);
+  animation: floatUpFade 1.6s var(--ease-out) forwards;
+}
+
+.spark-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.spark-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  opacity: 0;
+  animation: sparkFly 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Google-style Single Omni-Bar on Home */
+.home-omni-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 8px 0 16px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-subtle);
+  transition: background var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
+}
+
+.home-omni-bar:hover {
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.home-omni-bar:focus-within {
+  background: var(--bg-surface);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.12);
+}
+
+.home-omni-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--text-strong);
+}
+
+.home-omni-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Compact Quick Actions Strip (Home Variant) */
+.qa-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.qa-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 13px 0 8px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-surface);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-strong);
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+}
+
+.qa-pill:hover {
+  background: var(--bg-subtle);
+  border-color: var(--brand-primary-border);
+  transform: translateY(-1px);
+}
+
+.qa-pill-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Calendar Date Tile & Feed Mini Cards */
+.date-tile {
+  width: 42px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1.1;
+}
+
+.date-tile-month {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ikame-orange);
+}
+
+.date-tile-day {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.feed-mini-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 15px 17px;
+  border-radius: var(--r-12);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-surface);
+  transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+}
+
+.feed-mini-card:hover {
+  border-color: var(--brand-primary-border);
+  background: var(--bg-subtle);
+  transform: translateY(-1px);
+}
+
+@keyframes mascotFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(2deg); }
+}
+
+@keyframes auraPulse {
+  0%, 100% { transform: scale(0.95); opacity: 0.45; }
+  50% { transform: scale(1.06); opacity: 0.75; }
+}
+
+@keyframes mascotCelebrate {
+  0% { transform: scale(1) translateY(0) rotate(0deg); }
+  25% { transform: scale(1.22) translateY(-9px) rotate(-10deg); }
+  50% { transform: scale(1.14) translateY(-3px) rotate(10deg); }
+  75% { transform: scale(1.16) translateY(-6px) rotate(-5deg); }
+  100% { transform: scale(1) translateY(0) rotate(0deg); }
+}
+
+@keyframes checkinPop {
+  0% { transform: scale(0.86); }
+  55% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes floatUpFade {
+  0% { opacity: 0; transform: translateY(6px) scale(0.92); }
+  18% { opacity: 1; transform: translateY(-10px) scale(1); }
+  80% { opacity: 1; transform: translateY(-22px) scale(1); }
+  100% { opacity: 0; transform: translateY(-32px) scale(0.96); }
+}
+
+@keyframes sparkFly {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.1);
+  }
+}

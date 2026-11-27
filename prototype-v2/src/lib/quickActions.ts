@@ -1,5 +1,5 @@
 // Customizable Quick Actions catalog & per-person defaults
-export type QuickActionCategory = 'Chấm công & Đơn từ' | 'Công việc & AI' | 'Văn hoá & Công cụ';
+export type QuickActionCategory = 'Phổ biến' | 'Chấm công & Đơn từ' | 'Công việc & AI' | 'Văn hoá & Công cụ';
 
 export interface QuickActionDef {
   id: string;
@@ -20,7 +20,9 @@ export interface QuickActionDef {
     | 'users'
     | 'calendar'
     | 'user'
-    | 'compass';
+    | 'compass'
+    | 'filePen'
+    | 'fileText';
   accentBg: string;
   accentFg: string;
   kind: 'checkin' | 'ai' | 'route' | 'sso_app';
@@ -31,6 +33,69 @@ export interface QuickActionDef {
 }
 
 export const QUICK_ACTIONS_CATALOG: QuickActionDef[] = [
+  // 6 Phổ biến (Popular actions requested)
+  {
+    id: 'qa-leave',
+    label: 'Xin nghỉ phép',
+    category: 'Phổ biến',
+    iconKey: 'plane',
+    accentBg: 'var(--info-bg)',
+    accentFg: 'var(--info-fg)',
+    kind: 'ai',
+    aiPrompt: 'Xin nghỉ phép năm ngày thứ 6',
+  },
+  {
+    id: 'qa-room',
+    label: 'Đặt phòng họp',
+    category: 'Phổ biến',
+    iconKey: 'door',
+    accentBg: 'var(--info-bg)',
+    accentFg: 'var(--info-fg)',
+    kind: 'ai',
+    aiPrompt: 'Đặt phòng họp chiều nay',
+  },
+  {
+    id: 'qa-weekly-report',
+    label: 'Viết báo cáo tuần',
+    category: 'Phổ biến',
+    iconKey: 'filePen',
+    accentBg: 'var(--brand-primary-subtle)',
+    accentFg: 'var(--brand-primary-fg)',
+    kind: 'ai',
+    aiPrompt: 'Viết báo cáo tuần này',
+  },
+  {
+    id: 'qa-kudos',
+    label: 'Gửi Kudos',
+    category: 'Phổ biến',
+    iconKey: 'award',
+    accentBg: 'var(--violet-bg)',
+    accentFg: 'var(--violet-fg)',
+    kind: 'route',
+    route: '/icom/feed?compose=kudos',
+  },
+  {
+    id: 'qa-requests',
+    label: 'Đề xuất',
+    category: 'Phổ biến',
+    iconKey: 'fileText',
+    accentBg: 'var(--success-bg)',
+    accentFg: 'var(--success-fg)',
+    kind: 'route',
+    route: '/my-requests',
+  },
+  {
+    id: 'qa-late',
+    label: 'Đi muộn / Về sớm',
+    category: 'Phổ biến',
+    iconKey: 'calendarClock',
+    accentBg: 'var(--warning-bg)',
+    accentFg: 'var(--warning-fg)',
+    kind: 'ai',
+    aiPrompt: 'Xin đi muộn 60 phút ngày mai',
+  },
+
+  // Chấm công & Đơn từ
   {
     id: 'qa-checkin',
     label: 'Chấm công',
@@ -39,16 +104,6 @@ export const QUICK_ACTIONS_CATALOG: QuickActionDef[] = [
     accentBg: 'var(--brand-primary-subtle)',
     accentFg: 'var(--brand-primary-fg)',
     kind: 'checkin',
-  },
-  {
-    id: 'qa-leave',
-    label: 'Xin nghỉ phép',
-    category: 'Chấm công & Đơn từ',
-    iconKey: 'plane',
-    accentBg: 'var(--info-bg)',
-    accentFg: 'var(--info-fg)',
-    kind: 'ai',
-    aiPrompt: 'Xin nghỉ phép năm ngày thứ 6',
   },
   {
     id: 'qa-wfh',
@@ -71,35 +126,17 @@ export const QUICK_ACTIONS_CATALOG: QuickActionDef[] = [
     aiPrompt: 'Bổ sung quên chấm công sáng nay',
   },
   {
-    id: 'qa-late',
-    label: 'Đi muộn / Về sớm',
+    id: 'qa-balance',
+    label: 'Số dư phép',
     category: 'Chấm công & Đơn từ',
-    iconKey: 'calendarClock',
-    accentBg: 'var(--warning-bg)',
-    accentFg: 'var(--warning-fg)',
+    iconKey: 'calendarDays',
+    accentBg: 'var(--success-bg)',
+    accentFg: 'var(--success-fg)',
     kind: 'ai',
-    aiPrompt: 'Xin đi muộn 60 phút ngày mai',
+    aiPrompt: 'Số dư phép năm của tôi',
   },
-  {
-    id: 'qa-kudos',
-    label: 'Gửi Kudos',
-    category: 'Văn hoá & Công cụ',
-    iconKey: 'award',
-    accentBg: 'var(--violet-bg)',
-    accentFg: 'var(--violet-fg)',
-    kind: 'route',
-    route: '/icom/feed?compose=kudos',
-  },
-  {
-    id: 'qa-room',
-    label: 'Đặt phòng họp',
-    category: 'Công việc & AI',
-    iconKey: 'door',
-    accentBg: 'var(--info-bg)',
-    accentFg: 'var(--info-fg)',
-    kind: 'ai',
-    aiPrompt: 'Đặt phòng họp chiều nay',
-  },
+
+  // Công việc & AI
   {
     id: 'qa-okr',
     label: 'Check-in OKR',
@@ -120,16 +157,8 @@ export const QUICK_ACTIONS_CATALOG: QuickActionDef[] = [
     kind: 'ai',
     aiPrompt: 'Tạo request IT hỗ trợ thiết bị',
   },
-  {
-    id: 'qa-balance',
-    label: 'Số dư phép',
-    category: 'Chấm công & Đơn từ',
-    iconKey: 'calendarDays',
-    accentBg: 'var(--success-bg)',
-    accentFg: 'var(--success-fg)',
-    kind: 'ai',
-    aiPrompt: 'Số dư phép năm của tôi',
-  },
+
+  // Văn hoá & Công cụ
   {
     id: 'qa-onboarding',
     label: 'Hành trình 60 ngày',
@@ -184,8 +213,8 @@ export const QUICK_ACTIONS_CATALOG: QuickActionDef[] = [
 ];
 
 export const DEFAULT_QUICK_ACTION_IDS: Record<string, string[]> = {
-  'u-an': ['qa-checkin', 'qa-leave', 'qa-wfh', 'qa-kudos', 'qa-room', 'qa-okr'],
-  'u-huy': ['qa-checkin', 'qa-onboarding', 'qa-kudos', 'qa-irequest', 'qa-iwiki', 'qa-events'],
-  'u-mai': ['qa-checkin', 'qa-room', 'qa-kudos', 'qa-okr', 'qa-people', 'qa-iwiki'],
-  'u-ngoc': ['qa-checkin', 'qa-events', 'qa-kudos', 'qa-room', 'qa-people', 'qa-iwiki'],
+  'u-an': ['qa-leave', 'qa-room', 'qa-weekly-report', 'qa-kudos', 'qa-requests', 'qa-late'],
+  'u-huy': ['qa-leave', 'qa-room', 'qa-weekly-report', 'qa-kudos', 'qa-requests', 'qa-late'],
+  'u-mai': ['qa-leave', 'qa-room', 'qa-weekly-report', 'qa-kudos', 'qa-requests', 'qa-late'],
+  'u-ngoc': ['qa-leave', 'qa-room', 'qa-weekly-report', 'qa-kudos', 'qa-requests', 'qa-late'],
 };

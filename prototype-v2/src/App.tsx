@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType, useParams } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { AppShell } from './components/AppShell';
 import { HomePage } from './pages/HomePage';
@@ -29,11 +29,28 @@ import { AdminPage } from './pages/AdminPage';
 import { StatusPage } from './pages/StatusPage';
 import { WorkPage } from './pages/WorkPage';
 
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+  useEffect(() => {
+    if (navigationType !== 'POP') {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, navigationType]);
+  return null;
+};
+
+const NewsArticleRedirect: React.FC = () => {
+  const { id } = useParams();
+  return <Navigate to={`/feed/article/${id}`} replace />;
+};
+
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
       <AppProvider>
         <AppShell>
+          <ScrollToTop />
           <Routes>
             {/* My iKame — App Tổng: Cá nhân */}
             <Route path="/" element={<Navigate to="/home" replace />} />
@@ -45,6 +62,7 @@ export const App: React.FC = () => {
             <Route path="/onboarding" element={<OnboardingPage />} />
 
             {/* My iKame — App Tổng: Quản lý */}
+            <Route path="/manager" element={<Navigate to="/manager/overview" replace />} />
             <Route path="/manager/overview" element={<ManagerOverviewPage />} />
             <Route path="/manager/team" element={<ManagerTeamPage />} />
             <Route path="/manager/team/:id" element={<Member360Page />} />
@@ -74,7 +92,12 @@ export const App: React.FC = () => {
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/feed/article/:id" element={<ArticleDetailPage />} />
             <Route path="/news" element={<Navigate to="/icom/feed" replace />} />
+            <Route path="/news/:id" element={<NewsArticleRedirect />} />
             <Route path="/community" element={<Navigate to="/icom/feed" replace />} />
+            <Route path="/requests" element={<Navigate to="/my-requests" replace />} />
+            <Route path="/people" element={<Navigate to="/icom/feed" replace />} />
+            <Route path="/knowledge" element={<Navigate to="/iwiki" replace />} />
+            <Route path="/knowledge/:documentId" element={<Navigate to="/iwiki" replace />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/events/:id" element={<EventDetailPage />} />
             <Route path="/admin" element={<AdminPage />} />
@@ -91,6 +114,7 @@ export const App: React.FC = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/403" element={<StatusPage code={403} />} />
+            <Route path="/forbidden" element={<StatusPage code={403} />} />
             <Route path="*" element={<StatusPage code={404} />} />
           </Routes>
         </AppShell>

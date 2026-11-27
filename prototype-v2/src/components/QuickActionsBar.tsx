@@ -13,6 +13,8 @@ import {
   Clock,
   Compass,
   DoorOpen,
+  FilePenLine,
+  FileText,
   GripVertical,
   Home,
   Plane,
@@ -73,10 +75,17 @@ const QuickActionGlyph: React.FC<{ iconKey: QuickActionDef['iconKey']; size?: nu
       return <User size={size} />;
     case 'compass':
       return <Compass size={size} />;
+    case 'filePen':
+      return <FilePenLine size={size} />;
+    case 'fileText':
+      return <FileText size={size} />;
   }
 };
 
-export const QuickActionsBar: React.FC = () => {
+export const QuickActionsBar: React.FC<{
+  variant?: 'grid' | 'strip';
+  excludeIds?: string[];
+}> = ({ variant = 'grid', excludeIds = [] }) => {
   const {
     currentPerson,
     lens,
@@ -106,9 +115,10 @@ export const QuickActionsBar: React.FC = () => {
 
   const activeActions = useMemo(() => {
     return quickActionIds
+      .filter((id) => !excludeIds.includes(id))
       .map((id) => availableCatalog.find((a) => a.id === id))
       .filter((a): a is QuickActionDef => Boolean(a));
-  }, [quickActionIds, availableCatalog]);
+  }, [quickActionIds, availableCatalog, excludeIds]);
 
   const openCustomize = () => {
     setDraftIds(quickActionIds.filter((id) => availableCatalog.some((a) => a.id === id)));
@@ -176,62 +186,100 @@ export const QuickActionsBar: React.FC = () => {
     }
   };
 
-  const categories: QuickActionCategory[] = ['Chấm công & Đơn từ', 'Công việc & AI', 'Văn hoá & Công cụ'];
+  const categories: QuickActionCategory[] = ['Phổ biến', 'Chấm công & Đơn từ', 'Công việc & AI', 'Văn hoá & Công cụ'];
   const checkInTime = checkedInByPerson[currentPerson.id];
 
   return (
     <section>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <h2 style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: 'var(--text-secondary)' }}>
-          Thao tác nhanh
-        </h2>
-        <button type="button" className="btn btn-ghost btn-sm" onClick={openCustomize}>
-          <SlidersHorizontal size={13} /> Tuỳ chỉnh
-        </button>
-      </div>
+      {variant === 'grid' && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <h2 style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: 'var(--text-secondary)' }}>
+            Thao tác nhanh
+          </h2>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={openCustomize}>
+            <SlidersHorizontal size={13} /> Tuỳ chỉnh
+          </button>
+        </div>
+      )}
 
-      <div className="quick-actions-grid">
-        {activeActions.map((action) => {
-          const isCheckinDone = action.kind === 'checkin' && isCheckedInToday;
-          return (
-            <button
-              key={action.id}
-              type="button"
-              className="quick-action-tile"
-              onClick={() => runAction(action)}
-            >
-              <span
-                className="quick-action-icon"
-                style={{
-                  background: isCheckinDone ? 'var(--success-bg)' : action.accentBg,
-                  color: isCheckinDone ? 'var(--success-fg)' : action.accentFg,
-                }}
+      {variant === 'strip' ? (
+        <div className="qa-strip">
+          {activeActions.map((action) => {
+            const isCheckinDone = action.kind === 'checkin' && isCheckedInToday;
+            return (
+              <button
+                key={action.id}
+                type="button"
+                className="qa-pill"
+                onClick={() => runAction(action)}
               >
-                {isCheckinDone ? <CheckCircle2 size={17} /> : <QuickActionGlyph iconKey={action.iconKey} />}
-              </span>
-              <span className="quick-action-label">
-                {isCheckinDone ? `Đã chấm · ${checkInTime}` : action.label}
-              </span>
-            </button>
-          );
-        })}
-
-        {activeActions.length < MAX_QUICK_ACTIONS && (
+                <span
+                  className="qa-pill-icon"
+                  style={{
+                    background: isCheckinDone ? 'var(--success-bg)' : action.accentBg,
+                    color: isCheckinDone ? 'var(--success-fg)' : action.accentFg,
+                  }}
+                >
+                  {isCheckinDone ? <CheckCircle2 size={13} /> : <QuickActionGlyph iconKey={action.iconKey} size={13} />}
+                </span>
+                <span>{isCheckinDone ? `Đã chấm · ${checkInTime}` : action.label}</span>
+              </button>
+            );
+          })}
           <button
             type="button"
-            className="quick-action-tile quick-action-add"
+            className="qa-pill"
+            style={{ borderStyle: 'dashed', color: 'var(--text-tertiary)', padding: '0 12px' }}
             onClick={openCustomize}
-            aria-label="Thêm thao tác nhanh"
+            title="Tuỳ chỉnh lối tắt nhanh"
           >
-            <span className="quick-action-icon" style={{ background: 'var(--bg-subtle)', color: 'var(--text-tertiary)' }}>
-              <Plus size={16} />
-            </span>
-            <span className="quick-action-label" style={{ color: 'var(--text-tertiary)' }}>
-              Thêm
-            </span>
+            <SlidersHorizontal size={13} /> Tuỳ chỉnh
           </button>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="quick-actions-grid">
+          {activeActions.map((action) => {
+            const isCheckinDone = action.kind === 'checkin' && isCheckedInToday;
+            return (
+              <button
+                key={action.id}
+                type="button"
+                className="quick-action-tile"
+                onClick={() => runAction(action)}
+              >
+                <span
+                  className="quick-action-icon"
+                  style={{
+                    background: isCheckinDone ? 'var(--success-bg)' : action.accentBg,
+                    color: isCheckinDone ? 'var(--success-fg)' : action.accentFg,
+                  }}
+                >
+                  {isCheckinDone ? <CheckCircle2 size={17} /> : <QuickActionGlyph iconKey={action.iconKey} />}
+                </span>
+                <span className="quick-action-label">
+                  {isCheckinDone ? `Đã chấm · ${checkInTime}` : action.label}
+                </span>
+              </button>
+            );
+          })}
+
+          {activeActions.length < MAX_QUICK_ACTIONS && (
+            <button
+              type="button"
+              className="quick-action-tile quick-action-add"
+              onClick={openCustomize}
+              aria-label="Thêm thao tác nhanh"
+            >
+              <span className="quick-action-icon" style={{ background: 'var(--bg-subtle)', color: 'var(--text-tertiary)' }}>
+                <Plus size={16} />
+              </span>
+              <span className="quick-action-label" style={{ color: 'var(--text-tertiary)' }}>
+                Thêm
+              </span>
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Personalize Quick Actions Modal */}
       <Modal

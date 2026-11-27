@@ -11,6 +11,7 @@ import {
   Moon,
   Plane,
   Search,
+  Snowflake,
   Sparkles,
   Sun,
   Target,
@@ -40,8 +41,7 @@ export const CommandSearchModal: React.FC = () => {
     people,
     currentPerson,
     lens,
-    theme,
-    toggleTheme,
+    setTheme,
     isCheckedInToday,
     performCheckIn,
     openAiWithPrompt,
@@ -124,16 +124,32 @@ export const CommandSearchModal: React.FC = () => {
         run: () => openAiWithPrompt('Hôm nay tôi cần làm gì?'),
       },
       {
-        id: 'cmd-theme',
+        id: 'cmd-theme-light',
         group: 'Lệnh nhanh',
-        title: theme === 'light' ? 'Bật chế độ tối (Dark Mode)' : 'Bật chế độ sáng (Light Mode)',
-        subtitle: 'Đổi giao diện tức thì',
-        icon: theme === 'light' ? <Moon size={15} /> : <Sun size={15} />,
-        run: () => toggleTheme(),
+        title: 'Chế độ Sáng (Light Mode)',
+        subtitle: 'Giao diện sáng tinh gọn',
+        icon: <Sun size={15} />,
+        run: () => setTheme('light'),
+      },
+      {
+        id: 'cmd-theme-dark',
+        group: 'Lệnh nhanh',
+        title: 'Chế độ Tối (Dark Mode · Nền đen)',
+        subtitle: 'Nền đen thuần kết hợp phong cách Noel',
+        icon: <Moon size={15} />,
+        run: () => setTheme('dark'),
+      },
+      {
+        id: 'cmd-theme-noel',
+        group: 'Lệnh nhanh',
+        title: 'Chế độ Noel (Nền xanh thông)',
+        subtitle: 'Nền xanh đêm Giáng sinh kèm tuyết rơi & nút phủ tuyết',
+        icon: <Snowflake size={15} style={{ color: '#e03553' }} />,
+        run: () => setTheme('noel'),
       },
     ];
     return cmds;
-  }, [isCheckedInToday, navigate, performCheckIn, openAiWithPrompt, theme, toggleTheme]);
+  }, [isCheckedInToday, navigate, performCheckIn, openAiWithPrompt, setTheme]);
 
   const results = useMemo<CommandItem[]>(() => {
     const q = query.trim().normalize('NFC').toLowerCase();

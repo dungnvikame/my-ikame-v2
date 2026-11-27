@@ -45,10 +45,15 @@ export interface AgentMetrics {
   systemsWritten: string[];
 }
 
+export type AppTheme = 'light' | 'dark' | 'noel';
+
 interface AppContextValue {
   // Theme & Shell
-  theme: 'light' | 'dark';
+  theme: AppTheme;
+  setTheme: (next: AppTheme) => void;
   toggleTheme: () => void;
+  noelMode: boolean;
+  toggleNoelMode: () => void;
   sidebarCollapsed: boolean;
   setSidebarCollapsed: (v: boolean) => void;
   ssoLocked: boolean;
@@ -117,7 +122,7 @@ interface AppContextValue {
   togglePinPost: (postId: string) => void;
   sendComPush: (postId: string) => void;
   sendComReminder: (postId: string) => void;
-  wishBirthday: (personName: string) => void;
+  wishBirthday: (personName: string, message?: string) => void;
 
   // Events Actions
   toggleEventRsvp: (eventId: string) => void;
@@ -185,9 +190,14 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+  const [theme, setTheme] = useState<AppTheme>(() => {
     const saved = localStorage.getItem('my-ikame-theme');
-    return saved === 'dark' ? 'dark' : 'light';
+    return saved === 'light' || saved === 'dark' || saved === 'noel' ? saved : 'noel';
+  });
+
+  const [noelMode, setNoelMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('my-ikame-noel');
+    return saved === null ? true : saved === 'true';
   });
 
   useEffect(() => {
@@ -195,9 +205,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('my-ikame-theme', theme);
   }, [theme]);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  useEffect(() => {
+    if (noelMode) {
+      document.documentElement.setAttribute('data-season', 'noel');
+    } else {
+      document.documentElement.removeAttribute('data-season');
+    }
+    localStorage.setItem('my-ikame-noel', String(noelMode));
+  }, [noelMode]);
+
+  const setThemeSafe = useCallback((next: AppTheme) => {
+    setTheme(next);
+    if (next === 'noel') {
+      setNoelMode(true);
+    }
   }, []);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : prev === 'dark' ? 'noel' : 'light'));
+  }, []);
+
+  const toggleNoelMode = useCallback(() => {
+    setNoelMode((prev) => {
+      const next = !prev;
+      if (!next && theme === 'noel') {
+        setTheme('dark');
+      }
+      return next;
+    });
+  }, [theme]);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [ssoLocked, setSsoLocked] = useState(false);
@@ -221,7 +257,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [quickActionsByPerson, setQuickActionsByPerson] = useState<Record<string, string[]>>(() => {
     try {
-      const saved = localStorage.getItem('my-ikame-quick-actions');
+      const saved = localStorage.getItem('my-ikame-quick-actions-v2');
       return saved ? { ...DEFAULT_QUICK_ACTION_IDS, ...JSON.parse(saved) } : DEFAULT_QUICK_ACTION_IDS;
     } catch {
       return DEFAULT_QUICK_ACTION_IDS;
@@ -395,7 +431,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setQuickActionsByPerson((prev) => {
         const next = { ...prev, [currentPerson.id]: ids };
         try {
-          localStorage.setItem('my-ikame-quick-actions', JSON.stringify(next));
+          localStorage.setItem('my-ikame-quick-actions-v2', JSON.stringify(next));
         } catch {
           // ignore storage quota errors
         }
@@ -732,10 +768,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   );
 
   const wishBirthday = useCallback(
-    (personName: string) => {
+    (personName: string, message?: string) => {
       pushToast({
-        title: `Đã gửi lời chúc sinh nhật tới ${personName} 🎂`,
-        description: 'Lời chúc đã xuất hiện dưới bài chúc mừng hôm nay.',
+        title: `Đã gửi lời chúc tới ${personName} 🎉`,
+        description: message?.trim()
+          ? `"${message.trim()}"`
+          : 'Lời chúc đã xuất hiện dưới bài chúc mừng hôm nay.',
         tone: 'success',
       });
     },
@@ -1287,7 +1325,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const value: AppContextValue = {
     theme,
+    setTheme: setThemeSafe,
     toggleTheme,
+    noelMode,
+    toggleNoelMode,
     sidebarCollapsed,
     setSidebarCollapsed,
     ssoLocked,

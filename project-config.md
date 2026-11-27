@@ -4,24 +4,18 @@
 
 - Name: My iKame
 - Slug: my-ikame
-- Created at: 2026-08-11
-- Active project: true
+- Active version: Prototype v2 (`prototype-v2/`)
 
 ## Context
 
-- Product spec: `../../My-iKame-Product-Spec-v0.2.md`
-- Strategy source: `../../upload/bm-strategy-roadmap.html`
-- Asana board: not connected in this task
+- Product spec & research docs: `docs/` (including `docs/My-iKame-Product-Spec-v0.2.md`)
+- Vercel deployment config: `vercel.json`
 
 ## Output
 
-- Prototype app: `design-output/my-ikame/prototype-app`
-- Task worklog: `design-output/my-ikame/task-worklog`
-- Deployments: `design-output/my-ikame/deployments`
+- Prototype app: `prototype-v2/`
 
 ## Storage policy
 
-- Prototype uses mock data only.
-- No production API mutations or real employee data.
-- Deployment is not part of this task.
-
+- Prototype uses client-side mock data (`localStorage` for user preferences & quick actions).
+- No production API mutations or real employee PII.

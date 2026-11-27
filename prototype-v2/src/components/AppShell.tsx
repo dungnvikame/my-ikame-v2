@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Archive,
@@ -37,6 +37,7 @@ import {
   Search,
   ShieldCheck,
   Smartphone,
+  Snowflake,
   Sparkles,
   Sun,
   Target,
@@ -49,11 +50,13 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import ikameLogo from '../assets/ikame-logo.png';
+import ikameMascot from '../assets/ikame-mascot.png';
 import { useApp } from '../context/AppContext';
 import { INTERNAL_APPS } from '../data/mockData';
 import { LensKey } from '../types';
 import { AppIconGlyph, Avatar, ToastStack } from './UI';
 import { CommandSearchModal } from './CommandSearchModal';
+import { NoelEffectsLayer } from './FestiveEffects';
 import { NotificationDrawer, QuickAskDrawer, SsoHandoffModal } from './Overlays';
 
 export type SubAppId = 'my-ikame' | 'icheck' | 'igoal' | 'icom' | 'iwiki';
@@ -99,7 +102,9 @@ export function detectSubApp(pathname: string): SubAppId {
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {
     theme,
-    toggleTheme,
+    setTheme,
+    noelMode,
+    toggleNoelMode,
     sidebarCollapsed,
     setSidebarCollapsed,
     ssoLocked,
@@ -122,7 +127,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [launcherOpen, setLauncherOpen] = useState(false);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const [lensMenuOpen, setLensMenuOpen] = useState(false);
+  const topbarMenusRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -131,8 +138,20 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   useEffect(() => {
     setMobileMenuOpen(false);
     setLauncherOpen(false);
+    setThemeMenuOpen(false);
     setLensMenuOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    const onOutside = (e: MouseEvent) => {
+      if (topbarMenusRef.current && !topbarMenusRef.current.contains(e.target as Node)) {
+        setLauncherOpen(false);
+        setThemeMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onOutside);
+    return () => document.removeEventListener('mousedown', onOutside);
+  }, []);
 
   const unackedMandatoryCount = posts.filter(
     (p) =>
@@ -369,12 +388,12 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           </button>
 
           <Link to="/home" className="g-brand-link">
-            <img src={ikameLogo} alt="My iKame" className="g-brand-logo" />
+            <img src={ikameMascot} alt="My iKame" className="g-brand-logo" />
             <span className="g-brand-title hide-mobile">{appDisplayTitle}</span>
           </Link>
         </div>
 
-        {/* Center Top App Switcher Navigation (Seamless Sub-App Switching!) */}
+        {/* Center Top App Switcher Navigation (Mathematically Centered) */}
         <nav className="g-suite-nav" aria-label="Điều hướng giữa các ứng dụng iKame">
           {SUITE_APPS.map((app) => (
             <button
@@ -389,18 +408,16 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           ))}
         </nav>
 
-        {/* Right Google Workspace Utilities */}
-        <div className="g-topbar-right">
+        {/* Right Google Workspace Utilities — Clean, Uniform & Balanced */}
+        <div className="g-topbar-right" ref={topbarMenusRef}>
           <button
             type="button"
             className="g-search-pill"
             onClick={() => setSearchOpen(true)}
             aria-label="Tìm kiếm và lệnh nhanh"
+            title="Tìm kiếm nhanh (⌘K)"
           >
-            <Search size={16} />
-            <span className="hide-mobile" style={{ flex: 1, textAlign: 'left' }}>
-              Tìm kiếm...
-            </span>
+            <Search size={15} />
             <span className="kbd hide-mobile">⌘K</span>
           </button>
 
@@ -412,19 +429,206 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             aria-label="Mở Trợ lý AI"
             style={{ color: 'var(--brand-primary-fg)' }}
           >
-            <Sparkles size={19} />
+            <Sparkles size={18} />
           </button>
+
+          <button
+            type="button"
+            className="btn-icon"
+            onClick={() => setNotifDrawerOpen(true)}
+            aria-label="Thông báo"
+            title="Thông báo"
+          >
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span
+                className="tabular"
+                style={{
+                  position: 'absolute',
+                  top: 4,
+                  right: 4,
+                  minWidth: 16,
+                  height: 16,
+                  padding: '0 4px',
+                  borderRadius: 'var(--r-full)',
+                  background: 'var(--error-solid)',
+                  color: '#fff',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Single Unified Theme & Noel Popover Button */}
+          <div style={{ position: 'relative' }} className="hide-mobile">
+            <button
+              type="button"
+              className="btn-icon"
+              onClick={() => {
+                setThemeMenuOpen((v) => !v);
+                setLauncherOpen(false);
+              }}
+              aria-label="Tuỳ chỉnh giao diện"
+              title="Giao diện (Sáng / Tối / Noel)"
+              style={{
+                background: themeMenuOpen ? 'var(--hover-neutral)' : undefined,
+              }}
+            >
+              {theme === 'light' ? (
+                <Sun size={18} />
+              ) : theme === 'dark' ? (
+                <Moon size={18} />
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4.5 16.5 C6 8.5, 13 4.5, 19.2 9.8 C17 10.4, 16.2 12.8, 17 15.8 Z" fill="#E03553" />
+                  <rect x="3" y="15.5" width="15.2" height="3.6" rx="1.8" fill="#FFFFFF" />
+                  <circle cx="20" cy="10.8" r="2.1" fill="#FFFFFF" />
+                </svg>
+              )}
+            </button>
+
+            {themeMenuOpen && (
+              <div className="popover-menu" style={{ width: 244, padding: 12 }}>
+                <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>
+                  Chế độ giao diện
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 12 }}>
+                  {(
+                    [
+                      { id: 'light' as const, label: 'Sáng' },
+                      { id: 'dark' as const, label: 'Tối' },
+                      { id: 'noel' as const, label: 'Noel' },
+                    ]
+                  ).map((opt) => {
+                    const active = theme === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setTheme(opt.id)}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: 5,
+                          padding: '9px 6px',
+                          borderRadius: 'var(--r-10)',
+                          border: `1.5px solid ${active ? 'var(--brand-primary)' : 'var(--border-primary)'}`,
+                          background: active ? 'var(--brand-primary-subtle)' : 'var(--bg-subtle)',
+                          color: active ? 'var(--brand-primary-fg)' : 'var(--text-secondary)',
+                          fontSize: 12,
+                          fontWeight: 600,
+                        }}
+                      >
+                        {opt.id === 'light' ? (
+                          <Sun size={16} />
+                        ) : opt.id === 'dark' ? (
+                          <Moon size={16} />
+                        ) : (
+                          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                              d="M4.5 16.5 C6 8.5, 13 4.5, 19.2 9.8 C17 10.4, 16.2 12.8, 17 15.8 Z"
+                              fill="#E03553"
+                            />
+                            <rect x="3" y="15.5" width="15.2" height="3.6" rx="1.8" fill="#FFFFFF" />
+                            <circle cx="20" cy="10.8" r="2.1" fill="#FFFFFF" />
+                          </svg>
+                        )}
+                        <span>{opt.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div
+                  style={{
+                    paddingTop: 10,
+                    borderTop: '1px solid var(--border-subtle)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 10,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: 'var(--text-strong)' }}>
+                    <Snowflake size={14} style={{ color: noelMode ? 'var(--brand-primary-fg)' : 'var(--text-tertiary)' }} />
+                    <span>Hiệu ứng Noel</span>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={noelMode}
+                    className={`switch ${noelMode ? 'on' : ''}`}
+                    onClick={toggleNoelMode}
+                  >
+                    <span className="switch-thumb" />
+                  </button>
+                </div>
+
+                {noelMode && (
+                  <div
+                    data-snow-preview="true"
+                    style={{
+                      marginTop: 10,
+                      paddingTop: 9,
+                      borderTop: '1px solid var(--border-subtle)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 6,
+                    }}
+                  >
+                    <span style={{ fontSize: 11.5, color: 'var(--text-tertiary)' }}>Thử tuyết đọng:</span>
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      {(
+                        [
+                          { lvl: 1, label: '1p' },
+                          { lvl: 2, label: '5p' },
+                          { lvl: 3, label: '10p' },
+                        ] as const
+                      ).map((p) => (
+                        <button
+                          key={p.lvl}
+                          type="button"
+                          data-snow-preview="true"
+                          className="btn btn-dim btn-sm"
+                          style={{ height: 22, padding: '0 7px', fontSize: 11 }}
+                          onClick={() =>
+                            window.dispatchEvent(new CustomEvent('ikame:snow-preview', { detail: p.lvl }))
+                          }
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* 9-dot Google App Launcher */}
           <div style={{ position: 'relative' }}>
             <button
               type="button"
               className="btn-icon"
-              onClick={() => setLauncherOpen((v) => !v)}
+              onClick={() => {
+                setLauncherOpen((v) => !v);
+                setThemeMenuOpen(false);
+              }}
               aria-label="Mở tất cả ứng dụng iKame"
               title="Ứng dụng iKame"
+              style={{
+                background: launcherOpen ? 'var(--hover-neutral)' : undefined,
+              }}
             >
-              <Grid size={19} />
+              <Grid size={18} />
             </button>
             {launcherOpen && (
               <div className="popover-menu" style={{ width: 320, padding: 14 }}>
@@ -488,51 +692,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             )}
           </div>
 
-          <button
-            type="button"
-            className="btn-icon"
-            onClick={() => setNotifDrawerOpen(true)}
-            aria-label="Thông báo"
-            title="Thông báo"
-          >
-            <Bell size={19} />
-            {unreadCount > 0 && (
-              <span
-                className="tabular"
-                style={{
-                  position: 'absolute',
-                  top: 4,
-                  right: 4,
-                  minWidth: 16,
-                  height: 16,
-                  padding: '0 4px',
-                  borderRadius: 'var(--r-full)',
-                  background: 'var(--error-solid)',
-                  color: '#fff',
-                  fontSize: 10,
-                  fontWeight: 700,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                {unreadCount}
-              </span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            className="btn-icon hide-mobile"
-            onClick={toggleTheme}
-            aria-label="Đổi giao diện sáng tối"
-            title={theme === 'light' ? 'Chế độ tối' : 'Chế độ sáng'}
-          >
-            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
-
-          <Link to="/profile" title={`${currentPerson.name} · Hồ sơ`} style={{ marginLeft: 2 }}>
-            <Avatar person={currentPerson} size={34} />
+          <Link to="/profile" title={`${currentPerson.name} · Hồ sơ`} style={{ marginLeft: 4 }}>
+            <Avatar person={currentPerson} size={32} />
           </Link>
         </div>
       </header>
@@ -700,6 +861,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         <div className="g-workspace-wrap">
           <main id="main-content" className="g-workspace-sheet">
             <div className="g-workspace-inner">{children}</div>
+            <NoelEffectsLayer active={noelMode} dark={theme !== 'light'} />
           </main>
         </div>
       </div>

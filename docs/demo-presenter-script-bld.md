@@ -2,7 +2,7 @@
 
 > **Trạng thái:** v3 — cập nhật cho demo v2 (Cộng đồng + AI mọi module + ⌘K + nâng cấp Events/Tri thức/Mục tiêu/Hồ sơ). v2 (7 trạm, click-verified 2026-08-12) đã archive dưới dạng lịch sử — nội dung click path v2 vẫn đúng cho các trạm không đổi (Home, News, Manager, Vision).
 > **Tổng thời lượng:** ~34 phút · 11 trạm. **Express path (~20'):** bỏ trạm 6 (Tri thức) + trạm 7 (Mục tiêu chi tiết, giữ 1 chip); gộp trạm 3+4 (Cộng đồng+Events) còn 6'.
-> **URL:** Vercel production (pin URL đã rehearse vào đây: `______`) · Fallback local: `cd prototype-app && npm run dev` → http://localhost:5173
+> **URL:** Vercel production (pin URL đã rehearse vào đây: `______`) · Fallback local: `cd prototype-v2 && npm run dev` → http://localhost:5175
 
 ## Quy tắc vàng (đọc trước MỖI lần chạy)
 
