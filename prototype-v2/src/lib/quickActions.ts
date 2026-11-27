@@ -88,7 +88,7 @@ export const QUICK_ACTIONS_CATALOG: QuickActionDef[] = [
     accentBg: 'var(--violet-bg)',
     accentFg: 'var(--violet-fg)',
     kind: 'route',
-    route: '/feed?compose=kudos',
+    route: '/icom/feed?compose=kudos',
   },
   {
     id: 'qa-room',
@@ -148,8 +148,8 @@ export const QUICK_ACTIONS_CATALOG: QuickActionDef[] = [
     iconKey: 'book',
     accentBg: 'var(--success-bg)',
     accentFg: 'var(--success-fg)',
-    kind: 'sso_app',
-    appId: 'app-iwiki',
+    kind: 'route',
+    route: '/iwiki',
   },
   {
     id: 'qa-people',
@@ -169,7 +169,7 @@ export const QUICK_ACTIONS_CATALOG: QuickActionDef[] = [
     accentBg: 'var(--brand-primary-subtle)',
     accentFg: 'var(--brand-primary-fg)',
     kind: 'route',
-    route: '/events',
+    route: '/icom/events',
   },
   {
     id: 'qa-profile',

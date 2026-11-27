@@ -1,157 +1,175 @@
 /* ==========================================================================
-   My iKame — Core DS 1.1 Refined Semantic Tokens (Light & Dark)
-   Three-tier warm-stone SaaS hierarchy + iKame Vibrant Orange (#F76226)
+   My iKame — Google Material Design 3 / Google Workspace Token System
+   Clean tonal blue-gray canvas (#F8FAFD), floating white sheets, pill nav (#D3E3FD)
    ========================================================================== */
 
 :root,
 [data-theme="light"] {
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Roboto", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  /* Macro Surface Tiers (Core DS 1.1) */
-  --bg-sidebar: #f3f2f0;
-  --bg-canvas: #fafaf9;
+  /* Google Workspace Macro Surfaces */
+  --bg-shell: #f8fafd;
+  --bg-sidebar: #f8fafd;
+  --bg-canvas: #f8fafd;
   --bg-surface: #ffffff;
-  --bg-subtle: #f5f4f2;
-  --bg-muted: #ecebe8;
+  --bg-subtle: #f0f4f9;
+  --bg-muted: #e9eef6;
   --bg-elevated: #ffffff;
-  --bg-inverse: #1c1b1a;
-  --bg-backdrop: rgba(28, 27, 26, 0.44);
+  --bg-inverse: #1f1f1f;
+  --bg-backdrop: rgba(31, 31, 31, 0.42);
 
-  /* Brand & Accent */
-  --brand-primary: #f76226;
-  --brand-primary-hover: #e25117;
-  --brand-primary-active: #c94410;
-  --brand-primary-subtle: #fef4f0;
-  --brand-primary-border: #fcc8b5;
-  --brand-primary-fg: #c94410;
+  /* Google Material 3 Primary Accent (Google Blue) */
+  --brand-primary: #0b57d0;
+  --brand-primary-hover: #0842a0;
+  --brand-primary-active: #062e6f;
+  --brand-primary-subtle: #d3e3fd;
+  --brand-primary-tint: #edf2fa;
+  --brand-primary-border: #a8c7fa;
+  --brand-primary-fg: #0b57d0;
+  --nav-active-bg: #c2e7ff;
+  --nav-active-fg: #001d35;
 
-  /* Text Hierarchy (WCAG AA+) */
-  --text-strong: #171615;
-  --text-primary: #2d2c2a;
-  --text-secondary: #5c5854;
-  --text-tertiary: #847f79;
+  /* iKame Heritage Accent (used sparingly for logo/brand moments) */
+  --ikame-orange: #f76226;
+  --ikame-orange-subtle: #fef1eb;
+
+  /* Text Hierarchy (Material 3 On-Surface) */
+  --text-strong: #1f1f1f;
+  --text-primary: #202124;
+  --text-secondary: #444746;
+  --text-tertiary: #747775;
   --text-on-brand: #ffffff;
-  --text-inverse: #f5f4f2;
+  --text-inverse: #f8fafd;
 
-  /* Borders */
-  --border-subtle: #efeeec;
-  --border-primary: #e5e3df;
-  --border-strong: #d4d1cc;
-  --border-focus: #f76226;
+  /* Borders & Hairlines */
+  --border-subtle: #eff2f6;
+  --border-primary: #e0e3e7;
+  --border-strong: #c4c7c5;
+  --border-focus: #0b57d0;
 
-  /* Interactive Neutral Overlays */
-  --hover-neutral: rgba(45, 44, 42, 0.045);
-  --active-neutral: rgba(45, 44, 42, 0.085);
+  /* State Layers */
+  --hover-neutral: rgba(31, 31, 31, 0.05);
+  --active-neutral: rgba(11, 87, 208, 0.1);
 
-  /* Semantic Status Tokens */
-  --success-bg: #eefbf3;
-  --success-border: #b6ecc9;
-  --success-fg: #0b7a38;
-  --success-solid: #0f9d48;
+  /* Semantic Status (Google Material 3 Palette) */
+  --success-bg: #e6f4ea;
+  --success-border: #a8dab5;
+  --success-fg: #137333;
+  --success-solid: #188038;
 
-  --warning-bg: #fff9eb;
-  --warning-border: #f8dea0;
-  --warning-fg: #9a5b04;
-  --warning-solid: #d98207;
+  --warning-bg: #fef7e0;
+  --warning-border: #fde293;
+  --warning-fg: #b06000;
+  --warning-solid: #f9ab00;
 
-  --error-bg: #fef2f3;
-  --error-border: #fccad0;
-  --error-fg: #c21d2b;
-  --error-solid: #dc2636;
+  --error-bg: #fce8e6;
+  --error-border: #f6aea9;
+  --error-fg: #c5221f;
+  --error-solid: #d93025;
 
-  --info-bg: #eff7ff;
-  --info-border: #c4e1fc;
-  --info-fg: #0a64b4;
-  --info-solid: #0d87f2;
+  --info-bg: #e8f0fe;
+  --info-border: #aecbfa;
+  --info-fg: #1967d2;
+  --info-solid: #1a73e8;
 
-  --violet-bg: #f5f2ff;
-  --violet-border: #ddd4fe;
-  --violet-fg: #6638d4;
+  --violet-bg: #f3e8fd;
+  --violet-border: #d7aefb;
+  --violet-fg: #7627bb;
 
-  /* Elevation — Strict Core DS: no shadow on inline cards, only popovers/drawers/modals */
+  /* Material 3 Elevation (Tonal first, shadows only on floating menus/modals) */
   --shadow-none: none;
-  --shadow-popover: 0 8px 24px -4px rgba(23, 22, 21, 0.09), 0 2px 6px -1px rgba(23, 22, 21, 0.05);
-  --shadow-drawer: -12px 0 36px -8px rgba(23, 22, 21, 0.14);
-  --shadow-modal: 0 24px 56px -12px rgba(23, 22, 21, 0.22), 0 4px 14px -2px rgba(23, 22, 21, 0.08);
+  --shadow-card: 0 1px 2px rgba(60, 64, 67, 0.08), 0 1px 3px 1px rgba(60, 64, 67, 0.04);
+  --shadow-popover: 0 4px 16px rgba(60, 64, 67, 0.16), 0 1px 3px rgba(60, 64, 67, 0.08);
+  --shadow-drawer: -12px 0 32px rgba(60, 64, 67, 0.16);
+  --shadow-modal: 0 24px 48px rgba(60, 64, 67, 0.22), 0 2px 8px rgba(60, 64, 67, 0.1);
 
-  /* Radius Scale */
+  /* Material 3 Shape Scale */
   --r-4: 4px;
-  --r-6: 6px;
-  --r-8: 8px;
-  --r-10: 10px;
-  --r-12: 12px;
-  --r-16: 16px;
+  --r-6: 8px;
+  --r-8: 12px;
+  --r-10: 14px;
+  --r-12: 16px;
+  --r-16: 24px;
   --r-full: 9999px;
 
   /* Layout Dimensions */
-  --sidebar-w: 248px;
-  --sidebar-collapsed-w: 68px;
-  --topbar-h: 58px;
-  --bottom-nav-h: 62px;
+  --sidebar-w: 256px;
+  --sidebar-collapsed-w: 72px;
+  --topbar-h: 64px;
+  --bottom-nav-h: 64px;
 
-  /* Motion */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --t-fast: 130ms;
-  --t-med: 210ms;
+  /* Motion (Material 3 Emphasized Decelerate) */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --t-fast: 150ms;
+  --t-med: 240ms;
 }
 
 [data-theme="dark"] {
-  --bg-sidebar: #161514;
-  --bg-canvas: #1c1b1a;
-  --bg-surface: #242321;
-  --bg-subtle: #2b2a28;
-  --bg-muted: #34322f;
-  --bg-elevated: #2a2927;
-  --bg-inverse: #f5f4f2;
+  --bg-shell: #131314;
+  --bg-sidebar: #131314;
+  --bg-canvas: #131314;
+  --bg-surface: #1e1f20;
+  --bg-subtle: #282a2c;
+  --bg-muted: #333537;
+  --bg-elevated: #282a2c;
+  --bg-inverse: #e3e3e3;
   --bg-backdrop: rgba(0, 0, 0, 0.65);
 
-  --brand-primary: #f76226;
-  --brand-primary-hover: #ff753d;
-  --brand-primary-active: #e25117;
-  --brand-primary-subtle: rgba(247, 98, 38, 0.14);
-  --brand-primary-border: rgba(247, 98, 38, 0.36);
-  --brand-primary-fg: #ff8c5e;
+  --brand-primary: #a8c7fa;
+  --brand-primary-hover: #d3e3fd;
+  --brand-primary-active: #8ab4f8;
+  --brand-primary-subtle: #0842a0;
+  --brand-primary-tint: #1f2a3d;
+  --brand-primary-border: #3962a8;
+  --brand-primary-fg: #a8c7fa;
+  --nav-active-bg: #004a77;
+  --nav-active-fg: #c2e7ff;
 
-  --text-strong: #f7f6f4;
-  --text-primary: #e7e5e2;
-  --text-secondary: #a8a39d;
-  --text-tertiary: #78736d;
-  --text-on-brand: #ffffff;
-  --text-inverse: #171615;
+  --ikame-orange: #ff8a5b;
+  --ikame-orange-subtle: rgba(247, 98, 38, 0.18);
 
-  --border-subtle: #2c2b28;
-  --border-primary: #34322f;
-  --border-strong: #474440;
-  --border-focus: #ff753d;
+  --text-strong: #e3e3e3;
+  --text-primary: #e3e3e3;
+  --text-secondary: #c4c7c5;
+  --text-tertiary: #8e918f;
+  --text-on-brand: #062e6f;
+  --text-inverse: #1f1f1f;
 
-  --hover-neutral: rgba(255, 255, 255, 0.055);
-  --active-neutral: rgba(255, 255, 255, 0.1);
+  --border-subtle: #2c2d2f;
+  --border-primary: #37393b;
+  --border-strong: #4e5053;
+  --border-focus: #a8c7fa;
 
-  --success-bg: rgba(15, 157, 72, 0.14);
-  --success-border: rgba(54, 211, 118, 0.28);
-  --success-fg: #5ee394;
-  --success-solid: #16b355;
+  --hover-neutral: rgba(227, 227, 227, 0.08);
+  --active-neutral: rgba(168, 199, 250, 0.16);
 
-  --warning-bg: rgba(217, 130, 7, 0.16);
-  --warning-border: rgba(247, 185, 59, 0.3);
-  --warning-fg: #fbca5c;
-  --warning-solid: #f0a11b;
+  --success-bg: rgba(129, 201, 149, 0.14);
+  --success-border: rgba(129, 201, 149, 0.32);
+  --success-fg: #81c995;
+  --success-solid: #34a853;
 
-  --error-bg: rgba(220, 38, 54, 0.16);
-  --error-border: rgba(244, 110, 122, 0.32);
-  --error-fg: #ff808b;
-  --error-solid: #eb4250;
+  --warning-bg: rgba(253, 214, 99, 0.14);
+  --warning-border: rgba(253, 214, 99, 0.3);
+  --warning-fg: #fdd663;
+  --warning-solid: #fbbc04;
 
-  --info-bg: rgba(13, 135, 242, 0.15);
-  --info-border: rgba(88, 172, 248, 0.3);
-  --info-fg: #6cb8ff;
-  --info-solid: #2b98f7;
+  --error-bg: rgba(242, 139, 130, 0.15);
+  --error-border: rgba(242, 139, 130, 0.32);
+  --error-fg: #f28b82;
+  --error-solid: #ea4335;
 
-  --violet-bg: rgba(139, 92, 246, 0.16);
-  --violet-border: rgba(167, 139, 250, 0.3);
-  --violet-fg: #bda1ff;
+  --info-bg: rgba(138, 180, 248, 0.14);
+  --info-border: rgba(138, 180, 248, 0.32);
+  --info-fg: #8ab4f8;
+  --info-solid: #669df6;
 
-  --shadow-popover: 0 12px 32px -4px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
-  --shadow-drawer: -16px 0 42px rgba(0, 0, 0, 0.55);
-  --shadow-modal: 0 28px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --violet-bg: rgba(197, 138, 249, 0.15);
+  --violet-border: rgba(197, 138, 249, 0.3);
+  --violet-fg: #c58af9;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.55);
+  --shadow-drawer: -14px 0 36px rgba(0, 0, 0, 0.6);
+  --shadow-modal: 0 24px 56px rgba(0, 0, 0, 0.68);
 }

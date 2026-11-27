@@ -235,8 +235,8 @@ export const HomePage: React.FC = () => {
           <section className="card">
             <div className="card-header" style={{ marginBottom: 8 }}>
               <h2 className="card-title">Tin mới nổi bật</h2>
-              <Link to="/feed" className="btn btn-ghost btn-sm">
-                iKame Feed <ArrowRight size={13} />
+              <Link to="/icom/feed" className="btn btn-ghost btn-sm">
+                iCom Feed <ArrowRight size={13} />
               </Link>
             </div>
 
@@ -289,7 +289,7 @@ export const HomePage: React.FC = () => {
               <h2 className="card-title" style={{ fontSize: 14 }}>
                 <Calendar size={15} /> Sự kiện sắp tới
               </h2>
-              <Link to="/events" className="btn btn-ghost btn-sm">
+              <Link to="/icom/events" className="btn btn-ghost btn-sm">
                 Tất cả
               </Link>
             </div>
