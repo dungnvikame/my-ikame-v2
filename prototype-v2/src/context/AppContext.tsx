@@ -151,7 +151,7 @@ interface AppContextValue {
   // Onboarding Actions
   toggleQuestComplete: (questId: string) => void;
   onboardingSurvey: { day30?: number; day60?: number };
-  submitOnboardingSurvey: (milestone: 'day30' | 'day60', score: number) => void;
+  submitOnboardingSurvey: (milestone: 'day30' | 'day60', score?: number, note?: string) => void;
 
   // Notification Actions
   markNotificationRead: (id: string) => void;
@@ -1071,6 +1071,69 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
       }
 
+      // Completing all 12 quests unlocks 60-day Graduation badge + auto lifecycle post
+      const allDone = updatedQuests.every((q) => q.completed);
+      if (nextCompleted && allDone) {
+        const alreadyGraduated = people
+          .find((p) => p.id === 'u-huy')
+          ?.badges.some((b) => b.id === 'b-huy-60d');
+
+        if (!alreadyGraduated) {
+          setPeople((prev) =>
+            prev.map((p) =>
+              p.id === 'u-huy'
+                ? {
+                    ...p,
+                    badges: [
+                      {
+                        id: 'b-huy-60d',
+                        label: 'Chính thức 60 ngày',
+                        kind: 'onboarding',
+                        earnedAt: '27/11/2026',
+                        description: 'Tốt nghiệp xuất sắc Hành trình 60 ngày tại iKame',
+                      },
+                      ...p.badges,
+                    ],
+                  }
+                : p
+            )
+          );
+
+          const gradPost: FeedPost = {
+            id: `post-lifecycle-huy-60d-${Date.now()}`,
+            kind: 'lifecycle',
+            title: 'Chúc mừng Phạm Gia Huy tốt nghiệp Hành trình 60 ngày tại iKame! 🎓',
+            content:
+              'Phạm Gia Huy (Frontend Engineer · Product Engineering) đã hoàn thành trọn vẹn 12/12 nhiệm vụ hội nhập và chính thức khép lại 60 ngày thử việc rực rỡ cùng team!',
+            authorId: 'system-onboarding',
+            authorName: 'My iKame · Hành trình 60 ngày',
+            authorTitle: 'Bài tự động từ cột mốc hội nhập',
+            authorTeam: 'Toàn công ty',
+            audience: 'all',
+            createdAt: new Date().toISOString(),
+            timeLabel: 'Vừa xong',
+            ackedBy: {},
+            reachCount: 184,
+            readCount: 1,
+            totalAudienceCount: 184,
+            reminderCount: 0,
+            lifecycleSource: 'Hành trình 60 ngày · Tốt nghiệp 60 ngày',
+            reactions: { heart: [], clap: [] },
+            comments: [],
+            savedBy: [],
+            tags: ['Hành trình 60 ngày', 'Tốt nghiệp'],
+          };
+          setPosts((prev) => [gradPost, ...prev]);
+
+          pushToast({
+            title: 'Chúc mừng tốt nghiệp Hành trình 60 ngày! 🎓',
+            description: 'Huy hiệu "Chính thức 60 ngày" đã gắn vào Hồ sơ & đăng tin chúc mừng.',
+            tone: 'success',
+          });
+          return;
+        }
+      }
+
       pushToast({
         title: nextCompleted ? 'Đã hoàn thành nhiệm vụ' : 'Đã đánh dấu chưa xong',
         description: target.title,
@@ -1081,11 +1144,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   );
 
   const submitOnboardingSurvey = useCallback(
-    (milestone: 'day30' | 'day60', score: number) => {
+    (milestone: 'day30' | 'day60', score?: number, note?: string) => {
       setOnboardingSurvey((prev) => ({ ...prev, [milestone]: score }));
+      if (score === undefined) return;
       pushToast({
         title: `Đã gửi khảo sát mốc ${milestone === 'day30' ? '30 ngày' : '60 ngày'}`,
-        description: 'Phản hồi được tổng hợp ẩn danh gửi về P&OD.',
+        description: note?.trim()
+          ? 'P&OD đã nhận phản hồi và ghi chú hỗ trợ của bạn.'
+          : 'Phản hồi được tổng hợp ẩn danh gửi về P&OD.',
         tone: 'success',
       });
     },

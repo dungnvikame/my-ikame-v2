@@ -1409,7 +1409,8 @@ button {
   border-color: var(--border-primary);
 }
 
-[data-theme="noel"] .home-hero {
+[data-theme="noel"] .home-hero,
+[data-theme="noel"] .onb-hero {
   background:
     radial-gradient(540px 220px at 4% 0%, rgba(224, 53, 83, 0.16), transparent 70%),
     radial-gradient(460px 220px at 96% 10%, rgba(46, 182, 101, 0.14), transparent 72%),
@@ -1802,6 +1803,245 @@ button {
 
 .mini-avatar-chip:first-child {
   margin-left: 0;
+}
+
+/* ==========================================================================
+   Onboarding 60-Day Journey — Clean, Minimal-Text Google Workspace Layout
+   ========================================================================== */
+.onb-hero {
+  background:
+    radial-gradient(500px 200px at 6% 0%, rgba(11, 87, 208, 0.08), transparent 70%),
+    radial-gradient(420px 180px at 96% 0%, rgba(247, 98, 38, 0.08), transparent 72%),
+    var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: 20px;
+  padding: 22px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.onb-hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.onb-progress-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 170px;
+}
+
+.onb-progress-track {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--r-full);
+  background: var(--bg-muted);
+  overflow: hidden;
+}
+
+.onb-progress-fill {
+  height: 100%;
+  border-radius: var(--r-full);
+  background: linear-gradient(90deg, var(--brand-primary) 0%, #188038 100%);
+  transition: width 320ms var(--ease-out);
+}
+
+.onb-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 780px) {
+  .onb-stepper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .onb-progress-box {
+    align-items: flex-start;
+    width: 100%;
+  }
+}
+
+.onb-step-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: var(--r-12);
+  border: 1.5px solid var(--border-primary);
+  background: var(--bg-subtle);
+  text-align: left;
+  transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+}
+
+.onb-step-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.onb-step-card.done {
+  border-color: var(--success-border);
+  background: var(--success-bg);
+}
+
+.onb-step-card.selected {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary-subtle);
+  box-shadow: 0 2px 10px rgba(11, 87, 208, 0.08);
+}
+
+.onb-step-bar {
+  height: 4px;
+  width: 100%;
+  border-radius: var(--r-full);
+  background: var(--border-primary);
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.onb-step-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-full);
+  transition: width 260ms var(--ease-out);
+}
+
+/* Next-Step Focus Bar (1 clean row, zero verbose text) */
+.onb-next-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 16px;
+  border-radius: var(--r-12);
+  border: 1px solid var(--brand-primary-border);
+  background: var(--brand-primary-subtle);
+}
+
+@media (max-width: 640px) {
+  .onb-next-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Expandable Clean Quest Row */
+.onb-quest-item {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.onb-quest-item:last-child {
+  border-bottom: none;
+}
+
+.onb-quest-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.onb-quest-title-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  color: var(--text-strong);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.onb-quest-title-btn:hover {
+  color: var(--brand-primary-fg);
+}
+
+.onb-quest-detail {
+  margin: 0 0 12px 30px;
+  padding: 10px 13px;
+  border-radius: var(--r-10);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  animation: fadeIn 140ms var(--ease-out);
+}
+
+/* 2x2 Minimal Survival Kit Grid */
+.onb-kit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.onb-kit-tile {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  border-radius: var(--r-10);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-subtle);
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-strong);
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+}
+
+.onb-kit-tile:hover {
+  background: var(--bg-surface);
+  border-color: var(--brand-primary-border);
+  transform: translateY(-1px);
+}
+
+/* 4-Option Compact Pulse Strip */
+.onb-pulse-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.onb-pulse-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border-radius: var(--r-10);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-subtle);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+}
+
+.onb-pulse-btn:hover,
+.onb-pulse-btn.active {
+  background: var(--brand-primary-subtle);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary-fg);
+  font-weight: 600;
+  transform: translateY(-1px);
 }
 
 .checkin-float-tag {

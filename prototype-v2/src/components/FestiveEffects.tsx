@@ -172,6 +172,116 @@ export const FullPageCheckInCelebration: React.FC<{
   );
 };
 
+export const MilestoneCelebrationOverlay: React.FC<{
+  triggerId: number;
+  title: string;
+  subtitle: string;
+  isNoel?: boolean;
+}> = ({ triggerId, title, subtitle, isNoel = false }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (triggerId === 0) return;
+    setVisible(true);
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const palette = isNoel
+      ? ['#E03553', '#167942', '#F9AB00', '#93C5FD', '#FFFFFF']
+      : ['#F76226', '#F9AB00', '#0B57D0', '#188038', '#8B5CF6'];
+
+    const particles: Particle[] = [];
+    const spawn = (ox: number, oy: number, count: number, aMin: number, aMax: number, sMin: number, sMax: number) => {
+      for (let i = 0; i < count; i++) {
+        const angle = aMin + Math.random() * (aMax - aMin);
+        const speed = sMin + Math.random() * (sMax - sMin);
+        const shapes: Particle['shape'][] = ['rect', 'circle', 'star'];
+        particles.push({
+          x: ox,
+          y: oy,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: 4 + Math.random() * 4.5,
+          color: palette[Math.floor(Math.random() * palette.length)],
+          rotation: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.22,
+          shape: shapes[Math.floor(Math.random() * shapes.length)],
+          alpha: 0.96,
+          decay: 0.0075 + Math.random() * 0.006,
+        });
+      }
+    };
+
+    spawn(w * 0.5, 46, 52, Math.PI * 0.08, Math.PI * 0.92, 4, 11.5);
+    spawn(w * 0.14, h * 0.84, 28, -Math.PI * 0.45, -Math.PI * 0.2, 9.5, 17);
+    spawn(w * 0.86, h * 0.84, 28, -Math.PI * 0.8, -Math.PI * 0.55, 9.5, 17);
+
+    let rafId = 0;
+    const tick = () => {
+      ctx.clearRect(0, 0, w, h);
+      let alive = 0;
+      for (const p of particles) {
+        if (p.alpha <= 0) continue;
+        alive++;
+        p.vx *= 0.983;
+        p.vy = p.vy * 0.986 + 0.27;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.vRot;
+        p.alpha = Math.max(0, p.alpha - p.decay);
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.fillStyle = p.color;
+        if (p.shape === 'rect') {
+          ctx.fillRect(-p.size * 0.55, -p.size * 0.3, p.size * 1.1, p.size * 0.6);
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size * 0.42, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+      if (alive > 0) rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    const timer = window.setTimeout(() => setVisible(false), 2900);
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.clearTimeout(timer);
+    };
+  }, [triggerId, isNoel]);
+
+  if (!visible) return null;
+
+  return (
+    <div className="checkin-celebration-overlay" aria-hidden="true">
+      <canvas ref={canvasRef} className="checkin-confetti-canvas" />
+      <div className="checkin-banner-pop">
+        <img src={ikameMascot} alt="" className="checkin-banner-mascot" />
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-strong)' }}>{title}</div>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{subtitle}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /* ============================================================================
    2. Ultra-Lightweight Framed Noel Snowfall + Cached Volumetric Idle Snowdrift
       Performance Guarantees:
